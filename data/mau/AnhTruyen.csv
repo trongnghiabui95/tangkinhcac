@@ -1,10 +1,10 @@
-tac_pham_id,nhan_vat_id,link_anh,nguon_anh,chu_thich
-pham-nhan-tu-tien,,assets/img/mau/hoang-phong-coc-phim.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Hoàng Phong Cốc giữa biển mây
-pham-nhan-tu-tien,,assets/img/mau/huyet-sac-cam-dia-phim.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Trận chiến trong Huyết Sắc Cấm Địa
-pham-nhan-tu-tien,,assets/img/mau/bien-may-thien-nam-phim.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Biển mây Thiên Nam
-pham-nhan-tu-tien,,assets/img/mau/yem-nguyet-tong-son-mon.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Sơn môn Yểm Nguyệt Tông
-pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap-ket-dan.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Tạo hình Hàn Lập thời Kết Đan
-pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap-poster.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Hàn Lập – đệ tử Hoàng Phong Cốc
-pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap.jpg,Minh họa: Tàng Kinh Các,Tranh minh họa Hàn Lập
-pham-nhan-tu-tien,nam-cung-uyen,assets/img/mau/nam-cung-uyen-poster.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Nam Cung Uyển – trưởng lão Yểm Nguyệt Tông
-pham-nhan-tu-tien,nam-cung-uyen,assets/img/mau/nam-cung-uyen.jpg,Minh họa: Tàng Kinh Các,Tranh minh họa Nam Cung Uyển
+tac_pham_id,nhan_vat_id,link_anh,nguon_anh,chu_thich,trang_thai
+pham-nhan-tu-tien,,assets/img/mau/hoang-phong-coc-phim.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Hoàng Phong Cốc giữa biển mây,duyệt
+pham-nhan-tu-tien,,assets/img/mau/huyet-sac-cam-dia-phim.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Trận chiến trong Huyết Sắc Cấm Địa,duyệt
+pham-nhan-tu-tien,,assets/img/mau/bien-may-thien-nam-phim.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Biển mây Thiên Nam,duyệt
+pham-nhan-tu-tien,,assets/img/mau/yem-nguyet-tong-son-mon.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Sơn môn Yểm Nguyệt Tông,duyệt
+pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap-ket-dan.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Tạo hình Hàn Lập thời Kết Đan,duyệt
+pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap-poster.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Hàn Lập – đệ tử Hoàng Phong Cốc,duyệt
+pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap.jpg,Minh họa: Tàng Kinh Các,Tranh minh họa Hàn Lập,duyệt
+pham-nhan-tu-tien,nam-cung-uyen,assets/img/mau/nam-cung-uyen-poster.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),Nam Cung Uyển – trưởng lão Yểm Nguyệt Tông,duyệt
+pham-nhan-tu-tien,nam-cung-uyen,assets/img/mau/nam-cung-uyen.jpg,Minh họa: Tàng Kinh Các,Tranh minh họa Nam Cung Uyển,duyệt

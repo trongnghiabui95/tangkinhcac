@@ -142,6 +142,15 @@ Từ giờ, mỗi lần bạn sửa file trên GitHub, web tự đăng lại. **
 5. **Tab `AnhTruyen`:** ảnh riêng của nhân vật thì điền cả `nhan_vat_id`.
 6. Trang mới nằm ở `nhan-vat.html?id=<id>`.
 
+### Viết nháp, duyệt rồi mới hiện (cột `trang_thai`)
+Mỗi tab có cột **`trang_thai`** ở cuối:
+- Để trống hoặc ghi **`duyệt`**: dòng đó **hiện** trên web.
+- Ghi **`nháp`** (viết `nhap` hay `Nháp` cũng được): dòng đó **ẩn** khỏi web, kể cả trang chủ, danh sách, trang review, trang nhân vật.
+- **Tác phẩm** để `nháp` thì nhân vật, thế lực, cấp độ, vật phẩm, địa điểm… của tác phẩm đó cũng ẩn theo.
+- **Nhân vật** để `nháp` thì cuộc đời, quan hệ và ảnh riêng của nhân vật đó cũng ẩn.
+
+Quy trình gợi ý: người viết (BA) thêm dòng với `nháp` → người kiểm (Checker) đọc lại trong Sheet → đổi sang `duyệt` → khoảng 5 phút sau nội dung lên web.
+
 ### Lỗi thường gặp
 | Hiện tượng | Cách sửa |
 |---|---|
