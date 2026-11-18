@@ -266,3 +266,7 @@ img[loading="lazy"] { background: var(--color-base-300); }
 /* Logo yendan ở chân trang: cao 32px, chữ đổi màu theo giao diện */
 .thuong-hieu { color: var(--mau-yendan); display: inline-flex; }
 .logo-yendan { height: 32px; width: auto; }
+
+/* Trang Thế lực */
+.the-luc-the { display: flex; height: 100%; }
+.the-luc-the .the-ten { -webkit-line-clamp: 2; }

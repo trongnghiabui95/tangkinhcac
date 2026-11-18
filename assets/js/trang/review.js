@@ -65,7 +65,8 @@
           ${tl ? `<div class="flex gap-2 items-center flex-wrap"><dt class="font-semibold text-primary">Thủ lĩnh:</dt><dd>${chip(tl)}</dd></div>` : ''}
           ${ts ? `<div><dt class="inline font-semibold text-primary">Trụ sở:</dt> <dd class="inline"><a class="lien-ket" href="#dia-diem-${esc(ts.id)}">${esc(ts.ten)}</a></dd></div>` : ''}
           ${tv.length ? `<div><dt class="font-semibold text-primary mb-1">Thành viên:</dt><dd class="flex flex-wrap gap-2">${tv.map(chip).join('')}</dd></div>` : ''}
-        </dl></div>`;
+        </dl>
+        <a href="${LINK.faction(f)}" class="btn btn-sm btn-outline btn-primary mt-4 min-h-11">Xem trang thế lực ${icon('arrow-right')}</a></div>`;
     }).join('')}</div>`;
   }
 
