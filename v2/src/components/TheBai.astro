@@ -1,0 +1,13 @@
+---
+// Thẻ 1 bài viết trong lưới danh sách (ảnh + tên + nhãn). Không có ảnh thì hiện khung chữ.
+import CharacterCardImage from './CharacterCardImage.astro';
+import { layAnh, tenBai, urlBai, DANH_MUC, NHAN_VAI_TRO } from '../lib/tien-ich.js';
+interface Props { bai: any; uuTien?: boolean; hienBo?: string }
+const { bai, uuTien = false, hienBo } = Astro.props;
+const d = bai.data;
+const nhan = d.category === 'nhan-vat' && d.vai_tro ? NHAN_VAI_TRO[d.vai_tro] : DANH_MUC[d.category]?.ten;
+---
+<li class="the-bai">
+  <CharacterCardImage anh={layAnh(bai)} alt={tenBai(bai)} ten={tenBai(bai)} nhan={nhan} gon href={urlBai(bai)} uuTien={uuTien} />
+  {hienBo && <p class="the-phu">{hienBo}</p>}
+</li>

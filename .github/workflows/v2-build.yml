@@ -21,12 +21,9 @@ jobs:
           cache: npm
           cache-dependency-path: v2/package-lock.json
       - run: npm ci
-      - name: Build (ảnh → Astro → Pagefind)
+      - name: Kiểm thử bộ kiểm tra nội dung (3 file sai phải bị chặn)
+        run: npm run test:noi-dung
+      - name: Build (kiểm tra nội dung → ảnh → Astro → Pagefind)
         run: npm run build
-      - name: Kiểm tra kết quả
-        run: |
-          test -f dist/pham-nhan-tu-tien/nhan-vat/han-lap/index.html
-          test -f dist/sitemap-index.xml && test -f dist/robots.txt && test -d dist/pagefind
-          grep -q '"@type":"FAQPage"' dist/pham-nhan-tu-tien/nhan-vat/han-lap/index.html
-          grep -q 'class="lien-ket-noi-bo"' dist/pham-nhan-tu-tien/nhan-vat/han-lap/index.html
-          echo "OK: trang nhân vật, sitemap, robots, pagefind, FAQPage, liên kết nội bộ"
+      - name: Thêm 1 bài .mdx hợp lệ → phải có trang mới, hiện ở trang chủ, bộ truyện, danh mục, menu, sitemap
+        run: bash tests/thu-them-bai.sh

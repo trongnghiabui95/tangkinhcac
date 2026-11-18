@@ -1,12 +1,30 @@
 ---
+// Trang chủ: bài mới · theo bộ truyện · theo danh mục – tất cả tính từ v2/content/
 import BoCuc from '../layouts/BoCuc.astro';
 import CharacterCardImage from '../components/CharacterCardImage.astro';
-import { layBai, layAnh, urlBai, url } from '../lib/tien-ich.js';
-const ds = (await layBai('truyen')).sort((a, b) => b.data.ngay_cap_nhat.getTime() - a.data.ngay_cap_nhat.getTime());
+import LuoiBai from '../components/LuoiBai.astro';
+import { layBai, laySeries, slugSeries, layAnhSeries, url, urlSeries, urlDanhMuc, DANH_MUC, CAC_DANH_MUC } from '../lib/tien-ich.js';
+const [bai, series] = await Promise.all([layBai(), laySeries()]);
+const tenSeries = new Map(series.map((s) => [slugSeries(s), s.data.ten]));
+const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.category === c).length })).filter((x) => x.so);
 ---
 <BoCuc tieuDe="Tu Chân Bảo Điển" moTa="Bách khoa toàn thư & review truyện Tu Tiên, Huyền Huyễn: hồ sơ nhân vật, hệ thống cảnh giới, pháp bảo, tóm tắt cốt truyện.">
   <h1>Tu Chân Bảo Điển – Bách khoa truyện Tu Tiên, Huyền Huyễn</h1>
   <p><a class="nut" href={url('tim-kiem/')}>Tìm nhân vật, pháp bảo, cảnh giới…</a></p>
-  <h2>Truyện mới cập nhật</h2>
-  <ul class="luoi-the">{ds.slice(0, 24).map((t, i) => <li><CharacterCardImage anh={layAnh(t.id)} alt={`Bìa ${t.data.ten}`} ten={t.data.ten} gon href={urlBai(t.id)} uuTien={i < 2} /></li>)}</ul>
+
+  <h2>Bài mới cập nhật</h2>
+  <LuoiBai ds={bai.slice(0, 12)} tenBo={(b) => tenSeries.get(b.data.series)} uuTienDau={2} />
+
+  {series.length > 0 && <>
+    <h2>Theo bộ truyện</h2>
+    <ul class="luoi-the">{series.map((s) => (
+      <li><CharacterCardImage anh={layAnhSeries(s)} alt={`Bìa ${s.data.ten}`} ten={s.data.ten} gon href={urlSeries(slugSeries(s))} />
+        <p class="the-phu">{bai.filter((b) => b.data.series === slugSeries(s)).length} bài</p></li>
+    ))}</ul>
+  </>}
+
+  {danhMuc.length > 0 && <>
+    <h2>Theo danh mục</h2>
+    <ul class="chip-danh-muc">{danhMuc.map((x) => <li><a href={urlDanhMuc(x.c)}>{DANH_MUC[x.c].tenSoNhieu} <span>({x.so})</span></a></li>)}</ul>
+  </>}
 </BoCuc>

@@ -3,7 +3,8 @@ import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';
 import remarkLienKetNoiBo from './src/lib/remark-lien-ket-noi-bo.mjs';
-import remarkCauHoi from './src/lib/remark-cau-hoi.mjs';
+import remarkDirective from 'remark-directive';
+import remarkSpoiler from './src/lib/remark-spoiler.mjs';
 import rehypeChenQuangCao from './src/lib/rehype-chen-quang-cao.mjs';
 
 // Địa chỉ web thật (dùng cho canonical, sitemap, Open Graph). Đổi khi gắn tên miền riêng.
@@ -22,8 +23,9 @@ export default defineConfig({
     // Astro 7: plugin remark/rehype chạy qua bộ xử lý unified (@astrojs/markdown-remark)
     processor: unified({
       remarkPlugins: [
+        remarkDirective,                 // cú pháp :::spoiler … :::
+        remarkSpoiler,
         [remarkLienKetNoiBo, { thuMucNoiDung: 'content', base: BASE, toiDaMoiBai: 40 }],
-        remarkCauHoi,
       ],
       rehypePlugins: [
         [rehypeChenQuangCao, { moiSoH2: 3, adsenseClient: ADSENSE, slot: process.env.PUBLIC_ADSENSE_SLOT_GIUA_BAI || '' }],

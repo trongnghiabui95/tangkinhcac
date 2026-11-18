@@ -1,14 +1,14 @@
 ---
 /**
  * CharacterCardImage – ảnh thẻ nhân vật kèm khung biên tập và ghi nguồn.
- *  - <figure> + <figcaption> ghi nguồn (lấy từ frontmatter anh.nguon) – luôn hiện.
+ *  - <figure> + <figcaption> ghi nguồn (image_source.ten, có link tới image_source.url) – luôn hiện.
  *  - Lớp phủ tối ở cạnh dưới, khung viền cổ phong, huy hiệu cảnh giới và tên: vẽ bằng HTML/CSS đè lên ảnh.
  *  - Ảnh WebP nhiều cỡ (srcset), luôn có width/height để không nhảy trang; mặc định loading="lazy".
  *    uuTien = true cho ảnh chính đầu trang (LCP): tải ngay + fetchpriority="high".
  */
 import { url } from '../lib/tien-ich.js';
 interface Props {
-  anh: { src: string; width: number; height: number; srcset: { w: number; src: string }[]; nguon?: string } | null;
+  anh: { src: string; width: number; height: number; srcset: { w: number; src: string }[]; nguon?: string; nguon_url?: string } | null;
   alt: string;
   ten?: string;
   canhGioi?: string;
@@ -35,5 +35,9 @@ const Bao = href ? 'a' : 'div';
     {canhGioi && <span class="huy-hieu-canh-gioi" title="Cảnh giới cao nhất">{canhGioi}</span>}
     {ten && <span class="ten-tren-anh">{ten}</span>}
   </Bao>
-  {anh?.nguon && <figcaption>{anh.nguon}</figcaption>}
+  {anh?.nguon && (
+    <figcaption>Ảnh: {anh.nguon_url
+      ? <a href={anh.nguon_url} rel="nofollow noopener" target="_blank">{anh.nguon}</a>
+      : anh.nguon}</figcaption>
+  )}
 </figure>

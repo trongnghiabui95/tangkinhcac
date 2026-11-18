@@ -5,8 +5,10 @@
   "description": "Tu Chân Bảo Điển v2 – Astro SSG + MDX + Pagefind, xuất toàn bộ HTML tĩnh",
   "scripts": {
     "anh": "node scripts/process-images.mjs",
-    "dev": "node scripts/process-images.mjs && astro dev",
-    "build": "node scripts/process-images.mjs && astro build && pagefind --site dist",
+    "kiem-tra": "node scripts/kiem-tra-noi-dung.mjs",
+    "test:noi-dung": "node tests/kiem-tra-fixtures.mjs",
+    "dev": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro dev",
+    "build": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro build && pagefind --site dist",
     "preview": "astro preview"
   },
   "engines": {
@@ -19,6 +21,7 @@
     "gray-matter": "4.0.3",
     "mdast-util-to-string": "4.0.0",
     "pagefind": "1.6.0",
+    "remark-directive": "4.0.0",
     "sharp": "0.35.5",
     "unist-util-visit": "5.2.0",
     "unist-util-visit-parents": "6.0.2"

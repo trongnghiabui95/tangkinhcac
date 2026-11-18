@@ -1,0 +1,25 @@
+---
+// Trang vũ trụ truyện: /vu-tru/<universe>/ – gom các bộ cùng vũ trụ (ví dụ nhiều bộ chung một thế giới)
+import BoCuc from '../../../layouts/BoCuc.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import LuoiBai from '../../../components/LuoiBai.astro';
+import { cacVuTru, layBai, slugSeries, url, urlSeries } from '../../../lib/tien-ich.js';
+import { schemaBreadcrumb } from '../../../lib/schema.js';
+export async function getStaticPaths() {
+  return (await cacVuTru()).map((v) => ({ params: { universe: v.slug }, props: { v } }));
+}
+const { v } = Astro.props;
+const bai = await layBai((e) => e.data.universe === v.slug);
+const site = Astro.site!;
+const tieuDe = `Vũ trụ ${v.ten}`;
+---
+<BoCuc tieuDe={tieuDe} moTa={`Các bộ truyện, nhân vật, cảnh giới và pháp bảo trong vũ trụ ${v.ten}.`}
+  jsonLd={[schemaBreadcrumb([{ ten: 'Trang chủ', url: new URL(url(''), site).href }, { ten: tieuDe, url: new URL(Astro.url.pathname, site).href }])]}>
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: tieuDe }]} />
+  <h1>{tieuDe}</h1>
+  <p class="sapo">Gồm {v.series.length} bộ: {v.series.map((s, i) => <>{i > 0 && ', '}<a href={urlSeries(slugSeries(s))}>{s.data.ten}</a></>)}.</p>
+  {v.series.map((s) => {
+    const ds = bai.filter((b) => b.data.series === slugSeries(s));
+    return ds.length > 0 && <section><h2><a href={urlSeries(slugSeries(s))}>{s.data.ten}</a></h2><LuoiBai ds={ds.slice(0, 12)} /></section>;
+  })}
+</BoCuc>

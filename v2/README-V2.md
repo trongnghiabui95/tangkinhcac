@@ -15,80 +15,91 @@ Trang bách khoa chủ yếu là **trang để đọc**, nên Astro hợp hơn: 
 ## 2. Cấu trúc thư mục
 ```
 v2/
-├── astro.config.mjs              cấu hình: site, URL đẹp, plugin remark/rehype
-├── package.json                  lệnh: npm run build = xử lý ảnh → astro build → pagefind
-├── content/                      ⭐ NỘI DUNG (mỗi bài 1 file .mdx)
-│   └── pham-nhan-tu-tien/
-│       ├── index.mdx             trang review truyện
-│       ├── nhan-vat/han-lap.mdx  hồ sơ nhân vật
-│       ├── phap-bao/*.mdx        pháp bảo
-│       └── canh-gioi/*.mdx       cảnh giới (thu_tu = bậc)
-├── anh-goc/                      ⭐ ẢNH GỐC (chưa xử lý) theo truyện
-│   └── pham-nhan-tu-tien/{nhan-vat,phap-bao,bia}/…
-├── scripts/process-images.mjs    xử lý ảnh bằng sharp (mục 3)
-├── public/anh/                   ảnh đã xử lý (WebP, sinh tự động)
+├── content/                              ⭐ NỘI DUNG – mỗi bài 1 file .mdx (chuẩn ở mục 3)
+│   └── <series>/                         thư mục bộ truyện (slug không dấu)
+│       ├── index.mdx                     trang bộ truyện (có trường universe)
+│       ├── nhan-vat/<slug>.mdx           ┐
+│       ├── canh-gioi/<slug>.mdx          │ category = tên thư mục con
+│       ├── cot-truyen/<slug>.mdx         │ (chỉ 5 danh mục này)
+│       ├── phap-bao/<slug>.mdx           │
+│       └── the-luc/<slug>.mdx            ┘
+├── anh-goc/<series>/<category>/<slug>.(jpg|png|webp)   ảnh gốc (build tự cắt, nén, xoá EXIF)
+├── scripts/
+│   ├── kiem-tra-noi-dung.mjs             ⭐ kiểm tra chuẩn .mdx TRƯỚC khi build (lỗi → dừng)
+│   └── process-images.mjs                xử lý ảnh bằng sharp
+├── tests/
+│   ├── fixtures/sai/…                    3 file sai cố ý (thiếu faqs, title 72 ký tự, có <div>)
+│   ├── fixtures/hop-le/…                 1 bài hợp lệ để thử "thêm file → có trang"
+│   ├── kiem-tra-fixtures.mjs             npm run test:noi-dung
+│   └── thu-them-bai.sh                   bash tests/thu-them-bai.sh
 └── src/
-    ├── content.config.ts         khai báo cột frontmatter (kiểm tra sai kiểu lúc build)
-    ├── data/anh.json             danh sách ảnh đã xử lý (sinh tự động)
-    ├── lib/
-    │   ├── remark-lien-ket-noi-bo.mjs   tự gắn liên kết nội bộ (mục 4)
-    │   ├── remark-cau-hoi.mjs           rút "Câu hỏi thường gặp" → FAQPage
-    │   ├── rehype-chen-quang-cao.mjs    chèn quảng cáo giữa bài an toàn
-    │   ├── schema.js                    JSON-LD: Article, BreadcrumbList, FAQPage, Review
-    │   ├── sitemap.js, danh-sach.js, tien-ich.js, chi-muc-noi-dung.mjs
-    ├── components/
-    │   ├── CharacterCardImage.astro     ảnh thẻ: figure/figcaption, khung cổ phong, huy hiệu cảnh giới
-    │   ├── DisclaimerBanner.astro       miễn trừ trách nhiệm (chân trang)
-    │   ├── AdUnit.astro                 ô quảng cáo đặt tay
-    │   ├── YouTubeFacade.astro          video: chỉ tải YouTube khi bấm
-    │   ├── Spoiler.astro, Breadcrumb.astro, PhanTrang.astro, TrangMucTu.astro, DanhSachNhanVat.astro
-    ├── layouts/BoCuc.astro       <head> SEO: title, description, canonical, Open Graph, JSON-LD
+    ├── content.config.ts                 khai báo trường (Zod) – giới hạn lấy từ lib/chuan-mdx.mjs
+    ├── lib/chuan-mdx.mjs                 ⭐ NGUỒN DUY NHẤT của mọi giới hạn (title, description, faqs, số từ, danh mục)
+    ├── lib/remark-spoiler.mjs            khối :::spoiler … :::
+    ├── lib/remark-lien-ket-noi-bo.mjs, rehype-chen-quang-cao.mjs, schema.js, sitemap.js, tien-ich.js, danh-sach.js
+    ├── components/                       CharacterCardImage, TheBai, LuoiBai, TrangDanhSach, AdUnit, YouTubeFacade…
+    ├── layouts/BoCuc.astro               <head> SEO + menu SINH TỪ NỘI DUNG
     └── pages/
-        ├── [truyen]/nhan-vat/[slug].astro   ⭐ trang chi tiết nhân vật (mục 5)
-        ├── [truyen]/nhan-vat/index.astro + trang-[so].astro   danh sách 24 thẻ/trang
-        ├── [truyen]/index.astro, [truyen]/phap-bao/[slug].astro, [truyen]/canh-gioi/[slug].astro
-        ├── tim-kiem.astro                    tìm kiếm Pagefind
-        └── robots.txt.ts, sitemap-index.xml.ts, sitemap-[truyen].xml.ts, sitemap-trang-chinh.xml.ts
+        ├── index.astro                   trang chủ: bài mới · theo bộ · theo danh mục
+        ├── [series]/index.astro          /<series>/
+        ├── [series]/[category]/[slug].astro          /<series>/<category>/<slug>/  (trang bài)
+        ├── [series]/[category]/index.astro + trang-[so].astro   danh sách 24 bài/trang
+        ├── danh-muc/[category]/…         /danh-muc/<category>/ (mọi bộ)
+        ├── vu-tru/[universe]/index.astro /vu-tru/<universe>/
+        └── tim-kiem.astro, robots.txt.ts, sitemap-index.xml.ts, sitemap-[series].xml.ts, sitemap-trang-chinh.xml.ts
 ```
-URL sinh ra: `/pham-nhan-tu-tien/`, `/pham-nhan-tu-tien/nhan-vat/han-lap/`, `/pham-nhan-tu-tien/nhan-vat/trang-2/`, `/sitemap-pham-nhan-tu-tien.xml`.
 
-## 3. Thêm một nhân vật
-1. Bỏ ảnh gốc vào `anh-goc/<truyen>/nhan-vat/<slug>.jpg` (png/webp đều được).
-2. Tạo `content/<truyen>/nhan-vat/<slug>.mdx`, chép phần đầu từ `han-lap.mdx`:
-   ```yaml
-   ---
-   ten: Hàn Lập
-   ten_khac: [Hàn lão ma]           # dùng cho tìm kiếm + tự gắn liên kết
-   mo_ta: (≤ 170 ký tự, thành meta description + đoạn mở đầu)
-   vai_tro: chinh                   # chinh | phu | lien-quan | phan-dien
-   canh_gioi: luyen-hu              # slug trong canh-gioi/
-   phap_bao: [chuong-thien-binh]
-   anh:
-     goc: nhan-vat/han-lap.jpg
-     nguon: Tạo hình nhân vật Hàn Lập – Minh họa từ hoạt hình Phàm Nhân Tu Tiên (Bilibili)
-     cat_duoi: 0.12                 # cắt bỏ 12% dưới (phụ đề). cat_tren tương tự
-     # tam: [0.5, 0.3]              # nếu tự động cắt lệch mặt: ép tâm cắt (x, y từ 0 tới 1)
-   ngay_dang: 2026-11-10
-   ngay_cap_nhat: 2026-11-18
-   spoiler: true
-   # youtube: <id video chính thức>  # hiện khung video (chỉ tải YouTube khi bấm)
-   ---
-   ```
-3. Viết nội dung bằng Markdown: `## Mục`. Đoạn tiết lộ cốt truyện bọc trong `<Spoiler>…</Spoiler>`. Cuối bài có thể thêm:
-   ```md
-   ## Câu hỏi thường gặp
-   ### Câu hỏi?
-   Câu trả lời.
-   ```
-   Mục này tự thành dữ liệu FAQPage.
-4. Không cần tự chèn link: tên nhân vật, pháp bảo, cảnh giới cùng truyện được nối tự động ở lần xuất hiện đầu.
-5. Chạy `npm run build` (hoặc để GitHub tự build). Sai kiểu dữ liệu (ví dụ `vai_tro: chính` có dấu) thì build báo lỗi, chỉ đúng file.
+### Nguyên tắc Zero-Hardcode (bắt buộc)
+Không viết cứng tên truyện, nhân vật, menu, bảng cảnh giới hay đường dẫn bài trong `src/`. Mọi trang, menu, danh sách, JSON-LD, sitemap sinh 100% lúc build từ `content/`. **BA chỉ cần thêm file .mdx là web có trang mới.** Kiểm tra: `grep -rniI "tên-truyện-bất-kỳ" src --exclude-dir=data` phải không ra gì.
+
+## 3. Chuẩn file .mdx & thêm bài mới
+Chuẩn đầy đủ: Issue #27. Tóm tắt:
+```yaml
+---
+title: "Hàn Lập là ai? Tiểu sử, cảnh giới, đạo lữ trong Phàm Nhân Tu Tiên"   # 50–65 ký tự
+slug: han-lap                      # TRÙNG tên file, không dấu
+description: "…"                   # 140–160 ký tự
+keywords: ["hàn lập là ai", "đạo lữ hàn lập"]
+universe: pham-nhan-tu-tien        # vũ trụ (nhiều bộ chung thế giới thì dùng chung)
+series: pham-nhan-tu-tien          # TRÙNG thư mục bộ truyện
+category: nhan-vat                 # TRÙNG thư mục con
+aliases: ["Hàn lão ma"]            # tên khác: tìm kiếm + tự gắn liên kết
+date: 2026-11-20
+updated: 2026-11-20
+infobox:                           # bảng thông tin cạnh ảnh; giá trị trùng tên bài khác cùng bộ tự thành link
+  Thế lực: Hoàng Phong Cốc
+  Đạo lữ: Nam Cung Uyển
+image: nhan-vat/han-lap.webp       # trong anh-goc/<series>/
+image_source: { ten: "…", url: "https://…" }
+image_crop: { duoi: 0.1 }          # bỏ khung đen/phụ đề – KHÔNG dùng để xoá logo/watermark
+spoiler: true
+faqs:                              # 3–6 câu (thành khối FAQ + JSON-LD FAQPage)
+  - q: "Hàn Lập có mấy vợ?"
+    a: "…"
+nhap: false                        # true = chưa xuất bản
+# Tuỳ chọn: ten, vai_tro (chinh|phu|lien-quan|phan-dien), canh_gioi, phap_bao, thu_tu, youtube
+---
+```
+- Thân bài **chỉ Markdown** (`##`, `###`, danh sách, bảng). Không HTML/CSS/script/component. Spoiler:
+  ```
+  :::spoiler
+  …nội dung…
+  :::
+  ```
+- Không viết mục "Câu hỏi thường gặp" trong thân bài; FAQ lấy từ `faqs`.
+- Độ dài 800–1.200 từ. Build chỉ **cảnh báo**, workflow PR (Issue #28) sẽ chặn với file mới/sửa.
+
+**Kiểm tra khi build** (`scripts/kiem-tra-noi-dung.mjs`, thông báo tiếng Việt ghi file + trường + lý do): title 50–65; description 140–160; faqs 3–6; slug không dấu, trùng tên file, không trùng đường dẫn hệ thống (`trang-2`…); series/category trùng thư mục; bộ truyện có `index.mdx`; file ảnh có thật và cạnh ngắn ≥ 600px; có ảnh thì phải ghi nguồn; thân bài không có thẻ HTML/component.
+
+**Xem cả bài nháp khi làm việc**: `XEM_NHAP=1 npm run build && npm run preview` (bản này có dải đỏ cảnh báo và `noindex`, **không đăng**).
 
 ## 4. Lệnh và biến môi trường
 ```bash
 cd v2
 npm ci
-npm run build          # ảnh → HTML → chỉ mục tìm kiếm, kết quả ở dist/
+npm run build          # kiểm tra nội dung → ảnh → HTML → chỉ mục tìm kiếm, kết quả ở dist/
+npm run test:noi-dung  # 3 file sai phải bị chặn
+bash tests/thu-them-bai.sh   # thêm 1 bài hợp lệ → phải có trang mới
 npm run preview        # xem thử ở http://localhost:4321
 ```
 | Biến | Ý nghĩa |
@@ -98,6 +109,7 @@ npm run preview        # xem thử ở http://localhost:4321
 | `PUBLIC_ADSENSE_CLIENT` | Mã `ca-pub-…`. Trống = không có quảng cáo |
 | `PUBLIC_ADSENSE_SLOT_GIUA_BAI`, `PUBLIC_ADSENSE_SLOT_CUOI_BAI` | Mã ô quảng cáo (nếu dùng ô cố định thay vì quảng cáo tự động) |
 | `QC_XEM_THU=1` | Hiện khung giữ chỗ quảng cáo để xem vị trí (chỉ dùng khi làm việc, **không** bật khi đăng thật) |
+| `XEM_NHAP=1` | Build kèm bài nháp để xem thử (không đăng) |
 | `TIM_TOAN_VAN=1` | Tìm cả thân bài (chỉ mục lớn hơn nhiều, xem mục 6) |
 
 Đăng lên **Cloudflare Pages**: thư mục gốc `v2`, lệnh build `npm run build`, thư mục kết quả `dist`, biến `SITE_URL` = tên miền thật.

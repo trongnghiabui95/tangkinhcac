@@ -1,17 +1,23 @@
-import { layBai, tachId, MOI_TRANG } from './tien-ich.js';
-const THU_TU = { chinh: 0, phu: 1, 'lien-quan': 2, 'phan-dien': 3 };
-/** Mọi trang danh sách nhân vật của mọi truyện: [{ truyen, trang, tongTrang, ds, tp }] */
-export async function cacTrangNhanVat() {
-  const nv = await layBai('nhanVat');
-  const tps = await layBai('truyen');
-  const nhom = new Map();
-  for (const e of nv) { const t = tachId(e.id).truyen; (nhom.get(t) ?? nhom.set(t, []).get(t)).push(e); }
+// Sinh mọi trang danh sách có phân trang (24 thẻ/trang) – dùng chung cho getStaticPaths.
+import { layBai, laySeries, slugSeries, chiaTrang, CAC_DANH_MUC } from './tien-ich.js';
+
+/** /<series>/<category>/ và /<series>/<category>/trang-n/ */
+export async function trangSeriesDanhMuc() {
+  const [series, bai] = await Promise.all([laySeries(), layBai()]);
   const out = [];
-  for (const [truyen, ds] of nhom) {
-    ds.sort((a, b) => THU_TU[a.data.vai_tro] - THU_TU[b.data.vai_tro] || a.data.ten.localeCompare(b.data.ten, 'vi'));
-    const tongTrang = Math.max(1, Math.ceil(ds.length / MOI_TRANG));
-    const tp = tps.find((e) => tachId(e.id).truyen === truyen);
-    for (let trang = 1; trang <= tongTrang; trang++) out.push({ truyen, trang, tongTrang, tp, ds: ds.slice((trang - 1) * MOI_TRANG, trang * MOI_TRANG) });
+  for (const s of series) for (const c of CAC_DANH_MUC) {
+    const ds = bai.filter((b) => b.data.series === slugSeries(s) && b.data.category === c)
+      .sort((a, b) => (a.data.thu_tu ?? 999) - (b.data.thu_tu ?? 999) || a.data.title.localeCompare(b.data.title, 'vi'));
+    if (!ds.length) continue;
+    for (const p of chiaTrang(ds)) out.push({ series: slugSeries(s), tenSeries: s.data.ten, category: c, ...p });
   }
   return out;
+}
+/** /danh-muc/<category>/ và /danh-muc/<category>/trang-n/ */
+export async function trangDanhMuc() {
+  const bai = await layBai();
+  return CAC_DANH_MUC.flatMap((c) => {
+    const ds = bai.filter((b) => b.data.category === c);
+    return ds.length ? chiaTrang(ds).map((p) => ({ category: c, ...p })) : [];
+  });
 }

@@ -1,0 +1,15 @@
+---
+import TrangDanhSach from '../../../components/TrangDanhSach.astro';
+import { trangDanhMuc } from '../../../lib/danh-sach.js';
+import { url, urlDanhMuc, DANH_MUC } from '../../../lib/tien-ich.js';
+import { laySeries, slugSeries } from '../../../lib/tien-ich.js';
+export async function getStaticPaths() {
+  return (await trangDanhMuc()).filter((p) => p.trang > 1).map((p) => ({ params: { category: p.category, so: String(p.trang) }, props: p }));
+}
+const p = Astro.props;
+const tenSeries = new Map((await laySeries()).map((s) => [slugSeries(s), s.data.ten]));
+const ten = DANH_MUC[p.category].tenSoNhieu;
+---
+<TrangDanhSach tieuDe={`${ten} – mọi bộ truyện`} moTa={`Tổng hợp ${ten.toLowerCase()} trong các bộ truyện Tu Tiên, Huyền Huyễn trên Tu Chân Bảo Điển.`}
+  cap={[{ ten: 'Trang chủ', href: url('') }, { ten }]} ds={p.ds} trang={p.trang} tongTrang={p.tongTrang} urlGoc={urlDanhMuc(p.category)}
+  tenBo={(b) => tenSeries.get(b.data.series)} />

@@ -1,0 +1,61 @@
+---
+// Trang bộ truyện: /<series>/ – nội dung index.mdx + bài viết theo từng danh mục
+import { render } from 'astro:content';
+import BoCuc from '../../layouts/BoCuc.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import CharacterCardImage from '../../components/CharacterCardImage.astro';
+import LuoiBai from '../../components/LuoiBai.astro';
+import AdUnit from '../../components/AdUnit.astro';
+import { laySeries, slugSeries, layBai, layAnhSeries, url, urlSeriesDanhMuc, urlVuTru, boDau, DANH_MUC, CAC_DANH_MUC, cacVuTru } from '../../lib/tien-ich.js';
+import { schemaReviewTruyen, schemaBreadcrumb } from '../../lib/schema.js';
+export async function getStaticPaths() {
+  return (await laySeries()).map((s) => ({ params: { series: slugSeries(s) }, props: { s } }));
+}
+const { s } = Astro.props;
+const d = s.data;
+const slug = slugSeries(s);
+const { Content } = await render(s);
+const bai = await layBai((e) => e.data.series === slug);
+const nhom = CAC_DANH_MUC.map((c) => ({ c, ds: bai.filter((b) => b.data.category === c).sort((a, b) => (a.data.thu_tu ?? 999) - (b.data.thu_tu ?? 999)) })).filter((n) => n.ds.length);
+const vuTru = (await cacVuTru()).find((v) => v.slug === d.universe);
+const anh = layAnhSeries(s);
+const site = Astro.site!;
+const tuyetDoi = (p: string) => new URL(p, site).href;
+const tieuDe = `[Review] ${d.ten} | Cốt truyện, Nhân vật, Thế giới`;
+const jsonLd = [
+  schemaReviewTruyen({ ten: d.ten, tacGia: d.tac_gia, moTa: d.mo_ta, urlTrang: tuyetDoi(url(`${slug}/`)), anh: anh ? tuyetDoi(url(anh.src)) : undefined, diem: d.diem,
+    ngayDang: d.ngay_dang.toISOString(), ngayCapNhat: d.ngay_cap_nhat.toISOString(), site: site.href }),
+  schemaBreadcrumb([{ ten: 'Trang chủ', url: tuyetDoi(url('')) }, { ten: d.ten, url: tuyetDoi(url(`${slug}/`)) }]),
+];
+---
+<BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article">
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: d.ten }]} />
+  <article data-pagefind-body data-pagefind-filter={`truyen:${d.ten}`} data-pagefind-meta="loai:Bộ truyện">
+    <h1 data-pagefind-meta="title">{tieuDe}</h1>
+    <p class="sapo">{d.mo_ta}</p>
+    {vuTru && vuTru.series.length > 1 && <p class="thuoc-bo">Thuộc vũ trụ <a href={urlVuTru(d.universe)}>{vuTru.ten}</a></p>}
+    <span class="sr-only" data-pagefind-weight="8">{boDau([d.ten, ...d.ten_khac].join(' ')).toLowerCase()}</span>
+    <div class="bo-cuc-bai">
+      <aside class="cot-phu"><div class="infobox" data-pagefind-ignore>
+        <CharacterCardImage anh={anh} alt={`Bìa ${d.ten}`} uuTien sizes="(max-width: 960px) 90vw, 290px" />
+        <table><tbody>
+          {d.ten_trung && <tr><th scope="row">Tên gốc</th><td>{d.ten_trung}</td></tr>}
+          <tr><th scope="row">Tác giả</th><td>{d.tac_gia}</td></tr>
+          <tr><th scope="row">Thể loại</th><td>{d.the_loai.join(', ')}</td></tr>
+          <tr><th scope="row">Tình trạng</th><td>{d.tinh_trang}</td></tr>
+          {d.diem != null && <tr><th scope="row">Điểm</th><td>★ {d.diem}/10</td></tr>}
+        </tbody></table>
+      </div></aside>
+      <div class="noi-dung-bai" data-pagefind-ignore="all"><Content /></div>
+    </div>
+  </article>
+  <AdUnit viTri="sau-review" />
+  {nhom.map((n) => (
+    <section data-pagefind-ignore="all">
+      <h2>{DANH_MUC[n.c].tenSoNhieu}</h2>
+      <LuoiBai ds={n.ds.slice(0, 8)} />
+      {n.ds.length > 8 && <p><a class="nut" href={urlSeriesDanhMuc(slug, n.c)}>Xem tất cả {n.ds.length} bài</a></p>}
+    </section>
+  ))}
+  {!nhom.length && <p class="trong">Bộ truyện này chưa có bài viết đã xuất bản.</p>}
+</BoCuc>

@@ -1,5 +1,6 @@
-// Sinh JSON-LD (schema.org) cho Google. Mỗi hàm trả về 1 object; layout gắn vào <head>.
-const TO_CHUC = (site) => ({ '@type': 'Organization', name: 'Tu Chân Bảo Điển', url: site });
+// JSON-LD (schema.org) sinh từ frontmatter. Mọi URL tuyệt đối tính từ SITE_URL (Astro.site).
+const TEN_WEB = 'Tu Chân Bảo Điển';
+export const toChuc = (site) => ({ '@type': 'Organization', name: TEN_WEB, url: site, logo: { '@type': 'ImageObject', url: new URL('favicon.svg', site).href } });
 
 /** BreadcrumbList từ [{ ten, url (tuyệt đối) }] */
 export const schemaBreadcrumb = (cap) => ({
@@ -7,49 +8,31 @@ export const schemaBreadcrumb = (cap) => ({
   itemListElement: cap.map((c, i) => ({ '@type': 'ListItem', position: i + 1, name: c.ten, ...(c.url ? { item: c.url } : {}) })),
 });
 
-/**
- * Trang nhân vật: Article (bài viết về nhân vật) + about (nhân vật hư cấu, kiểu Person).
- * Ghi chú: Google dành ProfilePage cho trang hồ sơ người/tổ chức THẬT; nhân vật hư cấu dùng Article an toàn hơn.
- * Đặt kieu = 'ProfilePage' nếu vẫn muốn thử.
- */
-export function schemaNhanVat({ ten, ten_khac, moTa, urlTrang, anh, ngayDang, ngayCapNhat, truyen, urlTruyen, toChuc, site, kieu = 'Article' }) {
-  const nhanVat = {
-    '@type': 'Person', name: ten, ...(ten_khac?.length ? { alternateName: ten_khac } : {}),
-    description: moTa, ...(anh ? { image: anh } : {}),
-    subjectOf: { '@type': 'Book', name: truyen, url: urlTruyen },
-    ...(toChuc?.length ? { memberOf: toChuc.map((t) => ({ '@type': 'Organization', name: t })) } : {}),
-  };
-  if (kieu === 'ProfilePage') {
-    return { '@context': 'https://schema.org', '@type': 'ProfilePage', url: urlTrang, dateCreated: ngayDang, dateModified: ngayCapNhat, mainEntity: nhanVat };
-  }
+/** Article cho mọi bài viết. Bài nhân vật thêm `about` (nhân vật hư cấu, kiểu Person). */
+export function schemaArticle({ title, description, urlTrang, anh, date, updated, keywords, site, tenSeries, urlSeries, nhanVat }) {
   return {
     '@context': 'https://schema.org', '@type': 'Article',
-    headline: `${ten} | Tiểu sử, Sức mạnh, Mối quan hệ`, description: moTa,
-    ...(anh ? { image: [anh] } : {}), datePublished: ngayDang, dateModified: ngayCapNhat,
+    headline: title, description, ...(anh ? { image: [anh] } : {}),
+    datePublished: date.toISOString(), dateModified: updated.toISOString(),
     mainEntityOfPage: { '@type': 'WebPage', '@id': urlTrang },
-    author: TO_CHUC(site), publisher: TO_CHUC(site), about: nhanVat, inLanguage: 'vi',
+    author: toChuc(site), publisher: toChuc(site), inLanguage: 'vi',
+    ...(keywords?.length ? { keywords: keywords.join(', ') } : {}),
+    isPartOf: { '@type': 'CreativeWorkSeries', name: tenSeries, url: urlSeries },
+    ...(nhanVat ? { about: { '@type': 'Person', name: nhanVat.ten, ...(nhanVat.aliases?.length ? { alternateName: nhanVat.aliases } : {}) } } : {}),
   };
 }
 
-/** FAQPage từ [{ hoi, dap }]. (Từ 2023 Google chỉ hiện kết quả FAQ đặc biệt cho trang chính phủ/y tế,
- *  nhưng dữ liệu vẫn hợp lệ và giúp máy tìm kiếm/AI hiểu nội dung.) */
-export const schemaFaq = (faq) => faq?.length ? {
+/** FAQPage từ faqs [{ q, a }] */
+export const schemaFaq = (faqs) => faqs?.length ? {
   '@context': 'https://schema.org', '@type': 'FAQPage',
-  mainEntity: faq.map((c) => ({ '@type': 'Question', name: c.hoi, acceptedAnswer: { '@type': 'Answer', text: c.dap } })),
+  mainEntity: faqs.map((c) => ({ '@type': 'Question', name: c.q, acceptedAnswer: { '@type': 'Answer', text: c.a } })),
 } : null;
 
-/** Trang truyện: Review của Book */
+/** Trang bộ truyện: Review của Book */
 export const schemaReviewTruyen = ({ ten, tacGia, moTa, urlTrang, anh, diem, ngayDang, ngayCapNhat, site }) => ({
   '@context': 'https://schema.org', '@type': 'Review',
   name: `[Review] ${ten}`, description: moTa, url: urlTrang, datePublished: ngayDang, dateModified: ngayCapNhat,
-  author: TO_CHUC(site), publisher: TO_CHUC(site), inLanguage: 'vi',
+  author: toChuc(site), publisher: toChuc(site), inLanguage: 'vi',
   itemReviewed: { '@type': 'Book', name: ten, author: { '@type': 'Person', name: tacGia }, ...(anh ? { image: anh } : {}) },
   ...(diem != null ? { reviewRating: { '@type': 'Rating', ratingValue: diem, bestRating: 10, worstRating: 0 } } : {}),
-});
-
-/** Trang mục từ khác (pháp bảo, cảnh giới) */
-export const schemaBaiViet = ({ tieuDe, moTa, urlTrang, anh, ngayDang, ngayCapNhat, site }) => ({
-  '@context': 'https://schema.org', '@type': 'Article', headline: tieuDe, description: moTa,
-  ...(anh ? { image: [anh] } : {}), datePublished: ngayDang, dateModified: ngayCapNhat,
-  mainEntityOfPage: { '@type': 'WebPage', '@id': urlTrang }, author: TO_CHUC(site), publisher: TO_CHUC(site), inLanguage: 'vi',
 });

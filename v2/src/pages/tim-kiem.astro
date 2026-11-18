@@ -5,12 +5,13 @@
  * Gõ không dấu vẫn ra: mỗi bài có thêm đoạn từ khoá không dấu (ẩn) được đánh chỉ mục.
  */
 import BoCuc from '../layouts/BoCuc.astro';
-import { url } from '../lib/tien-ich.js';
+import { url, layBai, tenBai, boDau } from '../lib/tien-ich.js';
+const goiY = (await layBai()).slice(0, 3).map((b) => boDau(tenBai(b)).toLowerCase());   // ví dụ lấy từ bài mới nhất
 ---
 <BoCuc tieuDe="Tìm kiếm" moTa="Tìm nhân vật, pháp bảo, cảnh giới, truyện trên Tu Chân Bảo Điển." noindex>
   <h1>Tìm kiếm</h1>
   <label for="o-tim" class="sr-only">Từ khoá</label>
-  <input id="o-tim" class="o-tim" type="search" placeholder="Ví dụ: han lap, chuong thien binh, truc co…" autocomplete="off" data-pagefind-url={url('pagefind/')} />
+  <input id="o-tim" class="o-tim" type="search" placeholder={goiY.length ? `Ví dụ: ${goiY.join(', ')}…` : 'Nhập tên nhân vật, pháp bảo, cảnh giới…'} autocomplete="off" data-pagefind-url={url('pagefind/')} />
   <p id="trang-thai" class="yt-tieu-de" aria-live="polite"></p>
   <ul id="ket-qua" class="ket-qua"></ul>
 </BoCuc>
@@ -40,7 +41,7 @@ import { url } from '../lib/tien-ich.js';
     const gop = new Map<string, any>();
     for (const r of [...(a?.results ?? []), ...(b?.results ?? [])]) if (!gop.has(r.id)) gop.set(r.id, r);
     const ds = await Promise.all([...gop.values()].slice(0, 20).map((r) => r.data()));
-    tt.textContent = ds.length ? `${gop.size} kết quả` : 'Không tìm thấy. Thử từ khoá ngắn hơn, ví dụ "han lap".';
+    tt.textContent = ds.length ? `${gop.size} kết quả` : 'Không tìm thấy. Thử từ khoá ngắn hơn, hoặc gõ không dấu.';
     kq.innerHTML = ds.map((d) => `<li>${d.meta.image ? `<img src="${esc(d.meta.image)}" alt="" width="64" height="64" loading="lazy">` : '<span></span>'}
       <div><a href="${esc(d.url)}"><b>${esc(d.meta.title || '')}</b></a> <small>${esc(d.meta.loai || '')}</small><br><span>${d.excerpt}</span></div></li>`).join('');
   }
