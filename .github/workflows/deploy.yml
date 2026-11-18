@@ -30,7 +30,7 @@ jobs:
       - name: Gom file web (bỏ file công cụ và file Excel)
         run: |
           mkdir -p _site
-          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude '*.xlsx' --exclude '*.md' ./ _site/
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude '*.xlsx' --exclude '*.md' --exclude 'v2' ./ _site/
 
       - name: Cấu hình Pages
         uses: actions/configure-pages@v5

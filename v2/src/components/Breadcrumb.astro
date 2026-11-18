@@ -1,0 +1,7 @@
+---
+interface Props { cap: { ten: string; href?: string }[] }
+const { cap } = Astro.props;
+---
+<nav class="breadcrumb" aria-label="Đường dẫn">
+  <ol>{cap.map((c, i) => <li>{c.href && i < cap.length - 1 ? <a href={c.href}>{c.ten}</a> : <span aria-current={i === cap.length - 1 ? 'page' : undefined}>{c.ten}</span>}</li>)}</ol>
+</nav>

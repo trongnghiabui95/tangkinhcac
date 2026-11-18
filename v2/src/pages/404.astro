@@ -1,0 +1,8 @@
+---
+import BoCuc from '../layouts/BoCuc.astro';
+import { url } from '../lib/tien-ich.js';
+---
+<BoCuc tieuDe="Không tìm thấy trang" moTa="Trang không tồn tại." noindex>
+  <h1>Không tìm thấy trang</h1>
+  <p>Trang bạn tìm có thể đã đổi địa chỉ. <a href={url('tim-kiem/')}>Tìm kiếm</a> hoặc <a href={url('')}>về trang chủ</a>.</p>
+</BoCuc>

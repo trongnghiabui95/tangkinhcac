@@ -1,0 +1,121 @@
+---
+/**
+ * Trang chi tiết nhân vật: /<truyen>/nhan-vat/<slug>/  (HTML tĩnh, sinh lúc build)
+ *  - <head>: title, description, canonical, Open Graph 1200×630, JSON-LD Article + BreadcrumbList + FAQPage
+ *  - Ảnh: CharacterCardImage (figure + figcaption ghi nguồn, khung cổ phong, huy hiệu cảnh giới)
+ *  - Nội dung MDX: tự gắn liên kết nội bộ + tự chèn quảng cáo giữa bài (plugin lúc build)
+ *  - Quảng cáo thủ công: sau nội dung, trước khối "Nhân vật cùng truyện" (không sát ảnh/nút)
+ *  - Pagefind: chỉ đánh chỉ mục phần <article data-pagefind-body>
+ */
+import { render, getEntry } from 'astro:content';
+import BoCuc from '../../../layouts/BoCuc.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import CharacterCardImage from '../../../components/CharacterCardImage.astro';
+import AdUnit from '../../../components/AdUnit.astro';
+import YouTubeFacade from '../../../components/YouTubeFacade.astro';
+import Spoiler from '../../../components/Spoiler.astro';
+import { layBai, layAnh, tachId, url, urlBai, boDau, NHAN } from '../../../lib/tien-ich.js';
+import { schemaNhanVat, schemaBreadcrumb, schemaFaq } from '../../../lib/schema.js';
+
+export async function getStaticPaths() {
+  const ds = await layBai('nhanVat');
+  return ds.map((entry) => { const { truyen, slug } = tachId(entry.id); return { params: { truyen, slug }, props: { entry } }; });
+}
+
+const { entry } = Astro.props;
+const { truyen, slug } = tachId(entry.id);
+const d = entry.data;
+const { Content, remarkPluginFrontmatter } = await render(entry);
+const faq = remarkPluginFrontmatter.faq ?? [];
+
+const tp = (await layBai('truyen', (e) => tachId(e.id).truyen === truyen))[0];
+const canhGioi = d.canh_gioi ? await getEntry('canhGioi', `${truyen}/canh-gioi/${d.canh_gioi}`) : undefined;
+const phapBao = (await Promise.all(d.phap_bao.map((s) => getEntry('phapBao', `${truyen}/phap-bao/${s}`)))).filter(Boolean);
+const cungTruyen = (await layBai('nhanVat', (e) => tachId(e.id).truyen === truyen && e.id !== entry.id))
+  .sort((a, b) => (a.data.vai_tro === 'chinh' ? -1 : 0) - (b.data.vai_tro === 'chinh' ? -1 : 0)).slice(0, 8);
+
+const anh = layAnh(entry.id);
+const site = Astro.site!;
+const tuyetDoi = (p: string) => new URL(p, site).href;
+const urlTrang = tuyetDoi(urlBai(entry.id));
+const urlTruyen = tuyetDoi(url(`${truyen}/`));
+const urlDsNhanVat = url(`${truyen}/nhan-vat/`);
+const tenTruyen = tp?.data.ten ?? truyen;
+
+const cap = [
+  { ten: 'Trang chủ', href: url('') },
+  { ten: tenTruyen, href: url(`${truyen}/`) },
+  { ten: 'Nhân vật', href: urlDsNhanVat },
+  { ten: d.ten },
+];
+const jsonLd = [
+  schemaNhanVat({
+    ten: d.ten, ten_khac: d.ten_khac, moTa: d.mo_ta, urlTrang, anh: anh ? tuyetDoi(url(anh.src)) : undefined,
+    ngayDang: d.ngay_dang.toISOString(), ngayCapNhat: d.ngay_cap_nhat.toISOString(),
+    truyen: tenTruyen, urlTruyen, toChuc: d.tong_mon, site: site.href,
+  }),
+  schemaBreadcrumb(cap.map((c, i) => ({ ten: c.ten, url: i < cap.length - 1 ? tuyetDoi(c.href!) : urlTrang }))),
+  schemaFaq(faq),
+];
+// Từ khoá không dấu cho tìm kiếm Pagefind (gõ "han lap" vẫn ra "Hàn Lập")
+const tuKhoaKhongDau = boDau([d.ten, ...d.ten_khac, tenTruyen].join(' ')).toLowerCase();
+const hang = [
+  ['Bộ', `<a href="${url(`${truyen}/`)}">${tenTruyen}</a>`],
+  ['Tên khác', d.ten_khac.join(', ')],
+  ['Vai trò', NHAN.vai_tro[d.vai_tro]],
+  ['Giới tính', d.gioi_tinh], ['Chủng tộc', d.chung_toc],
+  ['Tông môn', d.tong_mon.join(', ')],
+  ['Cảnh giới cao nhất', canhGioi ? `<a href="${urlBai(canhGioi.id)}">${canhGioi.data.ten}</a>` : ''],
+  ['Tình trạng', d.tinh_trang],
+  ['Cập nhật', d.ngay_cap_nhat.toLocaleDateString('vi-VN')],
+].filter(([, v]) => v);
+const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) === '1'; // 1 = tìm cả thân bài (chỉ mục lớn hơn)
+---
+<BoCuc tieuDe={`${d.ten} | Tiểu sử, Sức mạnh, Mối quan hệ`} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article">
+  <Breadcrumb cap={cap} />
+  <article data-pagefind-body data-pagefind-filter={`truyen:${tenTruyen}`} data-pagefind-meta={`loai:Nhân vật`}>
+    <h1 data-pagefind-meta="title">{d.ten} | Tiểu sử, Sức mạnh, Mối quan hệ</h1>
+    <p class="sapo">{d.mo_ta}</p>
+    <p class="thuoc-bo">Bộ: <a href={url(`${truyen}/`)}>{tenTruyen}</a></p>
+    <span class="sr-only" data-pagefind-weight="8">{tuKhoaKhongDau}</span>
+    {anh && <span hidden data-pagefind-meta={`image:${url(anh.srcset.at(-1)!.src)}`}></span>}
+    {d.spoiler && <p class="canh-bao-spoiler" data-pagefind-ignore>⚠ Bài viết có tiết lộ nội dung (spoiler). Các đoạn quan trọng được thu gọn, bấm để mở.</p>}
+
+    <div class="bo-cuc-bai">
+      <aside class="cot-phu" aria-label="Thông tin nhân vật">
+        <div class="infobox">
+          <CharacterCardImage anh={anh} alt={`${d.ten} – nhân vật ${tenTruyen}`} ten={d.ten} canhGioi={canhGioi?.data.ten}
+                              nhan={NHAN.vai_tro[d.vai_tro]} uuTien sizes="(max-width: 960px) 90vw, 290px" />
+          <table><tbody>{hang.map(([k, v]) => <tr><th scope="row">{k}</th><td set:html={v} /></tr>)}</tbody></table>
+        </div>
+      </aside>
+
+      <div class="noi-dung-bai" data-pagefind-ignore={TIM_TOAN_VAN ? undefined : "all"}>
+        <Content components={{ Spoiler }} />
+
+        {d.youtube && <><h2>Video giới thiệu</h2><YouTubeFacade id={d.youtube} tieuDe={`${d.ten} – video giới thiệu`} /></>}
+
+        {phapBao.length > 0 && (
+          <section class="khong-quang-cao">
+            <h2>Pháp bảo của {d.ten}</h2>
+            <ul class="luoi-the">{phapBao.map((p) => (
+              <li><CharacterCardImage anh={layAnh(p!.id)} alt={p!.data.ten} ten={p!.data.ten} gon href={urlBai(p!.id)} /></li>
+            ))}</ul>
+          </section>
+        )}
+      </div>
+    </div>
+  </article>
+
+  <AdUnit viTri="cuoi-bai" slot={import.meta.env.PUBLIC_ADSENSE_SLOT_CUOI_BAI} />
+
+  {cungTruyen.length > 0 && (
+    <section data-pagefind-ignore="all">
+      <h2>Nhân vật cùng truyện</h2>
+      <ul class="luoi-the">{cungTruyen.map((c) => (
+        <li><CharacterCardImage anh={layAnh(c.id)} alt={c.data.ten} ten={c.data.ten} nhan={NHAN.vai_tro[c.data.vai_tro]} gon href={urlBai(c.id)} /></li>
+      ))}</ul>
+      <p><a class="nut" href={urlDsNhanVat}>Xem tất cả nhân vật {tenTruyen}</a></p>
+    </section>
+  )}
+</BoCuc>

@@ -1,0 +1,89 @@
+---
+/**
+ * BoCuc – khung chung mọi trang: <head> SEO (title, description, canonical, Open Graph, Twitter, JSON-LD),
+ * menu, chân trang (miễn trừ trách nhiệm + logo yendan), script AdSense (chỉ khi có mã).
+ */
+import '../styles/giao-dien.css';
+import DisclaimerBanner from '../components/DisclaimerBanner.astro';
+import { url } from '../lib/tien-ich.js';
+
+interface Props {
+  tieuDe: string;            // không gồm tên web
+  moTa: string;
+  anhOg?: string;            // đường dẫn tương đối, ví dụ anh/pham-nhan-tu-tien/han-lap-pham-nhan-tu-tien-og.jpg
+  jsonLd?: (object | null)[];
+  kieuOg?: 'website' | 'article';
+  noindex?: boolean;
+}
+const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false } = Astro.props;
+const TEN_WEB = 'Tàng Kinh Các';
+const title = tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const og = anhOg ? new URL(url(anhOg), Astro.site).href : undefined;
+const adsense = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const ld = jsonLd.filter(Boolean);
+---
+<!doctype html>
+<html lang="vi" data-theme="toi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{title}</title>
+  <meta name="description" content={moTa} />
+  <link rel="canonical" href={canonical} />
+  {noindex && <meta name="robots" content="noindex, follow" />}
+  <meta property="og:site_name" content={TEN_WEB} />
+  <meta property="og:locale" content="vi_VN" />
+  <meta property="og:type" content={kieuOg} />
+  <meta property="og:title" content={title} />
+  <meta property="og:description" content={moTa} />
+  <meta property="og:url" content={canonical} />
+  {og && <meta property="og:image" content={og} />}
+  {og && <meta property="og:image:width" content="1200" />}
+  {og && <meta property="og:image:height" content="630" />}
+  <meta name="twitter:card" content={og ? 'summary_large_image' : 'summary'} />
+  <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+  <link rel="sitemap" href={url('sitemap-index.xml')} />
+  <script is:inline>try{var t=localStorage.getItem('tkc2-giao-dien');if(t)document.documentElement.dataset.theme=t}catch(e){}</script>
+  {ld.map((o) => <script type="application/ld+json" set:html={JSON.stringify(o)} />)}
+  {adsense && <script async src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${adsense}`} crossorigin="anonymous"></script>}
+</head>
+<body>
+  <a class="bo-qua" href="#noi-dung">Bỏ qua tới nội dung</a>
+  <header class="dau-trang">
+    <div class="khung dau-trang-hang">
+      <a class="logo" href={url('')}><span class="logo-dau" aria-hidden="true">藏</span>{TEN_WEB}</a>
+      <nav aria-label="Menu chính" class="menu">
+        <a class="chi-may-tinh" href={url('')}>Trang chủ</a>
+        <a href={url('tim-kiem/')}>Tìm kiếm</a>
+        <button type="button" class="nut-giao-dien" aria-label="Đổi giao diện sáng/tối" title="Sáng / Tối">☯</button>
+      </nav>
+    </div>
+  </header>
+  <main id="noi-dung" class="khung"><slot /></main>
+  <footer class="chan-trang">
+    <div class="khung">
+      <DisclaimerBanner />
+      <p class="thuong-hieu">Một sản phẩm của <img src={url('yendan.svg')} alt="yendan" width="84" height="32" loading="lazy" /></p>
+      <p class="ban-quyen">© {new Date().getFullYear()} {TEN_WEB}</p>
+    </div>
+  </footer>
+  <script>
+    // Nút sáng/tối (nhớ lựa chọn)
+    document.querySelector('.nut-giao-dien')?.addEventListener('click', () => {
+      const h = document.documentElement; h.dataset.theme = h.dataset.theme === 'sang' ? 'toi' : 'sang';
+      try { localStorage.setItem('tkc2-giao-dien', h.dataset.theme); } catch (e) {}
+    });
+    // AdSense: chỉ yêu cầu quảng cáo khi ô sắp lọt vào màn hình (đỡ tốn tài nguyên, đúng chính sách hiển thị)
+    const ins = document.querySelectorAll('ins.adsbygoogle');
+    if (ins.length && 'IntersectionObserver' in window) {
+      const io = new IntersectionObserver((ds) => ds.forEach((d) => {
+        if (!d.isIntersecting) return;
+        io.unobserve(d.target);
+        try { ((window as any).adsbygoogle = (window as any).adsbygoogle || []).push({}); } catch (e) {}
+      }), { rootMargin: '300px 0px' });
+      ins.forEach((el) => io.observe(el));
+    }
+  </script>
+</body>
+</html>

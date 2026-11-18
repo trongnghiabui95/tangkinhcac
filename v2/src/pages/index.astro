@@ -1,0 +1,12 @@
+---
+import BoCuc from '../layouts/BoCuc.astro';
+import CharacterCardImage from '../components/CharacterCardImage.astro';
+import { layBai, layAnh, urlBai, url } from '../lib/tien-ich.js';
+const ds = (await layBai('truyen')).sort((a, b) => b.data.ngay_cap_nhat.getTime() - a.data.ngay_cap_nhat.getTime());
+---
+<BoCuc tieuDe="Tàng Kinh Các" moTa="Bách khoa toàn thư & review truyện Tu Tiên, Huyền Huyễn: hồ sơ nhân vật, hệ thống cảnh giới, pháp bảo, tóm tắt cốt truyện.">
+  <h1>Tàng Kinh Các – Bách khoa truyện Tu Tiên, Huyền Huyễn</h1>
+  <p><a class="nut" href={url('tim-kiem/')}>Tìm nhân vật, pháp bảo, cảnh giới…</a></p>
+  <h2>Truyện mới cập nhật</h2>
+  <ul class="luoi-the">{ds.slice(0, 24).map((t, i) => <li><CharacterCardImage anh={layAnh(t.id)} alt={`Bìa ${t.data.ten}`} ten={t.data.ten} gon href={urlBai(t.id)} uuTien={i < 2} /></li>)}</ul>
+</BoCuc>

@@ -1,0 +1,17 @@
+---
+// Thanh phân trang: Trang 1 = urlGoc, trang n = urlGoc + 'trang-n/'
+interface Props { trang: number; tongTrang: number; urlGoc: string }
+const { trang, tongTrang, urlGoc } = Astro.props;
+const lienKet = (n: number) => (n === 1 ? urlGoc : `${urlGoc}trang-${n}/`);
+const so = Array.from({ length: tongTrang }, (_, i) => i + 1).filter((n) => n === 1 || n === tongTrang || Math.abs(n - trang) <= 2);
+---
+{tongTrang > 1 && (
+  <nav class="phan-trang" aria-label="Phân trang">
+    {trang > 1 && <a href={lienKet(trang - 1)} rel="prev">← Trước</a>}
+    {so.map((n, i) => (<>
+      {i > 0 && n - so[i - 1] > 1 && <span class="phan-trang-ngat">…</span>}
+      {n === trang ? <span aria-current="page">{n}</span> : <a href={lienKet(n)}>{n}</a>}
+    </>))}
+    {trang < tongTrang && <a href={lienKet(trang + 1)} rel="next">Sau →</a>}
+  </nav>
+)}

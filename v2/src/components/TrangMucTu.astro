@@ -1,0 +1,45 @@
+---
+// Trang mục từ dùng chung cho pháp bảo và cảnh giới.
+import { render } from 'astro:content';
+import BoCuc from '../layouts/BoCuc.astro';
+import Breadcrumb from './Breadcrumb.astro';
+import CharacterCardImage from './CharacterCardImage.astro';
+import AdUnit from './AdUnit.astro';
+import Spoiler from './Spoiler.astro';
+import { layBai, layAnh, tachId, url, urlBai, boDau, NHAN } from '../lib/tien-ich.js';
+import { schemaBaiViet, schemaBreadcrumb, schemaFaq } from '../lib/schema.js';
+const { entry } = Astro.props;
+const { truyen, loai } = tachId(entry.id);
+const d = entry.data;
+const { Content, remarkPluginFrontmatter } = await render(entry);
+const tp = (await layBai('truyen', (e) => tachId(e.id).truyen === truyen))[0];
+const tenTruyen = tp?.data.ten ?? truyen;
+const anh = layAnh(entry.id);
+const site = Astro.site!;
+const tuyetDoi = (p: string) => new URL(p, site).href;
+const cap = [{ ten: 'Trang chủ', href: url('') }, { ten: tenTruyen, href: url(`${truyen}/`) }, { ten: NHAN.loai[loai] }, { ten: d.ten }];
+const tieuDe = `${d.ten} – ${NHAN.loai[loai]} trong ${tenTruyen}`;
+const jsonLd = [
+  schemaBaiViet({ tieuDe, moTa: d.mo_ta, urlTrang: tuyetDoi(urlBai(entry.id)), anh: anh ? tuyetDoi(url(anh.src)) : undefined,
+    ngayDang: d.ngay_dang.toISOString(), ngayCapNhat: d.ngay_cap_nhat.toISOString(), site: site.href }),
+  schemaBreadcrumb(cap.map((c) => ({ ten: c.ten, url: c.href ? tuyetDoi(c.href) : tuyetDoi(urlBai(entry.id)) }))),
+  schemaFaq(remarkPluginFrontmatter.faq),
+];
+const chuSoHuu = d.chu_so_huu ? (await layBai('nhanVat', (e) => e.id === `${truyen}/nhan-vat/${d.chu_so_huu}`))[0] : undefined;
+const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) === '1'; // 1 = tìm cả thân bài (chỉ mục lớn hơn)
+---
+<BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article">
+  <Breadcrumb cap={cap} />
+  <article data-pagefind-body data-pagefind-filter={`truyen:${tenTruyen}`} data-pagefind-meta={`loai:${NHAN.loai[loai]}`}>
+    <h1 data-pagefind-meta="title">{d.ten}</h1>
+    <p class="sapo">{d.mo_ta}</p>
+    <p class="thuoc-bo">{NHAN.loai[loai]} trong bộ <a href={url(`${truyen}/`)}>{tenTruyen}</a>{chuSoHuu && <> · Chủ sở hữu: <a href={urlBai(chuSoHuu.id)}>{chuSoHuu.data.ten}</a></>}</p>
+    <span class="sr-only" data-pagefind-weight="8">{boDau([d.ten, ...d.ten_khac].join(' ')).toLowerCase()}</span>
+    {anh && <span hidden data-pagefind-meta={`image:${url(anh.srcset.at(-1)!.src)}`}></span>}
+    <div class="bo-cuc-bai">
+      {anh && <aside class="cot-phu"><div class="infobox"><CharacterCardImage anh={anh} alt={d.ten} ten={d.ten} nhan={d.pham_cap} uuTien sizes="(max-width: 960px) 90vw, 290px" /></div></aside>}
+      <div class="noi-dung-bai" data-pagefind-ignore={TIM_TOAN_VAN ? undefined : "all"}><Content components={{ Spoiler }} /></div>
+    </div>
+  </article>
+  <AdUnit viTri="cuoi-bai" />
+</BoCuc>

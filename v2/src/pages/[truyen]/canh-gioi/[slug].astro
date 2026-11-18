@@ -1,0 +1,8 @@
+---
+import TrangMucTu from '../../../components/TrangMucTu.astro';
+import { layBai, tachId } from '../../../lib/tien-ich.js';
+export async function getStaticPaths() {
+  return (await layBai('canhGioi')).map((entry) => { const { truyen, slug } = tachId(entry.id); return { params: { truyen, slug }, props: { entry } }; });
+}
+---
+<TrangMucTu entry={Astro.props.entry} />
