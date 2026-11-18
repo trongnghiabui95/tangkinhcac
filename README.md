@@ -1,4 +1,4 @@
-# Tàng Kinh Các
+# Tu Chân Bảo Điển
 
 Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt. Nội dung lấy từ **Google Sheet**, ảnh lấy từ **Google Drive**, web chạy miễn phí trên **GitHub Pages**.
 
@@ -31,7 +31,7 @@ tangkinhcac/
 │   └── db.json             (Giai đoạn 3) bản dữ liệu do GitHub Actions sinh sẵn
 ├── tools/
 │   └── tao_du_lieu_mau.py  Sinh file Excel mẫu + CSV mẫu + ảnh mẫu
-├── Tang-Kinh-Cac-Mau.xlsx  File mẫu để tải lên Google Sheets
+├── Tu-Chan-Bao-Dien-Mau.xlsx  File mẫu để tải lên Google Sheets
 └── .github/workflows/deploy.yml   Tự đăng web lên GitHub Pages
 ```
 

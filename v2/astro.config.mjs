@@ -1,4 +1,4 @@
-// Tàng Kinh Các v2 – Astro xuất toàn bộ HTML tĩnh (SSG), không database, không server.
+// Tu Chân Bảo Điển v2 – Astro xuất toàn bộ HTML tĩnh (SSG), không database, không server.
 import { defineConfig } from 'astro/config';
 import mdx from '@astrojs/mdx';
 import { unified } from '@astrojs/markdown-remark';

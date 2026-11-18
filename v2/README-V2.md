@@ -1,4 +1,4 @@
-# Tàng Kinh Các v2: Astro + MDX + Pagefind (bản đề xuất)
+# Tu Chân Bảo Điển v2: Astro + MDX + Pagefind (bản đề xuất)
 
 Đây là **bản kiến trúc mới, chạy song song** với web hiện tại (HTML/JS thuần + Google Sheet). Web hiện tại **không bị ảnh hưởng**. Thư mục `v2/` không được đăng lên GitHub Pages cho tới khi bạn quyết định chuyển.
 

@@ -1,4 +1,4 @@
-/* Tàng Kinh Các v2 – token theo DESIGN.md (tối mặc định, sáng tuỳ chọn) */
+/* Tu Chân Bảo Điển v2 – token theo DESIGN.md (tối mặc định, sáng tuỳ chọn) */
 :root, [data-theme="toi"] {
   --nen: #0b121a; --be-mat: #111a24; --be-mat-2: #1b2735; --chu: #ebe3cf; --chu-phu: #b9b09b;
   --vang: #d4a944; --tren-vang: #1b1405; --ngoc: #3fb59b; --vien: rgba(212,169,68,.28);
@@ -23,7 +23,7 @@ h2 { font-size: 1.4rem; margin: 2em 0 .6em; color: var(--vang); }
 .dau-trang { border-bottom: 1px solid var(--vien); background: var(--be-mat); position: sticky; top: 0; z-index: 5; }
 .dau-trang-hang { display: flex; align-items: center; justify-content: space-between; min-height: 60px; gap: 12px; }
 .logo { display: flex; align-items: center; gap: 8px; min-height: 44px; font: 700 1.2rem var(--font-tieu-de); color: var(--vang); text-decoration: none; }
-.logo-dau { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--vang); color: var(--tren-vang); }
+.logo-dau { width: 36px; height: 36px; flex-shrink: 0; }
 .menu { display: flex; gap: 4px; align-items: center; white-space: nowrap; }
 .logo { white-space: nowrap; }
 @media (max-width: 420px) { .menu .chi-may-tinh { display: none; } .logo { font-size: 1.05rem; } }

@@ -175,7 +175,7 @@
       <div class="khung flex items-center gap-3 h-16">
         <button class="btn btn-ghost btn-sm btn-square lg:hidden" @click="mo=!mo" aria-label="Mở menu">${icon('menu', 'w-5 h-5')}</button>
         <a href="${LINK.home()}" class="flex items-center gap-2 shrink-0">
-          <span class="w-9 h-9 rounded-full grid place-items-center bg-primary text-primary-content font-bold font-tieu-de">藏</span>
+          <img src="${R}assets/img/logo.svg" alt="" width="36" height="36" class="w-9 h-9">
           <span class="logo-chu text-xl">${esc(ten)}</span>
         </a>
         <form action="${R}tim-kiem.html" class="ml-auto hidden sm:block">

@@ -16,7 +16,7 @@ interface Props {
   noindex?: boolean;
 }
 const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false } = Astro.props;
-const TEN_WEB = 'Tàng Kinh Các';
+const TEN_WEB = 'Tu Chân Bảo Điển';
 const title = tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = anhOg ? new URL(url(anhOg), Astro.site).href : undefined;
@@ -52,7 +52,7 @@ const ld = jsonLd.filter(Boolean);
   <a class="bo-qua" href="#noi-dung">Bỏ qua tới nội dung</a>
   <header class="dau-trang">
     <div class="khung dau-trang-hang">
-      <a class="logo" href={url('')}><span class="logo-dau" aria-hidden="true">藏</span>{TEN_WEB}</a>
+      <a class="logo" href={url('')}><img class="logo-dau" src={url('favicon.svg')} alt="" width="36" height="36" />{TEN_WEB}</a>
       <nav aria-label="Menu chính" class="menu">
         <a class="chi-may-tinh" href={url('')}>Trang chủ</a>
         <a href={url('tim-kiem/')}>Tìm kiếm</a>

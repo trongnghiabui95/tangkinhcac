@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-Sinh dữ liệu mẫu cho "Tàng Kinh Các":
-  - Tang-Kinh-Cac-Mau.xlsx  (tải lên Google Sheets)
+Sinh dữ liệu mẫu cho "Tu Chân Bảo Điển":
+  - Tu-Chan-Bao-Dien-Mau.xlsx  (tải lên Google Sheets)
   - data/mau/<Tab>.csv        (web dùng tạm khi chưa nối Google Sheet)
   - Ảnh minh họa: xem tools/ve_anh_mau.py
 
@@ -225,7 +225,7 @@ DL["DeCu"] = [
      "ly_do": "Cùng dòng phàm nhân lưu, nhân vật chính cũng đi lên từ tư chất bình thường nhưng lạnh lùng, quyết đoán hơn Hàn Lập."},
 ]
 
-DL["CaiDat"] = [{"ten_web": "Tàng Kinh Các", "mo_ta_web": "Review truyện Tu Tiên, Huyền Huyễn và Anime: cốt truyện, nhân vật, thế giới, cảnh giới tu luyện.",
+DL["CaiDat"] = [{"ten_web": "Tu Chân Bảo Điển", "mo_ta_web": "Review truyện Tu Tiên, Huyền Huyễn và Anime: cốt truyện, nhân vật, thế giới, cảnh giới tu luyện.",
                  "logo": "", "link_fanpage": "", "link_youtube": ""}]
 
 # Cột trang_thai (nháp/duyệt) ở cuối mọi tab nội dung; dữ liệu mẫu đều đã duyệt
@@ -235,12 +235,12 @@ for _tab in COT:
         for _r in DL.get(_tab, []):
             _r.setdefault("trang_thai", "duyệt")
 
-# Ảnh mẫu do Tàng Kinh Các tự vẽ → ghi nguồn cho mọi dòng có ảnh
+# Ảnh mẫu do Tu Chân Bảo Điển tự vẽ → ghi nguồn cho mọi dòng có ảnh
 for _tab, _cot in [("TacPham", "anh_bia"), ("NhanVat", "anh"), ("AnhTruyen", "link_anh"),
                    ("TheLuc", "logo"), ("VatPham", "anh"), ("DiaDiem", "anh_ban_do")]:
     for _r in DL[_tab]:
         if _r.get(_cot) and not _r.get("nguon_anh"):
-            _r["nguon_anh"] = "Minh họa: Tàng Kinh Các"
+            _r["nguon_anh"] = "Minh họa: Tu Chân Bảo Điển"
 
 # Giải thích cột cho tab hướng dẫn
 GIAI_THICH = [
@@ -332,7 +332,7 @@ def tao_excel():
     for row in hd.iter_rows(min_row=2):
         for c in row:
             c.alignment = Alignment(wrap_text=True, vertical="top")
-    out = os.path.join(GOC, "Tang-Kinh-Cac-Mau.xlsx")
+    out = os.path.join(GOC, "Tu-Chan-Bao-Dien-Mau.xlsx")
     wb.save(out)
     print("Đã tạo", out)
 
