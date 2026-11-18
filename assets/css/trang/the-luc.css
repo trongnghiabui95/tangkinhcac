@@ -1,0 +1,4 @@
+/* CSS riêng trang the-luc.html – chỉ trang này nạp (DESIGN.md: CSS chia theo trang) */
+/* Trang Thế lực */
+.the-luc-the { display: flex; height: 100%; }
+.the-luc-the .the-ten { -webkit-line-clamp: 2; }
