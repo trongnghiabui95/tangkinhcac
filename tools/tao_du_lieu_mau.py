@@ -3,11 +3,11 @@
 Sinh dữ liệu mẫu cho "Tàng Kinh Các":
   - Tang-Kinh-Cac-Mau.xlsx  (tải lên Google Sheets)
   - data/mau/<Tab>.csv        (web dùng tạm khi chưa nối Google Sheet)
-  - assets/img/mau/*.svg      (ảnh giữ chỗ)
+  - Ảnh minh họa: xem tools/ve_anh_mau.py
 
 Chạy:  python3 tools/tao_du_lieu_mau.py
 """
-import csv, os
+import csv, json, os
 from openpyxl import Workbook
 from openpyxl.styles import Font, PatternFill, Alignment
 from openpyxl.worksheet.datavalidation import DataValidation
@@ -47,7 +47,7 @@ DL["TacPham"] = [{
     "the_loai": "Tu Tiên, Huyền Huyễn, Phiêu Lưu", "tinh_trang": "Hoàn thành", "so_chuong": "2446",
     "so_tap": "", "so_mua": "", "nen_tang": "Khởi Điểm (Qidian)", "nam": "2008", "studio": "",
     "diem": "9.2", "diem_cot_truyen": "9", "diem_nhan_vat": "9.5", "diem_the_gioi": "9.5", "diem_hinh_anh": "8.5",
-    "anh_bia": A + "bia-pham-nhan-tu-tien.svg",
+    "anh_bia": A + "bia-pham-nhan-tu-tien.jpg",
     "tom_tat": (
         "Hàn Lập là một thiếu niên nhà nghèo ở vùng quê hẻo lánh, tư chất bình thường, linh căn kém. "
         "Nhờ người chú giới thiệu, cậu được vào Thất Huyền Môn làm đệ tử ký danh và trở thành học trò của Mặc Đại Phu.\n"
@@ -83,16 +83,16 @@ DL["TacPham"] = [{
 }]
 
 DL["AnhTruyen"] = [
-    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-1.svg", "chu_thich": "Hoàng Phong Cốc lúc bình minh"},
-    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-2.svg", "chu_thich": "Huyết Sắc Cấm Địa"},
-    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-3.svg", "chu_thich": "Biển mây Thiên Nam"},
-    {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "han-lap.svg", "chu_thich": "Hàn Lập thời trẻ"},
-    {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "anh-truyen-3.svg", "chu_thich": "Hàn Lập ngự kiếm"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-1.jpg", "chu_thich": "Hoàng Phong Cốc lúc bình minh"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-2.jpg", "chu_thich": "Huyết Sắc Cấm Địa"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-3.jpg", "chu_thich": "Biển mây Thiên Nam"},
+    {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "han-lap.jpg", "chu_thich": "Hàn Lập thời trẻ"},
+    {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "anh-truyen-3.jpg", "chu_thich": "Hàn Lập ngự kiếm"},
 ]
 
 DL["NhanVat"] = [
     {"id": "han-lap", "tac_pham_id": TP, "ten": "Hàn Lập", "biet_danh": "Hàn lão ma, Hàn Thiên Tôn", "vai_tro": "chinh",
-     "anh": A + "han-lap.svg", "gioi_tinh": "Nam", "chung_toc": "Nhân tộc", "tuoi": "Hơn vạn năm (cuối truyện)",
+     "anh": A + "han-lap.jpg", "gioi_tinh": "Nam", "chung_toc": "Nhân tộc", "tuoi": "Hơn vạn năm (cuối truyện)",
      "the_luc_ids": "hoang-phong-coc", "nghe_nghiep": "Luyện đan sư, Trận pháp sư, Luyện khí sư",
      "loai_tu_luyen_ids": "tu-khi, luyen-the", "cap_do_id": "luyen-hu", "tinh_trang": "Phi thăng",
      "xuat_than": "Con nhà nông nghèo ở một thôn nhỏ của Việt Quốc. Được người chú đưa vào Thất Huyền Môn, nơi cậu gặp Mặc Đại Phu và lần đầu tiếp xúc với con đường tu tiên.",
@@ -102,7 +102,7 @@ DL["NhanVat"] = [
      "cau_noi": "Tu tiên chi lộ, vốn là nghịch thiên mà đi.\nCẩn thận mới lái được thuyền vạn năm.",
      "mo_ta_ngan": "Thiếu niên linh căn kém nhưng nhờ thận trọng và cơ duyên mà từng bước bước lên đỉnh cao tu tiên.", "noi_bat": "có"},
     {"id": "nam-cung-uyen", "tac_pham_id": TP, "ten": "Nam Cung Uyển", "biet_danh": "Uyển Nhi", "vai_tro": "phu",
-     "anh": A + "nam-cung-uyen.svg", "gioi_tinh": "Nữ", "chung_toc": "Nhân tộc", "tuoi": "Không rõ",
+     "anh": A + "nam-cung-uyen.jpg", "gioi_tinh": "Nữ", "chung_toc": "Nhân tộc", "tuoi": "Không rõ",
      "the_luc_ids": "yem-nguyet-tong", "nghe_nghiep": "", "loai_tu_luyen_ids": "tu-khi", "cap_do_id": "nguyen-anh",
      "tinh_trang": "Còn sống",
      "xuat_than": "Tu sĩ của Yểm Nguyệt Tông, một trong Thất Phái Việt Quốc. Gặp Hàn Lập trong Huyết Sắc Cấm Địa khi đang bị phản phệ công pháp.",
@@ -111,7 +111,7 @@ DL["NhanVat"] = [
      "vat_pham_ids": "", "cau_noi": "Ta đợi chàng, bao lâu cũng được.",
      "mo_ta_ngan": "Đạo lữ của Hàn Lập, nữ tu tài sắc vẹn toàn của Yểm Nguyệt Tông.", "noi_bat": "có"},
     {"id": "mac-dai-phu", "tac_pham_id": TP, "ten": "Mặc Đại Phu", "biet_danh": "Mặc Cư Nhân", "vai_tro": "phan-dien",
-     "anh": A + "mac-dai-phu.svg", "gioi_tinh": "Nam", "chung_toc": "Nhân tộc", "tuoi": "Trung niên",
+     "anh": A + "mac-dai-phu.jpg", "gioi_tinh": "Nam", "chung_toc": "Nhân tộc", "tuoi": "Trung niên",
      "the_luc_ids": "", "nghe_nghiep": "Thầy thuốc", "loai_tu_luyen_ids": "", "cap_do_id": "", "tinh_trang": "Đã chết",
      "xuat_than": "Thầy thuốc có tiếng trong Thất Huyền Môn, mang trong người độc thương nặng và âm mưu đoạt xá để kéo dài sinh mệnh.",
      "tinh_cach": "Thâm trầm, nhiều mưu kế, ngoài mặt hiền hòa.",
@@ -138,10 +138,10 @@ DL["QuanHe"] = [
 ]
 
 DL["TheLuc"] = [
-    {"id": "hoang-phong-coc", "tac_pham_id": TP, "ten": "Hoàng Phong Cốc", "loai": "tong-mon", "logo": A + "logo-hoang-phong-coc.svg",
+    {"id": "hoang-phong-coc", "tac_pham_id": TP, "ten": "Hoàng Phong Cốc", "loai": "tong-mon", "logo": A + "logo-hoang-phong-coc.jpg",
      "mo_ta": "Một trong Thất Phái của Việt Quốc, nơi Hàn Lập chính thức bước vào giới tu tiên. Nổi tiếng với các đệ tử luyện đan và trận pháp.",
      "thu_linh_id": "", "tru_so_id": "viet-quoc"},
-    {"id": "yem-nguyet-tong", "tac_pham_id": TP, "ten": "Yểm Nguyệt Tông", "loai": "tong-mon", "logo": A + "logo-yem-nguyet-tong.svg",
+    {"id": "yem-nguyet-tong", "tac_pham_id": TP, "ten": "Yểm Nguyệt Tông", "loai": "tong-mon", "logo": A + "logo-yem-nguyet-tong.jpg",
      "mo_ta": "Tông môn lâu đời, mạnh nhất trong Thất Phái Việt Quốc, phần lớn đệ tử là nữ tu.",
      "thu_linh_id": "", "tru_so_id": "viet-quoc"},
 ]
@@ -162,18 +162,18 @@ DL["CapDo"] = [
 
 DL["VatPham"] = [
     {"id": "chuong-thien-binh", "tac_pham_id": TP, "ten": "Bình nhỏ màu xanh (Chưởng Thiên Bình)", "loai": "phap-bao", "pham_cap": "Chí bảo",
-     "anh": A + "chuong-thien-binh.svg", "mo_ta": "Chiếc bình nhỏ bí ẩn hấp thu tinh hoa ánh trăng, tạo ra giọt dịch xanh có thể thúc chín linh thảo hàng trăm năm. Bí mật lớn nhất của Hàn Lập.",
+     "anh": A + "chuong-thien-binh.jpg", "mo_ta": "Chiếc bình nhỏ bí ẩn hấp thu tinh hoa ánh trăng, tạo ra giọt dịch xanh có thể thúc chín linh thảo hàng trăm năm. Bí mật lớn nhất của Hàn Lập.",
      "chu_so_huu_id": "han-lap"},
     {"id": "thanh-truc-phong-van-kiem", "tac_pham_id": TP, "ten": "Thanh Trúc Phong Vân Kiếm", "loai": "vu-khi", "pham_cap": "Pháp bảo bản mệnh",
-     "anh": A + "thanh-truc-phong-van-kiem.svg", "mo_ta": "Bộ phi kiếm luyện từ Kim Lôi Trúc, có thể bày kiếm trận mang uy lực lôi điện, khắc chế tà ma.",
+     "anh": A + "thanh-truc-phong-van-kiem.jpg", "mo_ta": "Bộ phi kiếm luyện từ Kim Lôi Trúc, có thể bày kiếm trận mang uy lực lôi điện, khắc chế tà ma.",
      "chu_so_huu_id": "han-lap"},
     {"id": "truong-xuan-cong", "tac_pham_id": TP, "ten": "Trường Xuân Công", "loai": "cong-phap", "pham_cap": "Công pháp nhập môn",
-     "anh": A + "truong-xuan-cong.svg", "mo_ta": "Công pháp đầu tiên Hàn Lập tu luyện, do Mặc Đại Phu truyền lại. Tốc độ chậm nhưng nền tảng vững.",
+     "anh": A + "truong-xuan-cong.jpg", "mo_ta": "Công pháp đầu tiên Hàn Lập tu luyện, do Mặc Đại Phu truyền lại. Tốc độ chậm nhưng nền tảng vững.",
      "chu_so_huu_id": "han-lap"},
 ]
 
 DL["DiaDiem"] = [
-    {"id": "nhan-gioi", "tac_pham_id": TP, "ten": "Nhân Giới", "cap": "gioi", "thuoc_id": "", "anh_ban_do": A + "ban-do-nhan-gioi.svg",
+    {"id": "nhan-gioi", "tac_pham_id": TP, "ten": "Nhân Giới", "cap": "gioi", "thuoc_id": "", "anh_ban_do": A + "ban-do-nhan-gioi.jpg",
      "mo_ta": "Giới nơi phàm nhân và tu sĩ cấp thấp sinh sống, linh khí tương đối mỏng. Gồm nhiều đại lục và biển cả."},
     {"id": "thien-nam", "tac_pham_id": TP, "ten": "Thiên Nam", "cap": "vung", "thuoc_id": "nhan-gioi", "anh_ban_do": "",
      "mo_ta": "Vùng đất rộng lớn phía nam, nhiều quốc gia tu tiên và tông môn san sát."},
@@ -236,7 +236,21 @@ DROPDOWN = {
 }
 
 
+def link_drive():
+    """Đổi ảnh trong repo sang link Google Drive (nếu có tools/link_anh_drive.json)."""
+    p = os.path.join(GOC, "tools", "link_anh_drive.json")
+    return json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
+
+
+def gia_tri_excel(v, drive):
+    v = str(v)
+    if v.startswith(A) and v[len(A):] in drive:
+        return drive[v[len(A):]]
+    return v
+
+
 def tao_excel():
+    drive = link_drive()
     wb = Workbook()
     wb.remove(wb.active)
     dau = PatternFill("solid", fgColor="1F2A37")
@@ -244,7 +258,7 @@ def tao_excel():
         ws = wb.create_sheet(tab)
         ws.append(cot)
         for r in DL.get(tab, []):
-            ws.append([r.get(c, "") for c in cot])
+            ws.append([gia_tri_excel(r.get(c, ""), drive) for c in cot])
         for i, c in enumerate(cot, 1):
             cell = ws.cell(row=1, column=i)
             cell.font = Font(bold=True, color="F5D27A")
@@ -334,4 +348,3 @@ def tao_anh():
 if __name__ == "__main__":
     tao_excel()
     tao_csv()
-    tao_anh()

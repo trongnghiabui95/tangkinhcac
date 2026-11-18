@@ -58,6 +58,8 @@ Việc này làm **14 lần**, mỗi tab một lần, nhưng rất nhanh.
 
 ## C. Tạo thư mục ảnh trên Google Drive
 
+> ✅ **Đã làm sẵn:** thư mục **Anh Tang Kinh Cac** trên Drive của bạn đã có 13 ảnh minh họa mẫu và đã chia sẻ "Bất kỳ ai có đường liên kết": https://drive.google.com/drive/folders/1cYx0rRSr3Zv0Yl6ytn4oGl0N4N51l0N1 . File `Tang-Kinh-Cac-Mau.xlsx` đã điền sẵn link Drive của các ảnh này. Khi thêm truyện mới, cứ bỏ ảnh vào đúng thư mục đó rồi làm từ bước 4.
+
 1. Trong Google Drive: **+ Mới → Thư mục mới**, đặt tên `Anh Tang Kinh Cac`.
 2. Nhấp chuột phải vào thư mục → **Chia sẻ** → **Chia sẻ**.
 3. Ở mục **Quyền truy cập chung** chọn **Bất kỳ ai có đường liên kết**, vai trò **Người xem** → **Xong**.
