@@ -20,19 +20,19 @@ A = "assets/img/mau/"  # ảnh mẫu nằm trong repo; khi dùng thật hãy tha
 COT = {
     "TacPham": ["id", "loai", "ten_viet", "ten_trung", "ten_khac", "tac_gia", "the_loai", "tinh_trang",
                 "so_chuong", "so_tap", "so_mua", "nen_tang", "nam", "studio", "diem", "diem_cot_truyen",
-                "diem_nhan_vat", "diem_the_gioi", "diem_hinh_anh", "anh_bia", "tom_tat", "boi_canh",
+                "diem_nhan_vat", "diem_the_gioi", "diem_hinh_anh", "anh_bia", "nguon_anh", "tom_tat", "boi_canh",
                 "uu_diem", "nhuoc_diem", "ket_luan", "ost_youtube", "noi_bat", "ngay_dang"],
-    "AnhTruyen": ["tac_pham_id", "nhan_vat_id", "link_anh", "chu_thich"],
-    "NhanVat": ["id", "tac_pham_id", "ten", "biet_danh", "vai_tro", "anh", "gioi_tinh", "chung_toc", "tuoi",
+    "AnhTruyen": ["tac_pham_id", "nhan_vat_id", "link_anh", "nguon_anh", "chu_thich"],
+    "NhanVat": ["id", "tac_pham_id", "ten", "biet_danh", "vai_tro", "anh", "nguon_anh", "gioi_tinh", "chung_toc", "tuoi",
                 "the_luc_ids", "nghe_nghiep", "loai_tu_luyen_ids", "cap_do_id", "tinh_trang", "xuat_than",
                 "tinh_cach", "suc_manh", "vat_pham_ids", "cau_noi", "mo_ta_ngan", "noi_bat"],
     "CuocDoi": ["nhan_vat_id", "thu_tu", "giai_doan", "dia_diem_id", "su_kien", "cap_do_id"],
     "QuanHe": ["nhan_vat_id", "lien_quan_id", "quan_he", "ghi_chu"],
-    "TheLuc": ["id", "tac_pham_id", "ten", "loai", "logo", "mo_ta", "thu_linh_id", "tru_so_id"],
+    "TheLuc": ["id", "tac_pham_id", "ten", "loai", "logo", "nguon_anh", "mo_ta", "thu_linh_id", "tru_so_id"],
     "LoaiTuLuyen": ["id", "tac_pham_id", "ten", "mo_ta"],
     "CapDo": ["id", "tac_pham_id", "thu_tu", "ten", "mo_ta"],
-    "VatPham": ["id", "tac_pham_id", "ten", "loai", "pham_cap", "anh", "mo_ta", "chu_so_huu_id"],
-    "DiaDiem": ["id", "tac_pham_id", "ten", "cap", "thuoc_id", "anh_ban_do", "mo_ta"],
+    "VatPham": ["id", "tac_pham_id", "ten", "loai", "pham_cap", "anh", "nguon_anh", "mo_ta", "chu_so_huu_id"],
+    "DiaDiem": ["id", "tac_pham_id", "ten", "cap", "thuoc_id", "anh_ban_do", "nguon_anh", "mo_ta"],
     "HanhTrinh": ["tac_pham_id", "thu_tu", "dia_diem_id", "su_kien", "cap_do_id"],
     "ThuatNgu": ["id", "ten", "giai_thich", "tac_pham_id"],
     "DeCu": ["thu_tu", "tac_pham_id", "ly_do"],
@@ -202,6 +202,13 @@ DL["DeCu"] = [{"thu_tu": "1", "tac_pham_id": TP, "ly_do": "Kinh điển của d�
 DL["CaiDat"] = [{"ten_web": "Tàng Kinh Các", "mo_ta_web": "Review truyện Tu Tiên, Huyền Huyễn và Anime: cốt truyện, nhân vật, thế giới, cảnh giới tu luyện.",
                  "logo": "", "link_fanpage": "", "link_youtube": ""}]
 
+# Ảnh mẫu do Tàng Kinh Các tự vẽ → ghi nguồn cho mọi dòng có ảnh
+for _tab, _cot in [("TacPham", "anh_bia"), ("NhanVat", "anh"), ("AnhTruyen", "link_anh"),
+                   ("TheLuc", "logo"), ("VatPham", "anh"), ("DiaDiem", "anh_ban_do")]:
+    for _r in DL[_tab]:
+        if _r.get(_cot) and not _r.get("nguon_anh"):
+            _r["nguon_anh"] = "Minh họa: Tàng Kinh Các"
+
 # Giải thích cột cho tab hướng dẫn
 GIAI_THICH = [
     ("Quy tắc chung", "Mỗi tab là 1 loại dữ liệu. Dòng 1 là tên cột – KHÔNG đổi tên, KHÔNG xoá cột. Thứ tự cột có thể đổi."),
@@ -220,6 +227,7 @@ GIAI_THICH = [
     ("noi_bat", "có / không"),
     ("ngay_dang", "Dạng 2026-11-10 hoặc 10/11/2026"),
     ("diem", "Thang 10, dùng dấu chấm: 9.2"),
+    ("nguon_anh", "Nguồn của ảnh trên cùng dòng, ví dụ: Tencent Video, Bilibili, Poster chính thức. Web hiện dòng nhỏ 'Ảnh: …' dưới ảnh. Để trống thì không hiện."),
     ("ost_youtube", "Link YouTube, nhiều link cách nhau bằng dấu phẩy. Để trống thì mục OST tự ẩn."),
     ("Tab này", "Tab _HuongDan chỉ để đọc, web không dùng. Có thể xoá."),
 ]

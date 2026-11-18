@@ -71,6 +71,7 @@ Việc này làm **14 lần**, mỗi tab một lần, nhưng rất nhanh.
 
 **Gợi ý kích thước:** ảnh bìa dọc tỉ lệ 2:3 (ví dụ 600×900), ảnh nhân vật 3:4 (600×800), logo hình vuông, bản đồ ngang. Nên dưới 1 MB/ảnh để web nhanh.
 **Ảnh lỗi?** Web sẽ hiện ảnh "Chưa có ảnh". Hãy kiểm tra lại quyền chia sẻ của thư mục.
+**Ghi nguồn ảnh:** cạnh mỗi cột ảnh có cột `nguon_anh`. Ghi ví dụ `Tencent Video`, web sẽ hiện dòng nhỏ "Ảnh: Tencent Video" dưới ảnh. Nên ghi nguồn khi dùng ảnh chính thức của truyện/phim.
 Ô ảnh cũng nhận link ảnh thường (`https://...jpg` từ Cloudinary, GitHub…), nên sau này muốn đổi nơi lưu ảnh cũng không phải sửa code.
 
 ---

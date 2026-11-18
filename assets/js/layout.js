@@ -47,6 +47,12 @@
     el.onerror = null; el.src = DB.fallback();
   }
 
+  // Dòng ghi nguồn ảnh (cột nguon_anh). Không có thì không hiện gì.
+  const ghiNguon = (n) => { n = String(n || '').trim(); return n ? (/^(ảnh|minh họa|nguồn)/i.test(n) ? n : 'Ảnh: ' + n) : ''; };
+  const nguon = (n, cls = 'text-center') => ghiNguon(n) ? `<p class="text-[11px] opacity-60 italic mt-1 ${cls}">${esc(ghiNguon(n))}</p>` : '';
+  // Chú thích trong khung phóng to ảnh: "Chú thích — Ảnh: nguồn"
+  const tieuDeAnh = (chu, n) => [chu, ghiNguon(n)].filter(Boolean).join(' — ');
+
   /* ------------------------------------------------------------ mẫu thẻ */
   const nhanLoai = (loai) => loai ? `<span class="nhan nhan-${esc(loai)}">${esc(nhan('loaiTacPham', loai))}</span>` : '';
   const diemTag = (d) => num(d) != null ? `<span class="the-diem">★ ${num(d).toFixed(1)}</span>` : '';
@@ -218,5 +224,5 @@
     if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
   }
 
-  window.UI = { NHAN, nhan, LINK, icon, anh, anhLoi, nhanLoai, workCard, charCard, avatar, chip, breadcrumb, luoi, khungCho, trong, loi, setMeta, refresh, doiGiaoDien, khoiDong };
+  window.UI = { NHAN, nhan, LINK, icon, anh, anhLoi, nguon, tieuDeAnh, nhanLoai, workCard, charCard, avatar, chip, breadcrumb, luoi, khungCho, trong, loi, setMeta, refresh, doiGiaoDien, khoiDong };
 })();

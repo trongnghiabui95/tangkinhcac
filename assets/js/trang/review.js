@@ -1,7 +1,7 @@
 /* Trang Review tác phẩm: review.html?id=... */
 (function () {
   const { esc, img, num, lines, paragraphs, ids, formatDate, youtubeIds } = DB;
-  const { icon, anh, chip, charCard, workCard, luoi, breadcrumb, nhan, nhanLoai, LINK } = UI;
+  const { icon, anh, nguon, tieuDeAnh, chip, charCard, workCard, luoi, breadcrumb, nhan, nhanLoai, LINK } = UI;
   const id = new URLSearchParams(location.search).get('id');
 
   /* ---------------------------------------------------------------- các mục */
@@ -27,7 +27,7 @@
     const ds = DB.getImages(w.id);
     if (!ds.length) return '';
     return `<div class="luoi-anh grid grid-cols-2 md:grid-cols-3 gap-3">${ds.map((a) =>
-      `<a href="${esc(img(a.link_anh))}" class="glightbox" data-gallery="truyen" data-title="${esc(a.chu_thich)}">${anh(a.link_anh, a.chu_thich)}</a>`).join('')}</div>`;
+      `<a href="${esc(img(a.link_anh))}" class="glightbox" data-gallery="truyen" data-title="${esc(tieuDeAnh(a.chu_thich, a.nguon_anh))}">${anh(a.link_anh, a.chu_thich)}</a>`).join('')}</div>`;
   }
 
   function nhanVatChinh(w) {
@@ -58,7 +58,7 @@
       return `<div id="the-luc-${esc(f.id)}" class="bac-the !p-4" data-aos="fade-up">
         <div class="flex gap-4 items-center">
           ${anh(f.logo, f.ten, 'w-16 h-16 rounded-full object-cover border-2 border-primary shrink-0')}
-          <div><h3 class="text-lg font-bold">${esc(f.ten)}</h3><span class="nhan nhan-the-luc">${esc(nhan('loaiTheLuc', f.loai))}</span></div>
+          <div><h3 class="text-lg font-bold">${esc(f.ten)}</h3><span class="nhan nhan-the-luc">${esc(nhan('loaiTheLuc', f.loai))}</span>${nguon(f.nguon_anh, 'text-left')}</div>
         </div>
         <div class="noi-dung text-sm mt-3">${paragraphs(f.mo_ta)}</div>
         <dl class="text-sm mt-3 space-y-2">
@@ -102,10 +102,10 @@
       <div class="grid gap-3 mb-4">${nhom[k].map((v) => {
         const chu = DB.getCharacter(v.chu_so_huu_id);
         return `<div id="vat-pham-${esc(v.id)}" class="bac-the flex gap-4" data-aos="fade-up">
-          <a href="${esc(img(v.anh))}" class="glightbox shrink-0" data-gallery="vat-pham" data-title="${esc(v.ten)}">${anh(v.anh, v.ten, 'w-24 h-24 rounded-lg object-cover')}</a>
+          <a href="${esc(img(v.anh))}" class="glightbox shrink-0" data-gallery="vat-pham" data-title="${esc(tieuDeAnh(v.ten, v.nguon_anh))}">${anh(v.anh, v.ten, 'w-24 h-24 rounded-lg object-cover')}</a>
           <div class="min-w-0"><h4 class="font-bold">${esc(v.ten)}</h4>
             <div class="flex flex-wrap gap-1 my-1"><span class="nhan nhan-vat-pham">${esc(nhan('loaiVatPham', v.loai))}</span>${v.pham_cap ? `<span class="nhan nhan-vien">${esc(v.pham_cap)}</span>` : ''}</div>
-            <div class="noi-dung text-sm">${paragraphs(v.mo_ta)}</div>
+            <div class="noi-dung text-sm">${paragraphs(v.mo_ta)}</div>${nguon(v.nguon_anh, 'text-left')}
             ${chu ? `<div class="mt-2 text-sm flex items-center gap-2 flex-wrap"><span class="opacity-60">Chủ sở hữu:</span>${chip(chu)}</div>` : ''}
           </div></div>`;
       }).join('')}</div>`).join('');
@@ -120,7 +120,7 @@
       ${p.mo_ta ? `<div class="text-sm opacity-80 mt-1">${esc(p.mo_ta)}</div>` : ''}
       ${p.con.length ? veNhanh(p.con) : ''}</li>`).join('')}</ul>`;
     return (anhBanDo.length ? `<div class="luoi-anh grid gap-3 mb-5 ${anhBanDo.length > 1 ? 'sm:grid-cols-2' : ''}">${anhBanDo.map((p) =>
-      `<a href="${esc(img(p.anh_ban_do))}" class="glightbox" data-gallery="ban-do" data-title="Bản đồ ${esc(p.ten)}">${anh(p.anh_ban_do, 'Bản đồ ' + p.ten)}</a>`).join('')}</div>` : '') +
+      `<a href="${esc(img(p.anh_ban_do))}" class="glightbox" data-gallery="ban-do" data-title="${esc(tieuDeAnh('Bản đồ ' + p.ten, p.nguon_anh))}">${anh(p.anh_ban_do, 'Bản đồ ' + p.ten)}</a>${nguon(p.nguon_anh)}`).join('')}</div>` : '') +
       `<div class="cay [&>ul]:ml-0 [&>ul]:pl-0 [&>ul]:border-0">${veNhanh(cay)}</div>`;
   }
 
@@ -185,7 +185,7 @@
     ].filter(([, v]) => v);
     return `<aside class="infobox">
       <div class="infobox-tieu-de">${esc(w.ten_viet)}</div>
-      <a href="${esc(img(w.anh_bia))}" class="glightbox block p-3" data-title="${esc(w.ten_viet)}">${anh(w.anh_bia, w.ten_viet, 'w-full max-w-[200px] mx-auto lg:max-w-none rounded-lg aspect-[2/3] object-cover', false)}</a>
+      <a href="${esc(img(w.anh_bia))}" class="glightbox block p-3" data-title="${esc(tieuDeAnh(w.ten_viet, w.nguon_anh))}">${anh(w.anh_bia, w.ten_viet, 'w-full max-w-[200px] mx-auto lg:max-w-none rounded-lg aspect-[2/3] object-cover', false)}${nguon(w.nguon_anh)}</a>
       <table><tbody>${hang.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</tbody></table></aside>`;
   }
 

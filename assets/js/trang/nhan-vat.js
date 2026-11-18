@@ -3,7 +3,7 @@
    - nhan-vat.html (?tac_pham=...)   → lưới tất cả nhân vật, có bộ lọc */
 (function () {
   const { esc, img, ids, lines, paragraphs } = DB;
-  const { icon, anh, chip, charCard, luoi, breadcrumb, nhan, LINK, trong } = UI;
+  const { icon, anh, nguon, tieuDeAnh, chip, charCard, luoi, breadcrumb, nhan, LINK, trong } = UI;
   const q = new URLSearchParams(location.search);
   const id = q.get('id');
 
@@ -54,7 +54,7 @@
     ].filter(([, v]) => v);
     return `<aside class="infobox">
       <div class="infobox-tieu-de">${esc(c.ten)}</div>
-      <a href="${esc(img(c.anh))}" class="glightbox block p-3" data-gallery="nhan-vat" data-title="${esc(c.ten)}">${anh(c.anh, c.ten, 'w-full max-w-[220px] mx-auto lg:max-w-none rounded-lg aspect-[3/4] object-cover', false)}</a>
+      <a href="${esc(img(c.anh))}" class="glightbox block p-3" data-gallery="nhan-vat" data-title="${esc(tieuDeAnh(c.ten, c.nguon_anh))}">${anh(c.anh, c.ten, 'w-full max-w-[220px] mx-auto lg:max-w-none rounded-lg aspect-[3/4] object-cover', false)}${nguon(c.nguon_anh)}</a>
       <table><tbody>${hang.map(([k, v]) => `<tr><th>${k}</th><td>${v}</td></tr>`).join('')}</tbody></table></aside>`;
   }
 
@@ -103,7 +103,7 @@
     const ds = DB.getImages(null, c.id);
     if (!ds.length) return '';
     return `<div class="luoi-anh grid grid-cols-2 md:grid-cols-3 gap-3">${ds.map((a) =>
-      `<a href="${esc(img(a.link_anh))}" class="glightbox" data-gallery="anh-nv" data-title="${esc(a.chu_thich)}">${anh(a.link_anh, a.chu_thich || c.ten)}</a>`).join('')}</div>`;
+      `<a href="${esc(img(a.link_anh))}" class="glightbox" data-gallery="anh-nv" data-title="${esc(tieuDeAnh(a.chu_thich, a.nguon_anh))}">${anh(a.link_anh, a.chu_thich || c.ten)}</a>`).join('')}</div>`;
   }
 
   function cauNoi(c) {

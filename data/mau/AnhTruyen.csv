@@ -1,6 +1,6 @@
-tac_pham_id,nhan_vat_id,link_anh,chu_thich
-pham-nhan-tu-tien,,assets/img/mau/anh-truyen-1.jpg,Hoàng Phong Cốc lúc bình minh
-pham-nhan-tu-tien,,assets/img/mau/anh-truyen-2.jpg,Huyết Sắc Cấm Địa
-pham-nhan-tu-tien,,assets/img/mau/anh-truyen-3.jpg,Biển mây Thiên Nam
-pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap.jpg,Hàn Lập thời trẻ
-pham-nhan-tu-tien,han-lap,assets/img/mau/anh-truyen-3.jpg,Hàn Lập ngự kiếm
+tac_pham_id,nhan_vat_id,link_anh,nguon_anh,chu_thich
+pham-nhan-tu-tien,,assets/img/mau/anh-truyen-1.jpg,Minh họa: Tàng Kinh Các,Hoàng Phong Cốc lúc bình minh
+pham-nhan-tu-tien,,assets/img/mau/anh-truyen-2.jpg,Minh họa: Tàng Kinh Các,Huyết Sắc Cấm Địa
+pham-nhan-tu-tien,,assets/img/mau/anh-truyen-3.jpg,Minh họa: Tàng Kinh Các,Biển mây Thiên Nam
+pham-nhan-tu-tien,han-lap,assets/img/mau/han-lap.jpg,Minh họa: Tàng Kinh Các,Hàn Lập thời trẻ
+pham-nhan-tu-tien,han-lap,assets/img/mau/anh-truyen-3.jpg,Minh họa: Tàng Kinh Các,Hàn Lập ngự kiếm
