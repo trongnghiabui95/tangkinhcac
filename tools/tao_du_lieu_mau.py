@@ -47,7 +47,7 @@ DL["TacPham"] = [{
     "the_loai": "Tu Tiên, Huyền Huyễn, Phiêu Lưu", "tinh_trang": "Hoàn thành", "so_chuong": "2446",
     "so_tap": "", "so_mua": "", "nen_tang": "Khởi Điểm (Qidian)", "nam": "2008", "studio": "",
     "diem": "9.2", "diem_cot_truyen": "9", "diem_nhan_vat": "9.5", "diem_the_gioi": "9.5", "diem_hinh_anh": "8.5",
-    "anh_bia": A + "bia-pham-nhan-tu-tien.jpg",
+    "anh_bia": A + "bia-pham-nhan-tu-tien-goc.jpg", "nguon_anh": "Bìa tiểu thuyết gốc (Khởi Điểm)",
     "tom_tat": (
         "Hàn Lập là một thiếu niên nhà nghèo ở vùng quê hẻo lánh, tư chất bình thường, linh căn kém. "
         "Nhờ người chú giới thiệu, cậu được vào Thất Huyền Môn làm đệ tử ký danh và trở thành học trò của Mặc Đại Phu.\n"
@@ -83,9 +83,10 @@ DL["TacPham"] = [{
 }]
 
 DL["AnhTruyen"] = [
-    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-1.jpg", "chu_thich": "Hoàng Phong Cốc lúc bình minh"},
-    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-2.jpg", "chu_thich": "Huyết Sắc Cấm Địa"},
-    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "anh-truyen-3.jpg", "chu_thich": "Biển mây Thiên Nam"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "hoang-phong-coc-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Hoàng Phong Cốc giữa biển mây"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "huyet-sac-cam-dia-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Trận chiến trong Huyết Sắc Cấm Địa"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "bien-may-thien-nam-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Biển mây Thiên Nam"},
+    {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "yem-nguyet-tong-son-mon.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Sơn môn Yểm Nguyệt Tông"},
     {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "han-lap-ket-dan.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Tạo hình Hàn Lập thời Kết Đan"},
     {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "han-lap-poster.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Hàn Lập – đệ tử Hoàng Phong Cốc"},
     {"tac_pham_id": TP, "nhan_vat_id": "han-lap", "link_anh": A + "han-lap.jpg", "chu_thich": "Tranh minh họa Hàn Lập"},
@@ -141,10 +142,10 @@ DL["QuanHe"] = [
 ]
 
 DL["TheLuc"] = [
-    {"id": "hoang-phong-coc", "tac_pham_id": TP, "ten": "Hoàng Phong Cốc", "loai": "tong-mon", "logo": A + "logo-hoang-phong-coc.jpg",
+    {"id": "hoang-phong-coc", "tac_pham_id": TP, "ten": "Hoàng Phong Cốc", "loai": "tong-mon", "logo": A + "logo-hoang-phong-coc-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)",
      "mo_ta": "Một trong Thất Phái của Việt Quốc, nơi Hàn Lập chính thức bước vào giới tu tiên. Nổi tiếng với các đệ tử luyện đan và trận pháp.",
      "thu_linh_id": "", "tru_so_id": "viet-quoc"},
-    {"id": "yem-nguyet-tong", "tac_pham_id": TP, "ten": "Yểm Nguyệt Tông", "loai": "tong-mon", "logo": A + "logo-yem-nguyet-tong.jpg",
+    {"id": "yem-nguyet-tong", "tac_pham_id": TP, "ten": "Yểm Nguyệt Tông", "loai": "tong-mon", "logo": A + "logo-yem-nguyet-tong-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)",
      "mo_ta": "Tông môn lâu đời, mạnh nhất trong Thất Phái Việt Quốc, phần lớn đệ tử là nữ tu.",
      "thu_linh_id": "", "tru_so_id": "viet-quoc"},
 ]
@@ -165,10 +166,10 @@ DL["CapDo"] = [
 
 DL["VatPham"] = [
     {"id": "chuong-thien-binh", "tac_pham_id": TP, "ten": "Bình nhỏ màu xanh (Chưởng Thiên Bình)", "loai": "phap-bao", "pham_cap": "Chí bảo",
-     "anh": A + "chuong-thien-binh.jpg", "mo_ta": "Chiếc bình nhỏ bí ẩn hấp thu tinh hoa ánh trăng, tạo ra giọt dịch xanh có thể thúc chín linh thảo hàng trăm năm. Bí mật lớn nhất của Hàn Lập.",
+     "anh": A + "chuong-thien-binh-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "mo_ta": "Chiếc bình nhỏ bí ẩn hấp thu tinh hoa ánh trăng, tạo ra giọt dịch xanh có thể thúc chín linh thảo hàng trăm năm. Bí mật lớn nhất của Hàn Lập.",
      "chu_so_huu_id": "han-lap"},
     {"id": "thanh-truc-phong-van-kiem", "tac_pham_id": TP, "ten": "Thanh Trúc Phong Vân Kiếm", "loai": "vu-khi", "pham_cap": "Pháp bảo bản mệnh",
-     "anh": A + "thanh-truc-phong-van-kiem.jpg", "mo_ta": "Bộ phi kiếm luyện từ Kim Lôi Trúc, có thể bày kiếm trận mang uy lực lôi điện, khắc chế tà ma.",
+     "anh": A + "thanh-truc-phong-van-kiem-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "mo_ta": "Bộ phi kiếm luyện từ Kim Lôi Trúc, có thể bày kiếm trận mang uy lực lôi điện, khắc chế tà ma.",
      "chu_so_huu_id": "han-lap"},
     {"id": "truong-xuan-cong", "tac_pham_id": TP, "ten": "Trường Xuân Công", "loai": "cong-phap", "pham_cap": "Công pháp nhập môn",
      "anh": A + "truong-xuan-cong.jpg", "mo_ta": "Công pháp đầu tiên Hàn Lập tu luyện, do Mặc Đại Phu truyền lại. Tốc độ chậm nhưng nền tảng vững.",
@@ -178,7 +179,7 @@ DL["VatPham"] = [
 DL["DiaDiem"] = [
     {"id": "nhan-gioi", "tac_pham_id": TP, "ten": "Nhân Giới", "cap": "gioi", "thuoc_id": "", "anh_ban_do": A + "ban-do-nhan-gioi.jpg",
      "mo_ta": "Giới nơi phàm nhân và tu sĩ cấp thấp sinh sống, linh khí tương đối mỏng. Gồm nhiều đại lục và biển cả."},
-    {"id": "thien-nam", "tac_pham_id": TP, "ten": "Thiên Nam", "cap": "vung", "thuoc_id": "nhan-gioi", "anh_ban_do": "",
+    {"id": "thien-nam", "tac_pham_id": TP, "ten": "Thiên Nam", "cap": "vung", "thuoc_id": "nhan-gioi", "anh_ban_do": A + "ban-do-thien-nam.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)",
      "mo_ta": "Vùng đất rộng lớn phía nam, nhiều quốc gia tu tiên và tông môn san sát."},
     {"id": "viet-quoc", "tac_pham_id": TP, "ten": "Việt Quốc", "cap": "vung", "thuoc_id": "thien-nam", "anh_ban_do": "",
      "mo_ta": "Quê hương của Hàn Lập, có Thất Phái tu tiên cùng nhau trấn giữ."},
