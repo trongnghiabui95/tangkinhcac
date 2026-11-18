@@ -9,7 +9,9 @@
   const TABS = ['TacPham', 'AnhTruyen', 'NhanVat', 'CuocDoi', 'QuanHe', 'TheLuc', 'LoaiTuLuyen',
     'CapDo', 'VatPham', 'DiaDiem', 'HanhTrinh', 'ThuatNgu', 'DeCu', 'CaiDat'];
   const CFG = window.CAU_HINH || {};
-  const KHOA_CACHE = 'tkc-du-lieu-v1';
+  // Đổi số phiên bản khi cấu trúc dữ liệu đổi → mọi trình duyệt tự bỏ bản lưu tạm cũ
+  const KHOA_CACHE = 'tkc-du-lieu-v2';
+  try { ['tkc-du-lieu-v1', 'tvt-du-lieu-v1'].forEach((k) => localStorage.removeItem(k)); } catch (e) { /* */ }
 
   // Thư mục gốc của web (tính từ vị trí file này: assets/js/data.js → ../../)
   const ROOT = new URL('../../', (document.currentScript && document.currentScript.src) || location.href).href;
@@ -128,8 +130,10 @@
       const chuKy = JSON.stringify(CFG.sheetCsv || {});
       let tables = null, source = '';
 
-      // 1) Dữ liệu đã lưu tạm trong trình duyệt
-      if (!lamMoi) {
+      // 1) Dữ liệu Google Sheet đã lưu tạm trong trình duyệt (chỉ lưu tạm Sheet vì Sheet tải chậm;
+      //    dữ liệu mẫu và bản sinh sẵn là file tĩnh, luôn đọc mới để không bị dữ liệu/ảnh cũ)
+      if (lamMoi) { try { localStorage.removeItem(KHOA_CACHE); } catch (e) { /* */ } }
+      if (!lamMoi && coSheet) {
         try {
           const c = JSON.parse(localStorage.getItem(KHOA_CACHE) || 'null');
           if (c && c.chuKy === chuKy && Date.now() - c.t < (CFG.phutLuuTam || 30) * 60000) {
@@ -146,7 +150,9 @@
         if (coSheet) { tables = await taiTuSheet(); source = 'Google Sheet'; }
         else { tables = await taiMau(); source = 'dữ liệu mẫu'; }
       }
-      try { localStorage.setItem(KHOA_CACHE, JSON.stringify({ t: Date.now(), chuKy, source, tables })); } catch (e) { /* đầy bộ nhớ */ }
+      if (source === 'Google Sheet') {
+        try { localStorage.setItem(KHOA_CACHE, JSON.stringify({ t: Date.now(), chuKy, source, tables })); } catch (e) { /* đầy bộ nhớ */ }
+      }
 
       TABS.forEach((t) => { tables[t] = (tables[t] || []).map((r, i) => (r._dong ? r : { ...r, _dong: i + 2 })); });
       DB.tablesGoc = tables;            // đủ mọi dòng, kể cả nháp (dùng cho kiem-tra.html)
