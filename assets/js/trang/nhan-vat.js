@@ -102,7 +102,7 @@
   function thuVienAnh(c) {
     const ds = DB.getImages(null, c.id);
     if (!ds.length) return '';
-    return `<div class="luoi-anh grid grid-cols-2 md:grid-cols-3 gap-3">${ds.map((a) =>
+    return `<div class="luoi-anh doc grid grid-cols-2 md:grid-cols-3 gap-3">${ds.map((a) =>
       `<a href="${esc(img(a.link_anh))}" class="glightbox" data-gallery="anh-nv" data-title="${esc(tieuDeAnh(a.chu_thich, a.nguon_anh))}">${anh(a.link_anh, a.chu_thich || c.ten)}</a>`).join('')}</div>`;
   }
 

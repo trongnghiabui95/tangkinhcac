@@ -255,3 +255,6 @@ a:hover > .anh-tron { transform: scale(1.06); }
 /* Ảnh đang tải lười: nền mờ */
 img[loading="lazy"] { background: var(--color-base-300); }
 [x-cloak] { display: none !important; }
+/* Thư viện ảnh nhân vật: ô dọc 3:4, giữ phần đầu ảnh */
+.luoi-anh.doc a { aspect-ratio: 3 / 4; }
+.luoi-anh.doc img { object-position: top; }
