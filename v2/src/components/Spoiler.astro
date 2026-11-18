@@ -1,0 +1,6 @@
+---
+// <Spoiler>…</Spoiler> trong .mdx: nội dung tiết lộ cốt truyện, bấm mới mở (không cần JavaScript).
+interface Props { tieuDe?: string }
+const { tieuDe = 'Nội dung tiết lộ cốt truyện (spoiler) – bấm để xem' } = Astro.props;
+---
+<details class="spoiler khong-quang-cao"><summary>{tieuDe}</summary><div class="spoiler-noi-dung"><slot /></div></details>

@@ -1,0 +1,9 @@
+---
+// Trang 2, 3… của danh sách nhân vật: /<truyen>/nhan-vat/trang-2/
+import DanhSachNhanVat from '../../../components/DanhSachNhanVat.astro';
+import { cacTrangNhanVat } from '../../../lib/danh-sach.js';
+export async function getStaticPaths() {
+  return (await cacTrangNhanVat()).filter((p) => p.trang > 1).map((p) => ({ params: { truyen: p.truyen, so: String(p.trang) }, props: p }));
+}
+---
+<DanhSachNhanVat {...Astro.props} />

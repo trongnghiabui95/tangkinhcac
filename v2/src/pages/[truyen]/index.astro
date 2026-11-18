@@ -1,0 +1,65 @@
+---
+// Trang review tác phẩm: /<truyen>/
+import { render } from 'astro:content';
+import BoCuc from '../../layouts/BoCuc.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import CharacterCardImage from '../../components/CharacterCardImage.astro';
+import Spoiler from '../../components/Spoiler.astro';
+import AdUnit from '../../components/AdUnit.astro';
+import { layBai, layAnh, tachId, url, urlBai, boDau, NHAN } from '../../lib/tien-ich.js';
+import { schemaReviewTruyen, schemaBreadcrumb, schemaFaq } from '../../lib/schema.js';
+export async function getStaticPaths() {
+  return (await layBai('truyen')).map((entry) => ({ params: { truyen: tachId(entry.id).truyen }, props: { entry } }));
+}
+const { entry } = Astro.props;
+const { truyen } = tachId(entry.id);
+const d = entry.data;
+const { Content, remarkPluginFrontmatter } = await render(entry);
+const thuoc = (e) => tachId(e.id).truyen === truyen;
+const nhanVat = (await layBai('nhanVat', thuoc)).sort((a, b) => (a.data.vai_tro === 'chinh' ? -1 : 1) - (b.data.vai_tro === 'chinh' ? -1 : 1));
+const canhGioi = (await layBai('canhGioi', thuoc)).sort((a, b) => a.data.thu_tu - b.data.thu_tu);
+const phapBao = await layBai('phapBao', thuoc);
+const anh = layAnh(entry.id);
+const site = Astro.site!;
+const tuyetDoi = (p: string) => new URL(p, site).href;
+const urlTrang = tuyetDoi(url(`${truyen}/`));
+const tieuDe = `[Review] ${d.ten} | Cốt truyện, Nhân vật, Thế giới`;
+const jsonLd = [
+  schemaReviewTruyen({ ten: d.ten, tacGia: d.tac_gia, moTa: d.mo_ta, urlTrang, anh: anh ? tuyetDoi(url(anh.src)) : undefined, diem: d.diem,
+    ngayDang: d.ngay_dang.toISOString(), ngayCapNhat: d.ngay_cap_nhat.toISOString(), site: site.href }),
+  schemaBreadcrumb([{ ten: 'Trang chủ', url: tuyetDoi(url('')) }, { ten: d.ten, url: urlTrang }]),
+  schemaFaq(remarkPluginFrontmatter.faq),
+];
+const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) === '1'; // 1 = tìm cả thân bài (chỉ mục lớn hơn)
+---
+<BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article">
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: d.ten }]} />
+  <article data-pagefind-body data-pagefind-filter={`truyen:${d.ten}`} data-pagefind-meta="loai:Truyện">
+    <h1 data-pagefind-meta="title">{tieuDe}</h1>
+    <p class="sapo">{d.mo_ta}</p>
+    <span class="sr-only" data-pagefind-weight="8">{boDau([d.ten, ...d.ten_khac].join(' ')).toLowerCase()}</span>
+    <div class="bo-cuc-bai">
+      <aside class="cot-phu"><div class="infobox">
+        <CharacterCardImage anh={anh} alt={`Bìa ${d.ten}`} uuTien sizes="(max-width: 960px) 90vw, 290px" />
+        <table><tbody>
+          {d.ten_trung && <tr><th scope="row">Tên gốc</th><td>{d.ten_trung}</td></tr>}
+          <tr><th scope="row">Tác giả</th><td>{d.tac_gia}</td></tr>
+          <tr><th scope="row">Thể loại</th><td>{d.the_loai.join(', ')}</td></tr>
+          <tr><th scope="row">Tình trạng</th><td>{d.tinh_trang}</td></tr>
+          {d.diem != null && <tr><th scope="row">Điểm</th><td>★ {d.diem}/10</td></tr>}
+        </tbody></table>
+      </div></aside>
+      <div class="noi-dung-bai" data-pagefind-ignore={TIM_TOAN_VAN ? undefined : "all"}>
+        <Content components={{ Spoiler }} />
+        {canhGioi.length > 0 && <section><h2>Hệ thống cảnh giới</h2>
+          <ol>{canhGioi.map((c) => <li><a href={urlBai(c.id)}>{c.data.ten}</a></li>)}</ol></section>}
+      </div>
+    </div>
+  </article>
+  <AdUnit viTri="sau-review" />
+  {nhanVat.length > 0 && <section data-pagefind-ignore="all"><h2>Nhân vật</h2>
+    <ul class="luoi-the">{nhanVat.slice(0, 8).map((c) => <li><CharacterCardImage anh={layAnh(c.id)} alt={c.data.ten} ten={c.data.ten} nhan={NHAN.vai_tro[c.data.vai_tro]} gon href={urlBai(c.id)} /></li>)}</ul>
+    <p><a class="nut" href={url(`${truyen}/nhan-vat/`)}>Xem tất cả {nhanVat.length} nhân vật</a></p></section>}
+  {phapBao.length > 0 && <section data-pagefind-ignore="all"><h2>Pháp bảo</h2>
+    <ul class="luoi-the">{phapBao.slice(0, 8).map((p) => <li><CharacterCardImage anh={layAnh(p.id)} alt={p.data.ten} ten={p.data.ten} gon href={urlBai(p.id)} /></li>)}</ul></section>}
+</BoCuc>

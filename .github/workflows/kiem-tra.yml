@@ -23,7 +23,7 @@ jobs:
       - name: 1. Cú pháp JavaScript (node --check)
         run: |
           loi=0
-          for f in $(git ls-files '*.js' '*.mjs'); do
+          for f in $(git ls-files '*.js' '*.mjs' | grep -v '^v2/'); do
             if node --check "$f"; then echo "OK   $f"; else echo "LỖI $f"; loi=1; fi
           done
           exit $loi

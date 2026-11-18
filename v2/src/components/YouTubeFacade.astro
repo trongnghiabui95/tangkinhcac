@@ -1,0 +1,27 @@
+---
+/**
+ * YouTubeFacade – chỉ hiện ảnh bìa video (vài chục KB) + nút phát. Bấm mới tải iframe YouTube (~800 KB JS).
+ */
+interface Props { id: string; tieuDe: string }
+const { id, tieuDe } = Astro.props;
+---
+<div class="yt-facade" data-yt={id} data-pagefind-ignore="all">
+  <button type="button" class="yt-nut" aria-label={`Phát video: ${tieuDe}`}>
+    <img src={`https://i.ytimg.com/vi/${id}/hqdefault.jpg`} alt="" width="480" height="360" loading="lazy" decoding="async" />
+    <span class="yt-play" aria-hidden="true">▶</span>
+  </button>
+  <p class="yt-tieu-de">{tieuDe}</p>
+</div>
+<script>
+  // Bấm vào ảnh bìa → thay bằng iframe youtube-nocookie (tự phát). Không bấm thì không tải gì của YouTube.
+  document.querySelectorAll<HTMLElement>('.yt-facade').forEach((el) => {
+    el.querySelector('button')?.addEventListener('click', () => {
+      const f = document.createElement('iframe');
+      f.src = `https://www.youtube-nocookie.com/embed/${el.dataset.yt}?autoplay=1`;
+      f.title = el.querySelector('.yt-tieu-de')?.textContent || 'Video';
+      f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
+      f.allowFullscreen = true;
+      el.querySelector('button')?.replaceWith(f);
+    }, { once: true });
+  });
+</script>

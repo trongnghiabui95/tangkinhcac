@@ -1,0 +1,39 @@
+---
+/**
+ * CharacterCardImage – ảnh thẻ nhân vật kèm khung biên tập và ghi nguồn.
+ *  - <figure> + <figcaption> ghi nguồn (lấy từ frontmatter anh.nguon) – luôn hiện.
+ *  - Lớp phủ tối ở cạnh dưới, khung viền cổ phong, huy hiệu cảnh giới và tên: vẽ bằng HTML/CSS đè lên ảnh.
+ *  - Ảnh WebP nhiều cỡ (srcset), luôn có width/height để không nhảy trang; mặc định loading="lazy".
+ *    uuTien = true cho ảnh chính đầu trang (LCP): tải ngay + fetchpriority="high".
+ */
+import { url } from '../lib/tien-ich.js';
+interface Props {
+  anh: { src: string; width: number; height: number; srcset: { w: number; src: string }[]; nguon?: string } | null;
+  alt: string;
+  ten?: string;
+  canhGioi?: string;
+  nhan?: string;                // nhãn góc trên (vai trò…)
+  uuTien?: boolean;
+  sizes?: string;
+  gon?: boolean;                // bản gọn cho thẻ danh sách (chữ nguồn nhỏ hơn)
+  href?: string;
+}
+const { anh, alt, ten, canhGioi, nhan, uuTien = false, sizes = '(max-width: 640px) 50vw, 300px', gon = false, href } = Astro.props;
+const srcset = anh?.srcset.map((s) => `${url(s.src)} ${s.w}w`).join(', ');
+const Bao = href ? 'a' : 'div';
+---
+<figure class:list={['the-anh-nv', { gon }]}>
+  <Bao class="khung-co-phong" href={href}>
+    {anh ? (
+      <img src={url(anh.src)} srcset={srcset} sizes={sizes} width={anh.width} height={anh.height} alt={alt}
+           loading={uuTien ? 'eager' : 'lazy'} fetchpriority={uuTien ? 'high' : 'auto'} decoding="async" />
+    ) : (
+      <span class="chua-co-anh" role="img" aria-label={alt}>{ten ?? alt}</span>
+    )}
+    <span class="lop-toi" aria-hidden="true"></span>
+    {nhan && <span class="nhan-goc">{nhan}</span>}
+    {canhGioi && <span class="huy-hieu-canh-gioi" title="Cảnh giới cao nhất">{canhGioi}</span>}
+    {ten && <span class="ten-tren-anh">{ten}</span>}
+  </Bao>
+  {anh?.nguon && <figcaption>{anh.nguon}</figcaption>}
+</figure>

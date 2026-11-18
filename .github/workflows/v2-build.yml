@@ -1,0 +1,32 @@
+# Build thử bản v2 (Astro) trên mọi PR có sửa thư mục v2/: ảnh → HTML → chỉ mục tìm kiếm.
+name: v2-build
+on:
+  pull_request:
+    paths: ['v2/**', '.github/workflows/v2-build.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: v2
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.23.5
+          cache: npm
+          cache-dependency-path: v2/package-lock.json
+      - run: npm ci
+      - name: Build (ảnh → Astro → Pagefind)
+        run: npm run build
+      - name: Kiểm tra kết quả
+        run: |
+          test -f dist/pham-nhan-tu-tien/nhan-vat/han-lap/index.html
+          test -f dist/sitemap-index.xml && test -f dist/robots.txt && test -d dist/pagefind
+          grep -q '"@type":"FAQPage"' dist/pham-nhan-tu-tien/nhan-vat/han-lap/index.html
+          grep -q 'class="lien-ket-noi-bo"' dist/pham-nhan-tu-tien/nhan-vat/han-lap/index.html
+          echo "OK: trang nhân vật, sitemap, robots, pagefind, FAQPage, liên kết nội bộ"

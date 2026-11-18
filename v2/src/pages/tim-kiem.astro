@@ -1,0 +1,50 @@
+---
+/**
+ * Tìm kiếm tĩnh phân mảnh bằng Pagefind: lúc build, `pagefind --site dist` chia chỉ mục thành nhiều mảnh nhỏ.
+ * Trình duyệt chỉ tải pagefind.js + đúng các mảnh chứa từ đang gõ (vài chục KB), không tải toàn bộ dữ liệu.
+ * Gõ không dấu vẫn ra: mỗi bài có thêm đoạn từ khoá không dấu (ẩn) được đánh chỉ mục.
+ */
+import BoCuc from '../layouts/BoCuc.astro';
+import { url } from '../lib/tien-ich.js';
+---
+<BoCuc tieuDe="Tìm kiếm" moTa="Tìm nhân vật, pháp bảo, cảnh giới, truyện trên Tàng Kinh Các." noindex>
+  <h1>Tìm kiếm</h1>
+  <label for="o-tim" class="sr-only">Từ khoá</label>
+  <input id="o-tim" class="o-tim" type="search" placeholder="Ví dụ: han lap, chuong thien binh, truc co…" autocomplete="off" data-pagefind-url={url('pagefind/')} />
+  <p id="trang-thai" class="yt-tieu-de" aria-live="polite"></p>
+  <ul id="ket-qua" class="ket-qua"></ul>
+</BoCuc>
+<script>
+  const o = document.getElementById('o-tim') as HTMLInputElement;
+  const tt = document.getElementById('trang-thai')!;
+  const kq = document.getElementById('ket-qua')!;
+  const boDau = (s: string) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  let pagefind: any;
+  async function nap() {
+    if (pagefind) return pagefind;
+    // @vite-ignore: file sinh sau khi build, không đóng gói vào bundle
+    pagefind = await import(/* @vite-ignore */ o.dataset.pagefindUrl + 'pagefind.js');
+    await pagefind.options({ excerptLength: 24 });
+    pagefind.init();
+    return pagefind;
+  }
+  const esc = (s: string) => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+  async function tim(q: string) {
+    const u = new URL(location.href); q ? u.searchParams.set('q', q) : u.searchParams.delete('q'); history.replaceState(null, '', u);
+    if (!q.trim()) { kq.innerHTML = ''; tt.textContent = ''; return; }
+    tt.textContent = 'Đang tìm…';
+    const pf = await nap();
+    // Tìm cả bản có dấu và không dấu, gộp kết quả
+    const [a, b] = await Promise.all([pf.debouncedSearch(q, {}, 200), boDau(q) !== q ? pf.search(boDau(q)) : null]);
+    if (a === null) return;                                          // bị thay bởi lần gõ mới hơn
+    const gop = new Map<string, any>();
+    for (const r of [...(a?.results ?? []), ...(b?.results ?? [])]) if (!gop.has(r.id)) gop.set(r.id, r);
+    const ds = await Promise.all([...gop.values()].slice(0, 20).map((r) => r.data()));
+    tt.textContent = ds.length ? `${gop.size} kết quả` : 'Không tìm thấy. Thử từ khoá ngắn hơn, ví dụ "han lap".';
+    kq.innerHTML = ds.map((d) => `<li>${d.meta.image ? `<img src="${esc(d.meta.image)}" alt="" width="64" height="64" loading="lazy">` : '<span></span>'}
+      <div><a href="${esc(d.url)}"><b>${esc(d.meta.title || '')}</b></a> <small>${esc(d.meta.loai || '')}</small><br><span>${d.excerpt}</span></div></li>`).join('');
+  }
+  o.addEventListener('input', () => tim(o.value));
+  const q0 = new URLSearchParams(location.search).get('q');
+  if (q0) { o.value = q0; tim(q0); }
+</script>
