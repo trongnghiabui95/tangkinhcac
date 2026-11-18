@@ -20,6 +20,8 @@ const TRANG = [
   'danh-sach.html?loai=tu-tien',
   'danh-sach.html?loai=anime',
   'danh-sach.html?the_loai=Tu%20Ti%C3%AAn',
+  'the-luc.html?id=hoang-phong-coc',
+  'the-luc.html?id=khong-ton-tai',
   'the-luc.html', 'tu-luyen.html', 'tim-kiem.html', 'de-cu.html', 'thuat-ngu.html',
   ...(process.env.TRANG_THEM ? process.env.TRANG_THEM.split(',') : []),
 ];

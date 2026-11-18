@@ -28,7 +28,8 @@
     char: (id) => R + 'nhan-vat.html?id=' + encodeURIComponent(id),
     chars: (workId) => R + 'nhan-vat.html' + (workId ? '?tac_pham=' + encodeURIComponent(workId) : ''),
     // Giai đoạn 1: thế lực / cấp độ / vật phẩm / địa điểm dẫn về đúng mục trong trang review
-    faction: (f) => f ? LINK.work(f.tac_pham_id, 'the-luc-' + f.id) : '#',
+    faction: (f) => f ? R + 'the-luc.html?id=' + encodeURIComponent(f.id) : '#',
+    factions: (workId) => R + 'the-luc.html' + (workId ? '?tac_pham=' + encodeURIComponent(workId) : ''),
     level: (l) => l ? LINK.work(l.tac_pham_id, 'cap-do-' + l.id) : '#',
     item: (v) => v ? LINK.work(v.tac_pham_id, 'vat-pham-' + v.id) : '#',
     place: (p) => p ? LINK.work(p.tac_pham_id, 'dia-diem-' + p.id) : '#',
