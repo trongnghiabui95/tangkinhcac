@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="900" viewBox="0 0 600 900">
+<defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1d4e5f"/><stop offset="1" stop-color="#0b1320"/></linearGradient></defs>
+<rect width="600" height="900" fill="url(#g)"/><path d="M0 702.0 L132.0 450.0 L240.0 630.0 L372.0 378.0 L600 675.0 L600 900 L0 900Z" fill="#000" opacity=".35"/><circle cx="450.0" cy="198.0" r="60.0" fill="#f5d27a" opacity=".85"/><path d="M30.0 135.0 q36.0 -45.0 72.0 0 q36.0 -45.0 72.0 0" stroke="#fff" stroke-width="3" fill="none" opacity=".35"/>
+<rect x="24.0" y="27.0" width="552.0" height="846.0" fill="none" stroke="#f5d27a" stroke-opacity=".5" stroke-width="2" rx="8"/>
+<text x="50%" y="792.0" text-anchor="middle" font-family="Georgia, serif" font-size="45.0" fill="#fff6dc">Phàm Nhân Tu Tiên</text>
+<text x="50%" y="837.0" text-anchor="middle" font-family="Georgia, serif" font-size="24.0" fill="#f5d27a">凡人修仙传 · ảnh mẫu</text>
+</svg>

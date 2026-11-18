@@ -1,0 +1,45 @@
+# Giai đoạn 1: mỗi lần đẩy code lên nhánh main (hoặc bấm tay "Run workflow"),
+# GitHub tự đăng toàn bộ web lên GitHub Pages.
+# (Giai đoạn 3 sẽ thêm bước đọc Google Sheet và sinh trang tĩnh mỗi ngày.)
+name: Đăng web lên GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Lấy code
+        uses: actions/checkout@v4
+
+      - name: Gom file web (bỏ file công cụ và file Excel)
+        run: |
+          mkdir -p _site
+          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude '*.xlsx' --exclude '*.md' ./ _site/
+
+      - name: Cấu hình Pages
+        uses: actions/configure-pages@v5
+
+      - name: Tải gói web lên
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+      - name: Đăng web
+        id: deployment
+        uses: actions/deploy-pages@v4
