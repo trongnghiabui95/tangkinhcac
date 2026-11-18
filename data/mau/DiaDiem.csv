@@ -1,4 +1,4 @@
-id,tac_pham_id,ten,cap,thuoc_id,anh_ban_do,nguon_anh,mo_ta
-nhan-gioi,pham-nhan-tu-tien,Nhân Giới,gioi,,assets/img/mau/ban-do-nhan-gioi.jpg,Minh họa: Tàng Kinh Các,"Giới nơi phàm nhân và tu sĩ cấp thấp sinh sống, linh khí tương đối mỏng. Gồm nhiều đại lục và biển cả."
-thien-nam,pham-nhan-tu-tien,Thiên Nam,vung,nhan-gioi,assets/img/mau/ban-do-thien-nam.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),"Vùng đất rộng lớn phía nam, nhiều quốc gia tu tiên và tông môn san sát."
-viet-quoc,pham-nhan-tu-tien,Việt Quốc,vung,thien-nam,,,"Quê hương của Hàn Lập, có Thất Phái tu tiên cùng nhau trấn giữ."
+id,tac_pham_id,ten,cap,thuoc_id,anh_ban_do,nguon_anh,mo_ta,trang_thai
+nhan-gioi,pham-nhan-tu-tien,Nhân Giới,gioi,,assets/img/mau/ban-do-nhan-gioi.jpg,Minh họa: Tàng Kinh Các,"Giới nơi phàm nhân và tu sĩ cấp thấp sinh sống, linh khí tương đối mỏng. Gồm nhiều đại lục và biển cả.",duyệt
+thien-nam,pham-nhan-tu-tien,Thiên Nam,vung,nhan-gioi,assets/img/mau/ban-do-thien-nam.jpg,Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili),"Vùng đất rộng lớn phía nam, nhiều quốc gia tu tiên và tông môn san sát.",duyệt
+viet-quoc,pham-nhan-tu-tien,Việt Quốc,vung,thien-nam,,,"Quê hương của Hàn Lập, có Thất Phái tu tiên cùng nhau trấn giữ.",duyệt

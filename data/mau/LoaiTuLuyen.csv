@@ -1,3 +1,3 @@
-id,tac_pham_id,ten,mo_ta
-tu-khi,pham-nhan-tu-tien,Pháp tu (tu khí),"Hấp thu linh khí trời đất vào đan điền, luyện hóa thành pháp lực để thi triển pháp thuật và điều khiển pháp bảo. Đây là con đường chính của đa số tu sĩ."
-luyen-the,pham-nhan-tu-tien,Luyện thể,"Tôi luyện nhục thân bằng công pháp và linh dược đặc biệt, cơ thể cứng như pháp bảo. Rất gian khổ nên ít người theo, thường kiêm tu cùng pháp tu."
+id,tac_pham_id,ten,mo_ta,trang_thai
+tu-khi,pham-nhan-tu-tien,Pháp tu (tu khí),"Hấp thu linh khí trời đất vào đan điền, luyện hóa thành pháp lực để thi triển pháp thuật và điều khiển pháp bảo. Đây là con đường chính của đa số tu sĩ.",duyệt
+luyen-the,pham-nhan-tu-tien,Luyện thể,"Tôi luyện nhục thân bằng công pháp và linh dược đặc biệt, cơ thể cứng như pháp bảo. Rất gian khổ nên ít người theo, thường kiêm tu cùng pháp tu.",duyệt

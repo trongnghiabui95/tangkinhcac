@@ -206,6 +206,13 @@ DL["DeCu"] = [{"thu_tu": "1", "tac_pham_id": TP, "ly_do": "Kinh điển của d�
 DL["CaiDat"] = [{"ten_web": "Tàng Kinh Các", "mo_ta_web": "Review truyện Tu Tiên, Huyền Huyễn và Anime: cốt truyện, nhân vật, thế giới, cảnh giới tu luyện.",
                  "logo": "", "link_fanpage": "", "link_youtube": ""}]
 
+# Cột trang_thai (nháp/duyệt) ở cuối mọi tab nội dung; dữ liệu mẫu đều đã duyệt
+for _tab in COT:
+    if _tab != "CaiDat":
+        COT[_tab] = COT[_tab] + ["trang_thai"]
+        for _r in DL.get(_tab, []):
+            _r.setdefault("trang_thai", "duyệt")
+
 # Ảnh mẫu do Tàng Kinh Các tự vẽ → ghi nguồn cho mọi dòng có ảnh
 for _tab, _cot in [("TacPham", "anh_bia"), ("NhanVat", "anh"), ("AnhTruyen", "link_anh"),
                    ("TheLuc", "logo"), ("VatPham", "anh"), ("DiaDiem", "anh_ban_do")]:
@@ -232,12 +239,15 @@ GIAI_THICH = [
     ("ngay_dang", "Dạng 2026-11-10 hoặc 10/11/2026"),
     ("diem", "Thang 10, dùng dấu chấm: 9.2"),
     ("nguon_anh", "Nguồn của ảnh trên cùng dòng, ví dụ: Tencent Video, Bilibili, Poster chính thức. Web hiện dòng nhỏ 'Ảnh: …' dưới ảnh. Để trống thì không hiện."),
+    ("trang_thai", "Cột cuối mỗi tab: để trống hoặc 'duyệt' = hiện trên web; 'nháp' = ẩn (dùng khi đang viết dở hoặc chờ duyệt). Tác phẩm nháp thì nhân vật, thế lực… của nó cũng ẩn theo; nhân vật nháp thì cuộc đời, quan hệ, ảnh riêng của nhân vật đó cũng ẩn."),
     ("ost_youtube", "Link YouTube, nhiều link cách nhau bằng dấu phẩy. Để trống thì mục OST tự ẩn."),
     ("Tab này", "Tab _HuongDan chỉ để đọc, web không dùng. Có thể xoá."),
 ]
 
 DROPDOWN = {
     ("TacPham", "loai"): "tu-tien,anime",
+    **{(t, "trang_thai"): "duyệt,nháp" for t in ["TacPham", "AnhTruyen", "NhanVat", "CuocDoi", "QuanHe", "TheLuc", "LoaiTuLuyen",
+                                                "CapDo", "VatPham", "DiaDiem", "HanhTrinh", "ThuatNgu", "DeCu"]},
     ("TacPham", "noi_bat"): "có,không",
     ("TacPham", "tinh_trang"): "Đang ra,Hoàn thành,Tạm ngưng",
     ("NhanVat", "vai_tro"): "chinh,phu,lien-quan,phan-dien",

@@ -78,12 +78,12 @@
   function parseCsv(text) {
     const res = Papa.parse(text, {
       header: true,
-      skipEmptyLines: 'greedy',
+      skipEmptyLines: false,
       transformHeader: (h) => str(h).toLowerCase().replace(/^﻿/, ''),
     });
     return res.data
-      .map((r) => { const o = {}; for (const k in r) if (k) o[k] = str(r[k]); return o; })
-      .filter((r) => Object.values(r).some(Boolean));
+      .map((r, i) => { const o = {}; for (const k in r) if (k) o[k] = str(r[k]); o._dong = i + 2; return o; })
+      .filter((r) => Object.entries(r).some(([k, v]) => k !== '_dong' && v));
   }
 
   async function fetchText(u) {
@@ -148,8 +148,10 @@
       }
       try { localStorage.setItem(KHOA_CACHE, JSON.stringify({ t: Date.now(), chuKy, source, tables })); } catch (e) { /* đầy bộ nhớ */ }
 
-      TABS.forEach((t) => { tables[t] = tables[t] || []; });
-      DB.tables = tables; DB.source = source; DB.loadedAt = Date.now();
+      TABS.forEach((t) => { tables[t] = (tables[t] || []).map((r, i) => (r._dong ? r : { ...r, _dong: i + 2 })); });
+      DB.tablesGoc = tables;            // đủ mọi dòng, kể cả nháp (dùng cho kiem-tra.html)
+      DB.tables = locNhap(tables);      // web chỉ dùng dòng đã duyệt
+      DB.source = source; DB.loadedAt = Date.now();
       lapChiMuc();
       return DB;
     })();
@@ -157,6 +159,30 @@
   };
 
   DB.clearCache = () => { try { localStorage.removeItem(KHOA_CACHE); } catch (e) { /* */ } };
+
+  /* ------------------------------------------------------------ nháp / duyệt */
+  // Cột trang_thai: "nháp" (có dấu hay không, hoa hay thường) thì ẩn khỏi web. Trống hoặc "duyệt" thì hiện.
+  const laNhap = (r) => boDau(r && r.trang_thai).toLowerCase().replace(/\s+/g, '') === 'nhap';
+  DB.laNhap = laNhap;
+  function locNhap(goc) {
+    const out = {};
+    TABS.forEach((t) => { out[t] = (goc[t] || []).filter((r) => !laNhap(r)); });
+    // Tác phẩm nháp → ẩn mọi thứ thuộc tác phẩm đó
+    const tpAn = new Set((goc.TacPham || []).filter(laNhap).map((r) => r.id));
+    const tpCon = new Set(out.TacPham.map((r) => r.id));
+    TABS.forEach((t) => {
+      if (t === 'TacPham' || t === 'CaiDat' || t === 'ThuatNgu') return;
+      out[t] = out[t].filter((r) => !r.tac_pham_id || !tpAn.has(r.tac_pham_id));
+    });
+    out.ThuatNgu = out.ThuatNgu.filter((r) => !r.tac_pham_id || !tpAn.has(r.tac_pham_id));
+    out.DeCu = out.DeCu.filter((r) => tpCon.has(r.tac_pham_id));
+    // Nhân vật nháp/ẩn → ẩn cuộc đời, quan hệ, ảnh riêng của nhân vật đó
+    const nvCon = new Set(out.NhanVat.map((r) => r.id));
+    out.CuocDoi = out.CuocDoi.filter((r) => nvCon.has(r.nhan_vat_id));
+    out.QuanHe = out.QuanHe.filter((r) => nvCon.has(r.nhan_vat_id) && nvCon.has(r.lien_quan_id));
+    out.AnhTruyen = out.AnhTruyen.filter((r) => !r.nhan_vat_id || nvCon.has(r.nhan_vat_id));
+    return out;
+  }
 
   /* ------------------------------------------------------------ chỉ mục theo id */
   const idx = {};
