@@ -22,10 +22,11 @@ jobs:
 
       - name: 1. Cú pháp JavaScript (node --check)
         run: |
-          set -e
+          loi=0
           for f in $(git ls-files '*.js' '*.mjs'); do
-            node --check "$f" && echo "OK   $f"
+            if node --check "$f"; then echo "OK   $f"; else echo "LỖI $f"; loi=1; fi
           done
+          exit $loi
 
       - name: 2. Đọc dữ liệu mẫu data/mau/*.csv
         run: python3 tools/kiem-tra/doc_csv.py
