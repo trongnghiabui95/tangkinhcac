@@ -22,11 +22,15 @@
   --nhan-tu-luyen: #2fa37f;
   --nhan-vat-pham: #d0703a;
   --nhan-phan-dien: #c84848;
+
+  /* thương hiệu chủ quản yendan */
+  --mau-yendan: #7A1530;
 }
 
 /* ---------- 2. Giao diện TỐI (mặc định) – mực xanh đen, vàng kim, ngọc bích ---------- */
 [data-theme="tien-hiep"] {
   color-scheme: dark;
+  --mau-yendan: #FFE9EE;
   --color-base-100: #111a24;
   --color-base-200: #0b121a;
   --color-base-300: #1b2735;
@@ -258,3 +262,7 @@ img[loading="lazy"] { background: var(--color-base-300); }
 /* Thư viện ảnh nhân vật: ô dọc 3:4, giữ phần đầu ảnh */
 .luoi-anh.doc a { aspect-ratio: 3 / 4; }
 .luoi-anh.doc img { object-position: top; }
+
+/* Logo yendan ở chân trang: cao 32px, chữ đổi màu theo giao diện */
+.thuong-hieu { color: var(--mau-yendan); display: inline-flex; }
+.logo-yendan { height: 32px; width: auto; }
