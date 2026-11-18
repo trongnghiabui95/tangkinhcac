@@ -2,6 +2,8 @@
 
 Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt. Chủ dự án **không chuyên lập trình**: mọi giải thích, mô tả PR, hướng dẫn đều viết tiếng Việt, rõ ràng, từng bước.
 
+**Trước khi sửa bất cứ thứ gì nhìn thấy được: đọc `DESIGN.md`** (token, quy tắc, bộ kiểm tra giao diện Floor/Reflex/Finish).
+
 ## Ngăn xếp
 - **HTML + CSS + JavaScript thuần**, không framework, **không bước build bắt buộc** (mở bằng `python3 -m http.server` là chạy).
 - Thư viện chỉ nạp qua CDN, ghim phiên bản cụ thể: Tailwind v4 browser, DaisyUI 5, Alpine.js, Swiper, GLightbox, PapaParse, AOS, Lucide (giai đoạn sau: Fuse.js, vis-network).
