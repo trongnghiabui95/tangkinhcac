@@ -151,11 +151,14 @@ Mỗi tab có cột **`trang_thai`** ở cuối:
 
 Quy trình gợi ý: người viết (BA) thêm dòng với `nháp` → người kiểm (Checker) đọc lại trong Sheet → đổi sang `duyệt` → khoảng 5 phút sau nội dung lên web.
 
+### Trang kiểm tra dữ liệu
+Mở **`.../kiem-tra.html`** (trang ẩn, không có trên menu). Trang liệt kê các lỗi: id trùng, id sai chuẩn, liên kết tới id không tồn tại, ô bắt buộc để trống, giá trị không hợp lệ, ảnh không tải được. Mỗi lỗi ghi rõ **tab, số dòng trong Sheet, cột, giá trị và gợi ý sửa**. Lọc theo tab hoặc nháp/duyệt; bấm **Tải danh sách lỗi (CSV)** để gửi cho người sửa.
+
 ### Lỗi thường gặp
 | Hiện tượng | Cách sửa |
 |---|---|
 | Sửa Sheet rồi mà web chưa đổi | Chờ ~5 phút, rồi mở web kèm `?lammoi=1` |
 | Ảnh hiện "Chưa có ảnh" | Thư mục Drive chưa chia sẻ "Bất kỳ ai có đường liên kết", hoặc link dán sai |
 | Nhân vật/thế lực không hiện ở trang truyện | `tac_pham_id` gõ sai hoặc thừa dấu cách |
-| Liên kết tới người/vật không hiện | id trong cột `..._id(s)` không trùng với id thật (Giai đoạn 2 có trang `kiem-tra.html` liệt kê các lỗi này) |
+| Liên kết tới người/vật không hiện | id trong cột `..._id(s)` không trùng với id thật (mở `kiem-tra.html` để xem danh sách lỗi) |
 | Web báo "Không tải được dữ liệu" | Link trong `config.js` sai, hoặc tab chưa được công bố lên web |
