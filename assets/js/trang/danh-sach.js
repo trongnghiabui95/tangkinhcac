@@ -33,3 +33,4 @@
   document.getElementById('noi-dung').innerHTML = `<div class="khung py-8">${UI.khungCho(5)}</div>`;
   UI.khoiDong(ve);
 })();
+function hong( {
