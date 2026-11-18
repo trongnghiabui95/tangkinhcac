@@ -35,7 +35,7 @@ COT = {
     "DiaDiem": ["id", "tac_pham_id", "ten", "cap", "thuoc_id", "anh_ban_do", "nguon_anh", "mo_ta"],
     "HanhTrinh": ["tac_pham_id", "thu_tu", "dia_diem_id", "su_kien", "cap_do_id"],
     "ThuatNgu": ["id", "ten", "giai_thich", "tac_pham_id"],
-    "DeCu": ["thu_tu", "tac_pham_id", "ly_do"],
+    "DeCu": ["thu_tu", "tac_pham_id", "neu_thich_id", "ly_do"],
     "CaiDat": ["ten_web", "mo_ta_web", "logo", "link_fanpage", "link_youtube"],
 }
 
@@ -81,6 +81,24 @@ DL["TacPham"] = [{
     ),
     "ost_youtube": "", "noi_bat": "có", "ngay_dang": "2026-11-10",
 }]
+
+DL["TacPham"].append({
+    "id": "tien-nghich", "loai": "tu-tien", "ten_viet": "Tiên Nghịch", "ten_trung": "仙逆", "ten_khac": "Renegade Immortal",
+    "tac_gia": "Nhĩ Căn (耳根)", "the_loai": "Tu Tiên, Huyền Huyễn", "tinh_trang": "Hoàn thành", "so_chuong": "2088",
+    "so_tap": "", "so_mua": "", "nen_tang": "Khởi Điểm (Qidian)", "nam": "2009", "studio": "",
+    "diem": "8.8", "diem_cot_truyen": "9", "diem_nhan_vat": "9", "diem_the_gioi": "9", "diem_hinh_anh": "8",
+    "anh_bia": A + "bia-tien-nghich-goc.jpg", "nguon_anh": "Bìa tiểu thuyết gốc (Khởi Điểm)",
+    "tom_tat": ("Vương Lâm là một thiếu niên bình thường ở nước Triệu, tư chất không nổi bật nhưng ý chí kiên định. "
+                "Một cơ duyên tình cờ đưa cậu bước vào con đường tu tiên.\n"
+                "[spoiler]\n"
+                "Biến cố gia đình khiến Vương Lâm trở nên lạnh lùng, quyết đoán và không ngại đi ngược trời để đạt mục đích. "
+                "Hành trình của cậu là chuỗi báo thù, cơ duyên và cái giá phải trả trên con đường nghịch thiên."),
+    "boi_canh": "Thế giới tu chân rộng lớn với nhiều quốc gia tu tiên, tông môn và tinh vực. Kẻ mạnh làm chủ, tài nguyên tu luyện luôn bị tranh đoạt khốc liệt.",
+    "uu_diem": "Nhân vật chính quyết đoán, có chiều sâu\nKhông khí u buồn, nhiều đoạn cảm động\nThế giới mở rộng dần, nhiều tầng bí ẩn",
+    "nhuoc_diem": "Nhịp truyện giữa chừng hơi chậm\nNhiều tên tông môn, cảnh giới dễ rối với người mới",
+    "ket_luan": "Một tác phẩm kinh điển khác của dòng phàm nhân lưu, tối và nặng hơn Phàm Nhân Tu Tiên. Hợp với người thích nhân vật chính lạnh lùng, tâm cơ sâu.",
+    "ost_youtube": "", "noi_bat": "không", "ngay_dang": "2026-11-15",
+})
 
 DL["AnhTruyen"] = [
     {"tac_pham_id": TP, "nhan_vat_id": "", "link_anh": A + "hoang-phong-coc-phim.jpg", "nguon_anh": "Phim hoạt hình Phàm Nhân Tu Tiên (Bilibili)", "chu_thich": "Hoàng Phong Cốc giữa biển mây"},
@@ -201,7 +219,11 @@ DL["ThuatNgu"] = [
     {"id": "binh-canh", "ten": "Bình cảnh", "giai_thich": "Giai đoạn tu vi bị kẹt, khó đột phá lên cảnh giới tiếp theo.", "tac_pham_id": ""},
 ]
 
-DL["DeCu"] = [{"thu_tu": "1", "tac_pham_id": TP, "ly_do": "Kinh điển của dòng phàm nhân lưu, ai mới đọc tu tiên cũng nên bắt đầu từ đây."}]
+DL["DeCu"] = [
+    {"thu_tu": "1", "tac_pham_id": TP, "neu_thich_id": "", "ly_do": "Kinh điển của dòng phàm nhân lưu, ai mới đọc tu tiên cũng nên bắt đầu từ đây."},
+    {"thu_tu": "2", "tac_pham_id": "tien-nghich", "neu_thich_id": TP,
+     "ly_do": "Cùng dòng phàm nhân lưu, nhân vật chính cũng đi lên từ tư chất bình thường nhưng lạnh lùng, quyết đoán hơn Hàn Lập."},
+]
 
 DL["CaiDat"] = [{"ten_web": "Tàng Kinh Các", "mo_ta_web": "Review truyện Tu Tiên, Huyền Huyễn và Anime: cốt truyện, nhân vật, thế giới, cảnh giới tu luyện.",
                  "logo": "", "link_fanpage": "", "link_youtube": ""}]
@@ -240,6 +262,7 @@ GIAI_THICH = [
     ("diem", "Thang 10, dùng dấu chấm: 9.2"),
     ("nguon_anh", "Nguồn của ảnh trên cùng dòng, ví dụ: Tencent Video, Bilibili, Poster chính thức. Web hiện dòng nhỏ 'Ảnh: …' dưới ảnh. Để trống thì không hiện."),
     ("trang_thai", "Cột cuối mỗi tab: để trống hoặc 'duyệt' = hiện trên web; 'nháp' = ẩn (dùng khi đang viết dở hoặc chờ duyệt). Tác phẩm nháp thì nhân vật, thế lực… của nó cũng ẩn theo; nhân vật nháp thì cuộc đời, quan hệ, ảnh riêng của nhân vật đó cũng ẩn."),
+    ("DeCu", "Dòng có neu_thich_id trống = mục 'Người mới nên bắt đầu' (xếp theo thu_tu). Dòng có neu_thich_id = khối 'Nếu thích X thì đọc Y': X là neu_thich_id, Y là tac_pham_id, ly_do giải thích vì sao."),
     ("ost_youtube", "Link YouTube, nhiều link cách nhau bằng dấu phẩy. Để trống thì mục OST tự ẩn."),
     ("Tab này", "Tab _HuongDan chỉ để đọc, web không dùng. Có thể xoá."),
 ]

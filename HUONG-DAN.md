@@ -142,6 +142,11 @@ Từ giờ, mỗi lần bạn sửa file trên GitHub, web tự đăng lại. **
 5. **Tab `AnhTruyen`:** ảnh riêng của nhân vật thì điền cả `nhan_vat_id`.
 6. Trang mới nằm ở `nhan-vat.html?id=<id>`.
 
+### Đề cử (tab `DeCu`)
+- Dòng để **trống `neu_thich_id`**: hiện ở mục **"Người mới nên bắt đầu"**, xếp theo `thu_tu`.
+- Dòng có **`neu_thich_id`**: hiện khối **"Nếu thích X thì đọc Y"**. X là `neu_thich_id` (bộ người đọc đã thích), Y là `tac_pham_id` (bộ nên đọc tiếp), `ly_do` giải thích vì sao.
+- Trang Đề cử có bộ lọc Loại, Thể loại, Tình trạng, Điểm; link sau khi lọc gửi cho người khác được (ví dụ `de-cu.html?diem=9`).
+
 ### Viết nháp, duyệt rồi mới hiện (cột `trang_thai`)
 Mỗi tab có cột **`trang_thai`** ở cuối:
 - Để trống hoặc ghi **`duyệt`**: dòng đó **hiện** trên web.

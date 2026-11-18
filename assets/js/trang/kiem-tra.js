@@ -19,6 +19,7 @@
     tac_pham_id: 'TacPham', nhan_vat_id: 'NhanVat', lien_quan_id: 'NhanVat', thu_linh_id: 'NhanVat', chu_so_huu_id: 'NhanVat',
     the_luc_ids: 'TheLuc', loai_tu_luyen_ids: 'LoaiTuLuyen', cap_do_id: 'CapDo', vat_pham_ids: 'VatPham',
     dia_diem_id: 'DiaDiem', tru_so_id: 'DiaDiem', thuoc_id: 'DiaDiem',
+    neu_thich_id: 'TacPham',
   };
   // Cột ảnh: [tab, cột, bắt buộc?]
   const ANH = [['TacPham', 'anh_bia', true], ['NhanVat', 'anh', true], ['AnhTruyen', 'link_anh', true],
