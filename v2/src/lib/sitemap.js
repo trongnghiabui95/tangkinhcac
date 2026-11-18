@@ -1,13 +1,26 @@
-import { layBai, tachId, urlBai, url } from './tien-ich.js';
-import { cacTrangNhanVat } from './danh-sach.js';
-/** Mọi URL của 1 bộ truyện: { loc (tương đối), lastmod } */
-export async function urlCuaTruyen(truyen) {
-  const thuoc = (e) => tachId(e.id).truyen === truyen;
-  const bai = [...await layBai('truyen', thuoc), ...await layBai('nhanVat', thuoc), ...await layBai('phapBao', thuoc), ...await layBai('canhGioi', thuoc)];
-  const moiNhat = new Date(Math.max(...bai.map((b) => b.data.ngay_cap_nhat.getTime())));
-  const dsTrang = (await cacTrangNhanVat()).filter((p) => p.truyen === truyen)
-    .map((p) => ({ loc: p.trang === 1 ? url(`${truyen}/nhan-vat/`) : url(`${truyen}/nhan-vat/trang-${p.trang}/`), lastmod: moiNhat }));
-  return [...bai.map((b) => ({ loc: urlBai(b.id), lastmod: b.data.ngay_cap_nhat })), ...dsTrang];
+// Sitemap: URL tính hoàn toàn từ nội dung (Zero-Hardcode)
+import { layBai, laySeries, slugSeries, cacVuTru, url, urlBai, urlSeries, urlVuTru } from './tien-ich.js';
+import { trangSeriesDanhMuc, trangDanhMuc } from './danh-sach.js';
+
+const moiNhat = (ds, macDinh) => ds.length ? new Date(Math.max(...ds.map((d) => d.getTime()))) : macDinh;
+const urlTrang = (goc, n) => (n === 1 ? goc : `${goc}trang-${n}/`);
+
+/** Mọi URL của 1 bộ truyện: trang bộ, danh sách theo danh mục, từng bài */
+export async function urlCuaSeries(slug) {
+  const s = (await laySeries()).find((x) => slugSeries(x) === slug);
+  const bai = await layBai((e) => e.data.series === slug);
+  const capNhat = moiNhat(bai.map((b) => b.data.updated), s?.data.ngay_cap_nhat ?? new Date());
+  const ds = (await trangSeriesDanhMuc()).filter((p) => p.series === slug)
+    .map((p) => ({ loc: urlTrang(url(`${slug}/${p.category}/`), p.trang), lastmod: moiNhat(p.ds.map((b) => b.data.updated), capNhat) }));
+  return [{ loc: urlSeries(slug), lastmod: capNhat }, ...ds, ...bai.map((b) => ({ loc: urlBai(b), lastmod: b.data.updated }))];
+}
+/** Trang chung: trang chủ, vũ trụ, danh mục */
+export async function urlTrangChinh() {
+  const bai = await layBai();
+  const homNay = moiNhat(bai.map((b) => b.data.updated), new Date());
+  const vt = (await cacVuTru()).map((v) => ({ loc: urlVuTru(v.slug), lastmod: moiNhat(bai.filter((b) => b.data.universe === v.slug).map((b) => b.data.updated), homNay) }));
+  const dm = (await trangDanhMuc()).map((p) => ({ loc: urlTrang(url(`danh-muc/${p.category}/`), p.trang), lastmod: moiNhat(p.ds.map((b) => b.data.updated), homNay) }));
+  return [{ loc: url(''), lastmod: homNay }, ...vt, ...dm];
 }
 export const xml = (site, ds) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

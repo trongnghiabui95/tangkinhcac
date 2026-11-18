@@ -5,17 +5,20 @@
  */
 import '../styles/giao-dien.css';
 import DisclaimerBanner from '../components/DisclaimerBanner.astro';
-import { url } from '../lib/tien-ich.js';
+import { url, layMenu } from '../lib/tien-ich.js';
 
 interface Props {
   tieuDe: string;            // không gồm tên web
   moTa: string;
-  anhOg?: string;            // đường dẫn tương đối, ví dụ anh/pham-nhan-tu-tien/han-lap-pham-nhan-tu-tien-og.jpg
+  anhOg?: string;            // đường dẫn tương đối, ví dụ anh/<series>/<slug>-<series>-og.jpg
   jsonLd?: (object | null)[];
   kieuOg?: 'website' | 'article';
   noindex?: boolean;
+  tuKhoa?: string[];
 }
-const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false } = Astro.props;
+const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false, tuKhoa = [] } = Astro.props;
+const menu = await layMenu();   // sinh từ nội dung: bộ truyện + danh mục đang có bài
+const XEM_NHAP = (import.meta.env.XEM_NHAP ?? process.env.XEM_NHAP) === '1';
 const TEN_WEB = 'Tu Chân Bảo Điển';
 const title = tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
@@ -30,6 +33,8 @@ const ld = jsonLd.filter(Boolean);
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>{title}</title>
   <meta name="description" content={moTa} />
+  {tuKhoa.length > 0 && <meta name="keywords" content={tuKhoa.join(', ')} />}
+  {XEM_NHAP && <meta name="robots" content="noindex, nofollow" />}
   <link rel="canonical" href={canonical} />
   {noindex && <meta name="robots" content="noindex, follow" />}
   <meta property="og:site_name" content={TEN_WEB} />
@@ -54,12 +59,20 @@ const ld = jsonLd.filter(Boolean);
     <div class="khung dau-trang-hang">
       <a class="logo" href={url('')}><img class="logo-dau" src={url('favicon.svg')} alt="" width="36" height="36" />{TEN_WEB}</a>
       <nav aria-label="Menu chính" class="menu">
-        <a class="chi-may-tinh" href={url('')}>Trang chủ</a>
+        {menu.series.length > 0 && (
+          <details class="menu-con"><summary>Bộ truyện</summary>
+            <ul>{menu.series.map((m) => <li><a href={m.href}>{m.ten}</a></li>)}</ul></details>
+        )}
+        {menu.danhMuc.length > 0 && (
+          <details class="menu-con"><summary>Danh mục</summary>
+            <ul>{menu.danhMuc.map((m) => <li><a href={m.href}>{m.ten}</a></li>)}</ul></details>
+        )}
         <a href={url('tim-kiem/')}>Tìm kiếm</a>
         <button type="button" class="nut-giao-dien" aria-label="Đổi giao diện sáng/tối" title="Sáng / Tối">☯</button>
       </nav>
     </div>
   </header>
+  {XEM_NHAP && <p class="bang-xem-nhap">Bản xem thử có cả bài nháp (XEM_NHAP=1) – không đăng bản này.</p>}
   <main id="noi-dung" class="khung"><slot /></main>
   <footer class="chan-trang">
     <div class="khung">

@@ -1,0 +1,8 @@
+---
+import TheBai from './TheBai.astro';
+interface Props { ds: any[]; tenBo?: (bai: any) => string | undefined; uuTienDau?: number }
+const { ds, tenBo, uuTienDau = 0 } = Astro.props;
+---
+{ds.length > 0
+  ? <ul class="luoi-the">{ds.map((b, i) => <TheBai bai={b} uuTien={i < uuTienDau} hienBo={tenBo?.(b)} />)}</ul>
+  : <p class="trong">Chưa có bài nào ở mục này.</p>}

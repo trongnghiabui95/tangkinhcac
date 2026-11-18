@@ -34,6 +34,8 @@ const HO_SO = {
   'bia':      { tiLe: 2 / 3, rong: [1000, 500], catTren: 0, catDuoi: 0 },
   'phap-bao': { tiLe: 1,     rong: [600, 300], catTren: 0.04, catDuoi: 0.1 },
   'canh-gioi':{ tiLe: 16 / 9, rong: [1000, 500], catTren: 0, catDuoi: 0.1 },
+  'cot-truyen':{ tiLe: 16 / 9, rong: [1000, 500], catTren: 0, catDuoi: 0.1 },
+  'the-luc':  { tiLe: 1,     rong: [600, 300], catTren: 0.04, catDuoi: 0.1 },
 };
 const CHAT_LUONG = 80;
 
@@ -105,7 +107,7 @@ async function xuLy(viec) {
 
   return {
     khoa: `${truyen}/${loai}/${slug}`,
-    du_lieu: { src: srcset[0].src, width: rong, height: caoRa, srcset, og: `anh/${truyen}/${og}`, nguon: anh.nguon, dau_vet: dauVet },
+    du_lieu: { src: srcset[0].src, width: rong, height: caoRa, srcset, og: `anh/${truyen}/${og}`, nguon: anh.nguon, nguon_url: anh.nguon_url, dau_vet: dauVet },
     dauVet,
   };
 }
@@ -116,8 +118,13 @@ async function main() {
   const viecLam = [];
   for await (const f of duyet(THU_MUC_NOI_DUNG)) {
     const { data } = matter(await fs.readFile(f, 'utf8'));
-    if (!data.anh?.goc) continue;
-    viecLam.push({ ...phanTich(f), anh: data.anh });
+    // Bài viết (chuẩn .mdx mới): image + image_crop + image_source. Trang bộ truyện: khối anh cũ.
+    const anh = data.image
+      ? { goc: data.image, nguon: data.image_source?.ten, nguon_url: data.image_source?.url,
+          cat_tren: data.image_crop?.tren, cat_duoi: data.image_crop?.duoi, tam: data.image_crop?.tam }
+      : data.anh;
+    if (!anh?.goc) continue;
+    viecLam.push({ ...phanTich(f), anh });
   }
   let daXuLy = 0, boQua = 0;
   const loi = [];
@@ -130,7 +137,7 @@ async function main() {
       if (!LAM_LAI && cu[khoa] && existsSync(fileGoc) && existsSync(path.join(GOC, 'public', cu[khoa].src))) {
         const st = await fs.stat(fileGoc);
         const dv = crypto.createHash('sha1').update(JSON.stringify([st.size, st.mtimeMs, v.anh.cat_tren ?? hs.catTren, v.anh.cat_duoi ?? hs.catDuoi, v.anh.tam, hs, CHAT_LUONG])).digest('hex').slice(0, 12);
-        if (dv === cu[khoa].dau_vet) { moi[khoa] = { ...cu[khoa], nguon: v.anh.nguon }; boQua++; continue; }
+        if (dv === cu[khoa].dau_vet) { moi[khoa] = { ...cu[khoa], nguon: v.anh.nguon, nguon_url: v.anh.nguon_url }; boQua++; continue; }
       }
       const kq = await xuLy(v);
       moi[kq.khoa] = kq.du_lieu; daXuLy++;

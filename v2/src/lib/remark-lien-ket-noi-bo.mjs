@@ -1,11 +1,11 @@
 /**
  * remark-lien-ket-noi-bo – TỰ ĐỘNG GẮN LIÊN KẾT NỘI BỘ lúc build.
  *
- * Quét chữ trong bài; gặp tên (hoặc tên khác) của nhân vật, pháp bảo, cảnh giới, truyện đã có bài
+ * Quét chữ trong bài; gặp tên (tên ngắn rút từ title, `ten`, hoặc `aliases`) của bài khác đã có
  * trong content/ thì biến LẦN XUẤT HIỆN ĐẦU TIÊN thành liên kết tới trang đó.
- *  - Chỉ nối trong cùng một bộ truyện (tránh "Trúc Cơ" của truyện A trỏ sang truyện B); tên truyện thì nối mọi nơi.
+ *  - Chỉ nối trong cùng một bộ truyện (tránh tên cảnh giới của truyện A trỏ sang truyện B); tên truyện thì nối mọi nơi.
  *  - Không nối trong tiêu đề, trong liên kết có sẵn, trong code; không tự nối về chính bài đang viết.
- *  - Ưu tiên tên dài trước ("Thanh Trúc Phong Vân Kiếm" trước "Thanh Trúc"); so khớp đủ từ (không cắt giữa chữ).
+ *  - Ưu tiên tên dài trước (tên 4 chữ được xét trước tên 2 chữ trùng phần đầu); so khớp đủ từ (không cắt giữa chữ).
  *  - Giới hạn số liên kết mỗi bài (mặc định 40) để không "nhồi link".
  * Tuỳ chọn: { thuMucNoiDung: 'content', base: '/', toiDaMoiBai: 40, doDaiToiThieu: 3 }
  */
@@ -23,13 +23,13 @@ export default function remarkLienKetNoiBo(tuyChon = {}) {
     const tatCa = docChiMuc(path.resolve(thuMucNoiDung), base);
     const fileHienTai = file.path ? path.resolve(file.path) : '';
     const muc = tatCa.find((m) => m.file === fileHienTai);
-    const truyenHienTai = muc?.truyen;
+    const truyenHienTai = muc?.series;
 
     // Bảng tên → mục (chỉ cùng truyện, hoặc là chính tên truyện)
     const bang = new Map();
     for (const m of tatCa) {
       if (m.file === fileHienTai) continue;
-      if (m.loai !== 'truyen' && m.truyen !== truyenHienTai) continue;
+      if (m.category !== 'series' && m.series !== truyenHienTai) continue;
       for (const ten of [m.ten, ...m.ten_khac]) {
         if (ten.length >= doDaiToiThieu && !bang.has(ten)) bang.set(ten, m);
       }
@@ -54,7 +54,7 @@ export default function remarkLienKetNoiBo(tuyChon = {}) {
         if (khop.index > viTri) manh.push({ type: 'text', value: chu.slice(viTri, khop.index) });
         manh.push({
           type: 'link', url: m.url, title: m.ten,
-          data: { hProperties: { className: ['lien-ket-noi-bo'], 'data-loai': m.loai } },
+          data: { hProperties: { className: ['lien-ket-noi-bo'], 'data-loai': m.category } },
           children: [{ type: 'text', value: khop[1] }],
         });
         viTri = khop.index + khop[1].length;

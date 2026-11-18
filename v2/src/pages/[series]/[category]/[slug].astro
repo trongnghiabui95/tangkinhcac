@@ -1,0 +1,111 @@
+---
+/**
+ * Trang bài viết: /<series>/<category>/<slug>/ – sinh từ v2/content/<series>/<category>/<slug>.mdx
+ *  infobox (frontmatter `infobox` + ảnh) · mục lục từ `##` · khối FAQ từ `faqs` · nguồn ảnh có link
+ *  · bài liên quan cùng bộ · JSON-LD Article + BreadcrumbList + FAQPage · quảng cáo cuối bài
+ */
+import { render } from 'astro:content';
+import BoCuc from '../../../layouts/BoCuc.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import CharacterCardImage from '../../../components/CharacterCardImage.astro';
+import LuoiBai from '../../../components/LuoiBai.astro';
+import AdUnit from '../../../components/AdUnit.astro';
+import YouTubeFacade from '../../../components/YouTubeFacade.astro';
+import { layBai, laySeries, slugSeries, layAnh, tenBai, urlBai, urlSeries, urlSeriesDanhMuc, urlVuTru, url, boDau, DANH_MUC, NHAN_VAI_TRO, cacVuTru } from '../../../lib/tien-ich.js';
+import { schemaArticle, schemaBreadcrumb, schemaFaq } from '../../../lib/schema.js';
+
+export async function getStaticPaths() {
+  return (await layBai()).map((bai) => ({ params: { series: bai.data.series, category: bai.data.category, slug: bai.data.slug }, props: { bai } }));
+}
+const { bai } = Astro.props;
+const d = bai.data;
+const { Content, headings } = await render(bai);
+const series = (await laySeries()).find((s) => slugSeries(s) === d.series);
+const tenSeries = series?.data.ten ?? d.series;
+const vuTru = (await cacVuTru()).find((v) => v.slug === d.universe);
+const cungBo = await layBai((e) => e.data.series === d.series && e.id !== bai.id);
+const theoTen = new Map(cungBo.flatMap((e) => [tenBai(e), ...e.data.aliases].map((t) => [t.toLowerCase(), e])));
+const canhGioi = d.canh_gioi ? cungBo.find((e) => e.data.category === 'canh-gioi' && e.data.slug === d.canh_gioi) : undefined;
+const phapBao = d.phap_bao.map((s) => cungBo.find((e) => e.data.category === 'phap-bao' && e.data.slug === s)).filter(Boolean);
+const lienQuan = [...cungBo.filter((e) => e.data.category === d.category), ...cungBo.filter((e) => e.data.category !== d.category)].slice(0, 8);
+
+const anh = layAnh(bai);
+const ten = tenBai(bai);
+const tenDanhMuc = DANH_MUC[d.category].ten;
+const huyHieu = canhGioi ? tenBai(canhGioi) : Object.entries(d.infobox).find(([k]) => /cảnh giới/i.test(k))?.[1]?.toString();
+// Giá trị infobox trùng tên một bài cùng bộ → tự thành link
+const giaTriInfobox = (v: string | number) => String(v).split(/,\s*/).map((p) => {
+  const e = theoTen.get(p.trim().toLowerCase());
+  return e ? `<a href="${urlBai(e)}">${p}</a>` : p.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]!));
+}).join(', ');
+const mucLuc = headings.filter((h) => h.depth === 2);
+
+const site = Astro.site!;
+const tuyetDoi = (p: string) => new URL(p, site).href;
+const cap = [
+  { ten: 'Trang chủ', href: url('') },
+  { ten: tenSeries, href: urlSeries(d.series) },
+  { ten: DANH_MUC[d.category].tenSoNhieu, href: urlSeriesDanhMuc(d.series, d.category) },
+  { ten },
+];
+const jsonLd = [
+  schemaArticle({ title: d.title, description: d.description, urlTrang: tuyetDoi(urlBai(bai)), anh: anh ? tuyetDoi(url(anh.src)) : undefined,
+    date: d.date, updated: d.updated, keywords: d.keywords, site: site.href, tenSeries, urlSeries: tuyetDoi(urlSeries(d.series)),
+    nhanVat: d.category === 'nhan-vat' ? { ten, aliases: d.aliases } : undefined }),
+  schemaBreadcrumb(cap.map((c) => ({ ten: c.ten, url: tuyetDoi(c.href ?? urlBai(bai)) }))),
+  schemaFaq(d.faqs),
+];
+const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) === '1';
+---
+<BoCuc tieuDe={d.title} moTa={d.description} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article" tuKhoa={d.keywords}>
+  <Breadcrumb cap={cap} />
+  <article data-pagefind-body data-pagefind-filter={`truyen:${tenSeries}`} data-pagefind-meta={`loai:${tenDanhMuc}`}>
+    <h1 data-pagefind-meta="title">{d.title}</h1>
+    <p class="sapo">{d.description}</p>
+    <p class="thuoc-bo">{tenDanhMuc} trong bộ <a href={urlSeries(d.series)}>{tenSeries}</a>
+      {vuTru && vuTru.series.length > 1 && <> · Vũ trụ <a href={urlVuTru(d.universe)}>{vuTru.ten}</a></>}</p>
+    <span class="sr-only" data-pagefind-weight="8">{boDau([ten, ...d.aliases, ...d.keywords].join(' ')).toLowerCase()}</span>
+    {anh && <span hidden data-pagefind-meta={`image:${url(anh.srcset.at(-1)!.src)}`}></span>}
+    {d.spoiler && <p class="canh-bao-spoiler" data-pagefind-ignore>⚠ Bài viết có tiết lộ nội dung (spoiler). Các đoạn quan trọng được thu gọn, bấm để mở.</p>}
+
+    <div class="bo-cuc-bai">
+      <aside class="cot-phu" aria-label="Thông tin">
+        <div class="infobox" data-pagefind-ignore>
+          <CharacterCardImage anh={anh} alt={`${ten} – ${tenDanhMuc.toLowerCase()} ${tenSeries}`} ten={ten} canhGioi={huyHieu}
+                              nhan={d.vai_tro ? NHAN_VAI_TRO[d.vai_tro] : tenDanhMuc} uuTien sizes="(max-width: 960px) 90vw, 290px" />
+          <table><tbody>
+            {Object.entries(d.infobox).map(([k, v]) => <tr><th scope="row">{k}</th><td set:html={giaTriInfobox(v)} /></tr>)}
+            <tr><th scope="row">Bộ truyện</th><td><a href={urlSeries(d.series)}>{tenSeries}</a></td></tr>
+            <tr><th scope="row">Cập nhật</th><td><time datetime={d.updated.toISOString()}>{d.updated.toLocaleDateString('vi-VN')}</time></td></tr>
+          </tbody></table>
+        </div>
+        {mucLuc.length >= 2 && (
+          <nav class="muc-luc" aria-label="Mục lục" data-pagefind-ignore>
+            <p class="muc-luc-tieu-de">Mục lục</p>
+            <ol>{mucLuc.map((h) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}<li><a href="#cau-hoi-thuong-gap">Câu hỏi thường gặp</a></li></ol>
+          </nav>
+        )}
+      </aside>
+
+      <div class="noi-dung-bai" data-pagefind-ignore={TIM_TOAN_VAN ? undefined : 'all'}>
+        <Content />
+        {d.youtube && <><h2>Video giới thiệu</h2><YouTubeFacade id={d.youtube} tieuDe={`${ten} – video`} /></>}
+        {phapBao.length > 0 && <section class="khong-quang-cao"><h2>Pháp bảo của {ten}</h2><LuoiBai ds={phapBao} /></section>}
+        <section class="faq" id="cau-hoi-thuong-gap">
+          <h2>Câu hỏi thường gặp</h2>
+          {d.faqs.map((c) => <div class="faq-cau"><h3>{c.q}</h3><p>{c.a}</p></div>)}
+        </section>
+      </div>
+    </div>
+  </article>
+
+  <AdUnit viTri="cuoi-bai" slot={import.meta.env.PUBLIC_ADSENSE_SLOT_CUOI_BAI} />
+
+  {lienQuan.length > 0 && (
+    <section data-pagefind-ignore="all">
+      <h2>Bài liên quan trong {tenSeries}</h2>
+      <LuoiBai ds={lienQuan} />
+      <p><a class="nut" href={urlSeries(d.series)}>Xem toàn bộ {tenSeries}</a></p>
+    </section>
+  )}
+</BoCuc>

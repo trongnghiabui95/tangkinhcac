@@ -1,0 +1,13 @@
+---
+import TrangDanhSach from '../../../components/TrangDanhSach.astro';
+import { trangSeriesDanhMuc } from '../../../lib/danh-sach.js';
+import { url, urlSeries, urlSeriesDanhMuc, DANH_MUC } from '../../../lib/tien-ich.js';
+export async function getStaticPaths() {
+  return (await trangSeriesDanhMuc()).filter((p) => p.trang === 1).map((p) => ({ params: { series: p.series, category: p.category }, props: p }));
+}
+const p = Astro.props;
+const ten = `${DANH_MUC[p.category].tenSoNhieu} ${p.tenSeries}`;
+---
+<TrangDanhSach tieuDe={ten} moTa={`Tổng hợp ${DANH_MUC[p.category].tenSoNhieu.toLowerCase()} trong ${p.tenSeries}: tiểu sử, cảnh giới, pháp bảo và các mối quan hệ.`}
+  cap={[{ ten: 'Trang chủ', href: url('') }, { ten: p.tenSeries, href: urlSeries(p.series) }, { ten: DANH_MUC[p.category].tenSoNhieu }]}
+  ds={p.ds} trang={p.trang} tongTrang={p.tongTrang} urlGoc={urlSeriesDanhMuc(p.series, p.category)} />

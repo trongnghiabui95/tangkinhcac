@@ -1,0 +1,19 @@
+---
+// Trang danh sách có phân trang (bộ truyện × danh mục, hoặc danh mục trên mọi bộ).
+import BoCuc from '../layouts/BoCuc.astro';
+import Breadcrumb from './Breadcrumb.astro';
+import LuoiBai from './LuoiBai.astro';
+import PhanTrang from './PhanTrang.astro';
+import { schemaBreadcrumb } from '../lib/schema.js';
+interface Props { tieuDe: string; moTa: string; cap: { ten: string; href?: string }[]; ds: any[]; trang: number; tongTrang: number; urlGoc: string; tenBo?: (b: any) => string }
+const { tieuDe, moTa, cap, ds, trang, tongTrang, urlGoc, tenBo } = Astro.props;
+const tieuDeDay = trang > 1 ? `${tieuDe} – Trang ${trang}` : tieuDe;
+const site = Astro.site!;
+---
+<BoCuc tieuDe={tieuDeDay} moTa={trang > 1 ? `${moTa} Trang ${trang}.` : moTa}
+       jsonLd={[schemaBreadcrumb(cap.map((c) => ({ ten: c.ten, url: new URL(c.href ?? Astro.url.pathname, site).href })))]}>
+  <Breadcrumb cap={cap} />
+  <h1>{tieuDeDay}</h1>
+  <LuoiBai ds={ds} tenBo={tenBo} uuTienDau={2} />
+  <PhanTrang trang={trang} tongTrang={tongTrang} urlGoc={urlGoc} />
+</BoCuc>

@@ -102,3 +102,36 @@ h2 { font-size: 1.4rem; margin: 2em 0 .6em; color: var(--vang); }
 .ket-qua mark { background: var(--vang); color: var(--tren-vang); }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
 @media (prefers-reduced-motion: reduce) { * { scroll-behavior: auto !important; } }
+
+/* ---------- Menu con (bộ truyện, danh mục), mục lục, FAQ, thẻ, khác ---------- */
+.menu-con { position: relative; }
+.menu-con summary { list-style: none; min-height: 44px; display: inline-flex; align-items: center; padding: 0 10px; cursor: pointer; border-radius: var(--bo-nho); }
+.menu-con summary::-webkit-details-marker { display: none; }
+.menu-con summary::after { content: '▾'; margin-left: 4px; font-size: 13px; }
+.menu-con ul { position: absolute; right: 0; top: 100%; z-index: 6; min-width: 220px; max-height: 70vh; overflow: auto; list-style: none; margin: 4px 0 0; padding: 8px; background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-nho); box-shadow: 0 8px 24px #0006; }
+.menu-con li a { justify-content: flex-start; width: 100%; white-space: normal; }
+@media (max-width: 420px) { .menu-con summary { padding: 0 6px; } }
+.muc-luc { margin-top: 16px; background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); padding: 12px 16px; font-size: 15px; }
+.muc-luc-tieu-de { font-weight: 700; color: var(--vang); margin: 0 0 4px; }
+.muc-luc ol { margin: 0; padding-left: 20px; } .muc-luc a { display: inline-block; padding: 6px 0; }
+.faq-cau h3 { font-size: 1.05rem; margin: 20px 0 6px; } .faq-cau p { margin: 0; max-width: 70ch; }
+.the-phu { font-size: 13px; color: var(--chu-phu); margin: 4px 0 0; }
+.trong { color: var(--chu-phu); }
+.chip-danh-muc { list-style: none; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.chip-danh-muc a { display: inline-flex; align-items: center; min-height: 44px; padding: 0 16px; border: 1px solid var(--vien); border-radius: 999px; text-decoration: none; color: var(--chu); }
+.chip-danh-muc span { color: var(--chu-phu); margin-left: 4px; }
+.spoiler-noi-dung { padding-bottom: 8px; }
+.noi-dung-bai table { border-collapse: collapse; width: 100%; font-size: 15px; display: block; overflow-x: auto; }
+.noi-dung-bai th, .noi-dung-bai td { border: 1px solid var(--vien); padding: 8px 10px; text-align: left; }
+.bang-xem-nhap { background: #8a2a20; color: #fff; padding: 8px 16px; margin: 0; font-size: 14px; text-align: center; }
+
+/* ---------- Thanh menu trên điện thoại: xuống hàng thay vì tràn ngang; menu con trải theo bề ngang ---------- */
+.dau-trang-hang { position: relative; flex-wrap: wrap; }
+@media (max-width: 720px) {
+  .dau-trang-hang { padding-block: 4px; }
+  .menu { width: 100%; justify-content: space-between; border-top: 1px solid var(--vien); }
+  .menu-con { position: static; }
+  .menu-con ul { left: var(--le); right: var(--le); min-width: 0; }
+}
+.muc-luc a { min-height: 44px; display: flex; align-items: center; padding: 0; }
+.khung h2 a, .breadcrumb a, .breadcrumb span { min-height: 44px; display: inline-flex; align-items: center; padding-block: 0; }

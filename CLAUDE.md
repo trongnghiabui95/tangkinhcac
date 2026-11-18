@@ -56,3 +56,11 @@ tools/                    script phụ: dữ liệu mẫu, vẽ ảnh, kiem-tra/
    Kết quả phải `errors: []`.
 4. Mô tả PR (tiếng Việt): `Closes #<số>`, đã làm gì, cách kiểm tra từng tiêu chí, ảnh chụp màn hình trước/sau (với thay đổi giao diện), kết quả chạy thử trên máy.
 5. Workflow `kiem-tra` phải xanh. Chủ dự án là người merge. Đổi nhãn Issue sang `cho-duyet` khi PR sẵn sàng.
+
+## Web v2 (thư mục `v2/`, Astro) – CHUẨN FILE .MDX & ZERO-HARDCODE
+- Bài viết: `v2/content/<series>/<category>/<slug>.mdx` (category: nhan-vat | canh-gioi | cot-truyen | phap-bao | the-luc); trang bộ truyện `v2/content/<series>/index.mdx`. Chuẩn đầy đủ: Issue #27 và `v2/README-V2.md` mục 3.
+- Mọi giới hạn (title 50–65, description 140–160, faqs 3–6, 800–1.200 từ, danh mục) chỉ khai báo ở `v2/src/lib/chuan-mdx.mjs`.
+- `npm run build` chạy `scripts/kiem-tra-noi-dung.mjs` trước: sai chuẩn là dừng build. Kiểm thử: `npm run test:noi-dung`, `bash tests/thu-them-bai.sh`.
+- **Zero-Hardcode**: không viết cứng tên truyện, nhân vật, menu, bảng cảnh giới, đường dẫn bài trong `v2/src/`. Trang, menu, danh sách, JSON-LD, sitemap sinh từ `v2/content/`.
+- Thân bài .mdx chỉ Markdown; spoiler dùng `:::spoiler … :::`; không chèn HTML/component.
+- Web cũ (thư mục gốc) và web v2 độc lập: Issue v2 không sửa web cũ (trừ `.github/workflows` khi cần).
