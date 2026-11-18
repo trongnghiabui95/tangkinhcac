@@ -117,8 +117,13 @@ def an_trien(x, y, chu, s=1.0):
     g = f'<g transform="translate({x} {y}) scale({s})"><rect width="{w}" height="{h}" rx="4" fill="#b8322c"/>'
     g += f'<rect x="3" y="3" width="{w - 6}" height="{h - 6}" rx="3" fill="none" stroke="#f3d9c8" stroke-width="1.5" opacity=".7"/>'
     for i, c in enumerate(chu):
-        cc, rr = (cot - 1 - i // hang, i % hang) if cot == 2 else (0, i)
-        g += f'<text x="{5 + cc * 34 + 17}" y="{5 + rr * 34 + 28}" font-family="{HAN}" font-weight="700" font-size="28" fill="#f8e6d6" text-anchor="middle">{c}</text>'
+        la_latin = all(ch.isascii() or ch in "ĐđÂâÊêÔôƠơƯư" for ch in chu)
+        if cot == 2 and la_latin:
+            cc, rr = i % 2, i // 2                         # chữ Latin: đọc theo hàng, trái → phải
+        else:
+            cc, rr = (cot - 1 - i // hang, i % hang) if cot == 2 else (0, i)   # triện Hán: cột phải → trái
+        font = VIET if c.isascii() or c in "ĐđÂâÊêÔôƠơƯư" else HAN   # chữ Latin/Việt dùng font Việt
+        g += f'<text x="{5 + cc * 34 + 17}" y="{5 + rr * 34 + 28}" font-family="{font}" font-weight="700" font-size="28" fill="#f8e6d6" text-anchor="middle">{c}</text>'
     return g + "</g>"
 
 
@@ -213,7 +218,7 @@ def bia():
     b += chu_doc(536, 90, "凡人修仙传", 52, "#f5d27a")
     b += f'<text x="300" y="790" font-family="{VIET}" font-weight="700" font-size="50" fill="#fff6dc" text-anchor="middle">Phàm Nhân Tu Tiên</text>'
     b += f'<text x="300" y="830" font-family="{VIET}" font-size="20" fill="#f5d27a" text-anchor="middle" letter-spacing="3">REVIEW · TÀNG KINH CÁC</text>'
-    b += an_trien(46, 60, "藏经") + khung_vang(W, H)
+    b += an_trien(46, 60, "TCBĐ") + khung_vang(W, H)
     return svg(W, H, b, ("#2a6372", "#0a141c"), 3)
 
 
@@ -341,7 +346,7 @@ def ban_do():
     b += ('<g transform="translate(1060 150)"><circle r="56" fill="none" stroke="#5a4320" stroke-width="2"/><circle r="44" fill="none" stroke="#5a4320" stroke-width="1"/>'
           '<path d="M0 -60 L10 0 L0 60 L-10 0Z" fill="#5a4320"/><path d="M-60 0 L0 -10 L60 0 L0 10Z" fill="#8a6a3a"/>'
           f'<text y="-66" font-family="{HAN}" font-size="18" fill="#5a4320" text-anchor="middle">北</text></g>')
-    b += an_trien(70, 660, "藏经") + f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none" stroke="#5a4320" stroke-width="4"/>'
+    b += an_trien(70, 660, "TCBĐ") + f'<rect x="20" y="20" width="{W - 40}" height="{H - 40}" fill="none" stroke="#5a4320" stroke-width="4"/>'
     b += f'<rect x="32" y="32" width="{W - 64}" height="{H - 64}" fill="none" stroke="#5a4320" stroke-width="1.5"/>'
     return svg(W, H, b, ("#e8d9b0", "#e8d9b0"), 7, giay=False)
 
@@ -388,7 +393,7 @@ def canh(so):
         b += thong(230, 548, 1.1, "#0e1e2c")
         b += kiem_bay(80, 360, 640, 300, "#9ff3d6") + nguoi("nam", 640, 300, .32, vien="#9ff3d6")
         nen = ("#5a9ac0", "#16324a")
-    b += an_trien(W - 90, 40, "藏经")
+    b += an_trien(W - 90, 40, "TCBĐ")
     return svg(W, H, b, nen, 60 + so)
 
 

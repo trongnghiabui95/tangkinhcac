@@ -3,7 +3,7 @@
    ===================================================================== */
 window.CAU_HINH = {
   // Tên & mô tả mặc định (tab CaiDat trong Sheet sẽ ghi đè nếu có)
-  tenWeb: 'Tàng Kinh Các',
+  tenWeb: 'Tu Chân Bảo Điển',
   moTaWeb: 'Review truyện Tu Tiên, Huyền Huyễn và Anime bằng tiếng Việt.',
 
   // ---- LINK CSV CỦA TỪNG TAB ----

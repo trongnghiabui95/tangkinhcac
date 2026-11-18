@@ -1,8 +1,8 @@
 {
-  "name": "tang-kinh-cac-v2",
+  "name": "tu-chan-bao-dien-v2",
   "private": true,
   "type": "module",
-  "description": "Tàng Kinh Các v2 – Astro SSG + MDX + Pagefind, xuất toàn bộ HTML tĩnh",
+  "description": "Tu Chân Bảo Điển v2 – Astro SSG + MDX + Pagefind, xuất toàn bộ HTML tĩnh",
   "scripts": {
     "anh": "node scripts/process-images.mjs",
     "dev": "node scripts/process-images.mjs && astro dev",

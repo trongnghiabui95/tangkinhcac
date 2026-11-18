@@ -1,4 +1,4 @@
-# Tàng Kinh Các – quy tắc dự án
+# Tu Chân Bảo Điển – quy tắc dự án
 
 Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt. Chủ dự án **không chuyên lập trình**: mọi giải thích, mô tả PR, hướng dẫn đều viết tiếng Việt, rõ ràng, từng bước.
 
@@ -28,7 +28,7 @@ tools/                    script phụ: dữ liệu mẫu, vẽ ảnh, kiem-tra/
 - Cột `id`: **viết thường, không dấu, nối bằng gạch ngang** (`han-lap`, `hoang-phong-coc`), không trùng trong cùng tab.
 - Cột `..._id` / `..._ids` chỉ chứa id; nhiều id cách nhau bằng dấu phẩy.
 - Đoạn văn dài: xuống dòng trong ô = đoạn mới. `tom_tat` có dòng `[spoiler]` để chia phần che.
-- Thêm cột mới: cập nhật cùng lúc `tools/tao_du_lieu_mau.py` (COT + dữ liệu + giải thích `_HuongDan`), chạy lại script để sinh `data/mau/*.csv` và `Tang-Kinh-Cac-Mau.xlsx`, cập nhật `HUONG-DAN.md`. Dữ liệu cũ không có cột mới vẫn phải chạy bình thường.
+- Thêm cột mới: cập nhật cùng lúc `tools/tao_du_lieu_mau.py` (COT + dữ liệu + giải thích `_HuongDan`), chạy lại script để sinh `data/mau/*.csv` và `Tu-Chan-Bao-Dien-Mau.xlsx`, cập nhật `HUONG-DAN.md`. Dữ liệu cũ không có cột mới vẫn phải chạy bình thường.
 - Mục nào không có dữ liệu thì tự ẩn (kể cả dòng trong mục lục).
 
 ## Quy tắc ảnh

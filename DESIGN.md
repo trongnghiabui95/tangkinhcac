@@ -1,6 +1,6 @@
 ---
 version: alpha
-name: Tàng Kinh Các
+name: Tu Chân Bảo Điển
 description: Web review truyện Tu Tiên / Huyền Huyễn và Anime tiếng Việt, phong cách cổ phong tiên hiệp. Nền mực xanh đen (mặc định) hoặc giấy dó (sáng), điểm nhấn vàng kim và ngọc bích, họa tiết mây nhẹ, tiêu đề serif Noto Serif, nội dung Be Vietnam Pro. Bố cục kiểu wiki: thẻ bìa dọc 2:3, khung thông tin, mục lục bám theo.
 colors:
   # Giao diện tối "tien-hiep" (mặc định). Tên biến trong CSS: token DaisyUI 5 (--color-*)
@@ -111,7 +111,7 @@ components:
     textColor: "{colors.light-on-surface}"
 ---
 
-# Tàng Kinh Các — hệ thống thiết kế
+# Tu Chân Bảo Điển — hệ thống thiết kế
 
 File này mô tả giao diện cho mọi AI agent (Claude Code, Codex…) và người làm web. Phần token ở đầu file là giá trị chuẩn; phần chữ bên dưới giải thích **khi nào và vì sao** dùng. Giá trị thật nằm ở đầu `assets/css/giao-dien.css` (khối `:root`, `[data-theme="tien-hiep"]`, `[data-theme="ngoc-sang"]`); hai nơi phải khớp nhau. Định dạng theo [google-labs-code/design.md](https://github.com/google-labs-code/design.md), cùng khuôn với `DESIGN.md` của Hôm Nay Nấu Gì.
 
@@ -119,7 +119,7 @@ File này mô tả giao diện cho mọi AI agent (Claude Code, Codex…) và ng
 
 ## Overview
 
-Hình mẫu: **một tàng kinh các của tông môn**: gác sách cổ, ánh đèn vàng trên nền mực, mỗi cuốn kinh (tác phẩm) có bìa dọc và một tờ thông tin kiểu wiki. Người đọc là fan tu tiên/anime, đọc trên điện thoại buổi tối, muốn biết nhanh: truyện có hay không, nhân vật là ai, cảnh giới thế nào, rồi đào sâu bằng các liên kết.
+Hình mẫu: **một bộ bảo điển tu chân**: sách cổ quý, ánh đèn vàng trên nền mực, mỗi quyển (tác phẩm) có bìa dọc và một tờ thông tin kiểu wiki. Người đọc là fan tu tiên/anime, đọc trên điện thoại buổi tối, muốn biết nhanh: truyện có hay không, nhân vật là ai, cảnh giới thế nào, rồi đào sâu bằng các liên kết.
 
 Đặc điểm nhận diện:
 - **Thư viện:** Tailwind v4 (browser) + DaisyUI 5 qua CDN, ghim phiên bản. Màu và bo góc đi qua token DaisyUI (`--color-*`, `--radius-*`); mọi ghi đè nằm trong `giao-dien.css` (không nằm trong `@layer` nên luôn thắng).
@@ -128,7 +128,7 @@ Hình mẫu: **một tàng kinh các của tông môn**: gác sách cổ, ánh �
 - **Màu:** vàng kim là màu nhấn chính (link, nút, tiêu đề mục, điểm), ngọc bích cho liên kết trong đoạn văn và mốc thời gian, chu sa cho con dấu. Nhãn chuyên mục có màu riêng, luôn kèm chữ.
 - **Ảnh là nhân vật chính:** bìa dọc 2:3, ảnh nhân vật 3:4. Ưu tiên ảnh chính thức có ghi nguồn (`nguon_anh`); không có thì tranh minh họa thủy mặc tự vẽ (`tools/ve_anh_mau.py`), không dùng ảnh giả trộn lẫn ảnh thật.
 - **Họa tiết mây** trên nền trang là lựa chọn có chủ đích của chủ dự án (yêu cầu ban đầu): giữ thật mờ (≤ 7% độ đậm), không thêm họa tiết khác.
-- **Thương hiệu chủ quản yendan** chỉ xuất hiện ở chân trang ("Một sản phẩm của yendan"); thanh menu chỉ dùng logo Tàng Kinh Các (chữ 藏 trong vòng tròn vàng).
+- **Thương hiệu chủ quản yendan** chỉ xuất hiện ở chân trang ("Một sản phẩm của yendan"); thanh menu chỉ dùng logo Tu Chân Bảo Điển: **quyển bảo điển mở, phía trên là ngọn linh khí ngọc bích, trên nền tròn vàng kim** (`assets/img/logo.svg`, không dùng chữ Hán). Con dấu thương hiệu trên tranh tự vẽ là chữ **TCBĐ**.
 
 Trang review và trang nhân vật là trang **để đọc**: ưu tiên rõ ràng, liên kết chính xác; trang chủ được phép sinh động hơn ở banner trượt.
 
@@ -253,7 +253,7 @@ Ma trận: độ rộng 320, 390, 768, 1280 · giao diện tối (mặc định)
 
 Đo ngày 2026-11-18 (trang chủ, review, nhân vật × 320/390/1280 × tối/sáng). Sửa dần, mỗi PR một nhóm:
 
-1. **Trang chủ không có `h1`** (0 ở mọi độ rộng): thêm h1 (có thể ẩn chữ, giữ cho trình đọc màn hình) "Tàng Kinh Các – Review truyện Tu Tiên, Huyền Huyễn và Anime".
+1. **Trang chủ không có `h1`** (0 ở mọi độ rộng): thêm h1 (có thể ẩn chữ, giữ cho trình đọc màn hình) "Tu Chân Bảo Điển – Review truyện Tu Tiên, Huyền Huyễn và Anime".
 2. **Vùng bấm nhỏ hơn 44px**: 19–28 phần tử ở trang chủ, 42–50 ở review, 36–46 ở nhân vật (nút `btn-sm/xs`, nhãn thể loại là link, nút A–Z, chip).
 3. **Chữ nhỏ hơn 13px**: 11px (dòng nguồn ảnh `text-[11px]`), 11.5px (nhãn `.nhan`), 12px (`text-xs`: ngày đăng, chú thích): nâng lên 13px.
 4. **Sọc trái**: `.tieu-de-khoi h2::before` 6px, `.cau-noi` 4px, `.muc-luc a.dang-xem` 2px.

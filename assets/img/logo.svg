@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Tu Chân Bảo Điển">
+  <title>Tu Chân Bảo Điển</title>
+  <defs>
+    <radialGradient id="tcbd-nen" cx=".35" cy=".3" r=".85">
+      <stop offset="0" stop-color="#f8dc8c"/><stop offset="1" stop-color="#b9821d"/>
+    </radialGradient>
+    <linearGradient id="tcbd-linh" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#5fe0bf"/><stop offset="1" stop-color="#1f7a64"/>
+    </linearGradient>
+  </defs>
+  <circle cx="32" cy="32" r="31" fill="url(#tcbd-nen)"/>
+  <circle cx="32" cy="32" r="27.6" fill="none" stroke="#1b1405" stroke-opacity=".35" stroke-width="1.2"/>
+  <!-- ngọn linh khí -->
+  <path d="M32 8.5c4.6 5 5.8 8.6 2.6 13.2-.8-1.9-2-2.6-2.6-2.6s-1.8.7-2.6 2.6C26.2 17.1 27.4 13.5 32 8.5z" fill="url(#tcbd-linh)"/>
+  <circle cx="24.5" cy="16" r="1.1" fill="#1f7a64"/><circle cx="40" cy="14.5" r="0.9" fill="#1f7a64"/>
+  <!-- quyển bảo điển mở -->
+  <path d="M11.5 41.5c6.5-3.2 13.5-3.2 19.3.6V26.4c-5.8-3.8-12.8-3.8-19.3-.6z" fill="#1b1405"/>
+  <path d="M52.5 41.5c-6.5-3.2-13.5-3.2-19.3.6V26.4c5.8-3.8 12.8-3.8 19.3-.6z" fill="#1b1405"/>
+  <path d="M15 30.2c4-1.6 8.3-1.6 12.4.2M15 34c4-1.6 8.3-1.6 12.4.2M36.6 30.4c4.1-1.8 8.4-1.8 12.4-.2M36.6 34.2c4.1-1.8 8.4-1.8 12.4-.2" stroke="#e8c26a" stroke-width="1.3" fill="none" stroke-linecap="round"/>
+  <path d="M10 44.2c7.5-3.3 15.2-3 22 1.2 6.8-4.2 14.5-4.5 22-1.2" stroke="#1b1405" stroke-width="2.4" fill="none" stroke-linecap="round"/>
+</svg>

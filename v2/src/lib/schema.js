@@ -1,5 +1,5 @@
 // Sinh JSON-LD (schema.org) cho Google. Mỗi hàm trả về 1 object; layout gắn vào <head>.
-const TO_CHUC = (site) => ({ '@type': 'Organization', name: 'Tàng Kinh Các', url: site });
+const TO_CHUC = (site) => ({ '@type': 'Organization', name: 'Tu Chân Bảo Điển', url: site });
 
 /** BreadcrumbList từ [{ ten, url (tuyệt đối) }] */
 export const schemaBreadcrumb = (cap) => ({

@@ -279,7 +279,7 @@
   DB.getSettings = () => {
     const s = T('CaiDat')[0] || {};
     return {
-      ten_web: s.ten_web || CFG.tenWeb || 'Tàng Kinh Các',
+      ten_web: s.ten_web || CFG.tenWeb || 'Tu Chân Bảo Điển',
       mo_ta_web: s.mo_ta_web || CFG.moTaWeb || '',
       logo: s.logo || '', link_fanpage: s.link_fanpage || '', link_youtube: s.link_youtube || '',
     };

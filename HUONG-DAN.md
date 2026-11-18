@@ -1,4 +1,4 @@
-# Hướng dẫn cài đặt "Tàng Kinh Các" (dành cho người không chuyên)
+# Hướng dẫn cài đặt "Tu Chân Bảo Điển" (dành cho người không chuyên)
 
 Bạn sẽ làm 5 việc, mỗi việc chỉ cần trình duyệt web:
 
@@ -17,10 +17,10 @@ Bạn sẽ làm 5 việc, mỗi việc chỉ cần trình duyệt web:
 ## A. Đưa file Sheet mẫu lên Google Sheets
 
 1. Vào https://drive.google.com và đăng nhập Gmail.
-2. Bấm **+ Mới** → **Tải tệp lên** → chọn file `Tang-Kinh-Cac-Mau.xlsx`.
+2. Bấm **+ Mới** → **Tải tệp lên** → chọn file `Tu-Chan-Bao-Dien-Mau.xlsx`.
 3. Nhấp đúp vào file vừa tải lên, file mở bằng Google Trang tính.
 4. ⚠️ Quan trọng: bấm **Tệp → Lưu dưới dạng Google Trang tính**. Một bản Google Sheet mới sẽ mở ra. **Từ giờ chỉ dùng bản mới này** (biểu tượng màu xanh lá, không có chữ XLSX). Có thể xoá file .xlsx cũ.
-5. Đổi tên file tuỳ ý, ví dụ "Tàng Kinh Các – Dữ liệu".
+5. Đổi tên file tuỳ ý, ví dụ "Tu Chân Bảo Điển – Dữ liệu".
 
 File có 14 tab dữ liệu (TacPham, NhanVat, …) và 1 tab `_HuongDan` giải thích cách nhập từng cột.
 
@@ -58,7 +58,7 @@ Việc này làm **14 lần**, mỗi tab một lần, nhưng rất nhanh.
 
 ## C. Tạo thư mục ảnh trên Google Drive
 
-> ✅ **Đã làm sẵn:** thư mục **Anh Tang Kinh Cac** trên Drive của bạn đã có 13 ảnh minh họa mẫu và đã chia sẻ "Bất kỳ ai có đường liên kết": https://drive.google.com/drive/folders/1cYx0rRSr3Zv0Yl6ytn4oGl0N4N51l0N1 . File `Tang-Kinh-Cac-Mau.xlsx` đã điền sẵn link Drive của các ảnh này. Khi thêm truyện mới, cứ bỏ ảnh vào đúng thư mục đó rồi làm từ bước 4.
+> ✅ **Đã làm sẵn:** thư mục **Anh Tang Kinh Cac** trên Drive của bạn đã có 13 ảnh minh họa mẫu và đã chia sẻ "Bất kỳ ai có đường liên kết": https://drive.google.com/drive/folders/1cYx0rRSr3Zv0Yl6ytn4oGl0N4N51l0N1 . File `Tu-Chan-Bao-Dien-Mau.xlsx` đã điền sẵn link Drive của các ảnh này. Khi thêm truyện mới, cứ bỏ ảnh vào đúng thư mục đó rồi làm từ bước 4.
 
 1. Trong Google Drive: **+ Mới → Thư mục mới**, đặt tên `Anh Tang Kinh Cac`.
 2. Nhấp chuột phải vào thư mục → **Chia sẻ** → **Chia sẻ**.
