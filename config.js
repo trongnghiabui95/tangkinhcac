@@ -26,7 +26,7 @@ window.CAU_HINH = {
     CaiDat: '',
   },
 
-  // Số phút giữ dữ liệu trong trình duyệt trước khi tải lại từ Sheet.
+  // Số phút giữ dữ liệu Google Sheet trong trình duyệt trước khi tải lại (dữ liệu mẫu không lưu tạm).
   // Muốn xem ngay thay đổi vừa sửa: mở trang kèm ?lammoi=1 (ví dụ index.html?lammoi=1)
   phutLuuTam: 30,
 
