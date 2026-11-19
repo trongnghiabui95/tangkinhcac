@@ -3,6 +3,7 @@
  * BoCuc – khung chung mọi trang: <head> SEO (title, description, canonical, Open Graph, Twitter, JSON-LD),
  * menu, chân trang (miễn trừ trách nhiệm + logo yendan), script AdSense (chỉ khi có mã).
  */
+import '../styles/phong-chu.css';
 import '../styles/giao-dien.css';
 import DisclaimerBanner from '../components/DisclaimerBanner.astro';
 import BieuTuong from '../components/BieuTuong.astro';
@@ -43,10 +44,9 @@ const mucCuoi = { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-ki
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Phông có đủ dấu tiếng Việt (DESIGN.md: Noto Serif cho tiêu đề, Be Vietnam Pro cho nội dung) -->
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,600;0,700;1,400&display=swap" />
+  <!-- Phông tự lưu cùng tên miền (scripts/tai-phong-chu.mjs): tải trước 4 file hay dùng nhất để chữ không "nhảy" (CLS) -->
+  {['be-vietnam-pro-400-latin', 'be-vietnam-pro-400-vietnamese', 'noto-serif-700-latin', 'noto-serif-700-vietnamese'].map((f) =>
+    <link rel="preload" href={url(`phong/${f}.woff2`)} as="font" type="font/woff2" crossorigin />)}
   <title>{title}</title>
   <meta name="description" content={moTa} />
   {tuKhoa.length > 0 && <meta name="keywords" content={tuKhoa.join(', ')} />}
