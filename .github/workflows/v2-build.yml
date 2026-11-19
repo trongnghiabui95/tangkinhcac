@@ -35,7 +35,8 @@ jobs:
         run: |
           mkdir -p "$BAO_CAO"
           if [ -n "${{ github.base_ref }}" ]; then
-            git diff --name-only --diff-filter=AMR "origin/${{ github.base_ref }}...HEAD" -- 'v2/content/**.mdx' | sed 's|^v2/||' > "$BAO_CAO/thay-doi.txt"
+            # đang đứng trong v2/: --relative cho đường dẫn tính từ v2/ (vd. content/<series>/<category>/<slug>.mdx)
+            git diff --name-only --relative --diff-filter=AMR "origin/${{ github.base_ref }}...HEAD" -- 'content/**.mdx' > "$BAO_CAO/thay-doi.txt"
           else
             : > "$BAO_CAO/thay-doi.txt"
           fi
