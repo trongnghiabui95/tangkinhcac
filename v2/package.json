@@ -7,6 +7,7 @@
     "anh": "node scripts/process-images.mjs",
     "kiem-tra": "node scripts/kiem-tra-noi-dung.mjs",
     "test:noi-dung": "node tests/kiem-tra-fixtures.mjs",
+    "test:anh": "node tests/kiem-tra-anh.mjs",
     "dev": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro dev",
     "build": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",
