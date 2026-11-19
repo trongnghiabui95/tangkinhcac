@@ -3,8 +3,9 @@
 Vẽ bộ ảnh minh họa mẫu (nguyên bản, phong cách thủy mặc cổ phong) cho dữ liệu mẫu.
 Ảnh do code tự vẽ, không lấy từ truyện/phim, nên dùng thoải mái.
 
+  (chạy trong thư mục v2/)
   python3 tools/ve_anh_mau.py      → sinh tools/_svg/*.svg
-  node tools/chup_anh.js           → chuyển sang assets/img/mau/*.jpg
+  node tools/chup_anh.cjs          → chuyển sang anh-goc/_tu-ve/*.jpg, rồi chép ảnh cần dùng vào anh-goc/<series>/...
 """
 import math, os, random
 

@@ -8,7 +8,7 @@ import remarkSpoiler from './src/lib/remark-spoiler.mjs';
 import rehypeChenQuangCao from './src/lib/rehype-chen-quang-cao.mjs';
 
 // Địa chỉ web thật (dùng cho canonical, sitemap, Open Graph). Đổi khi gắn tên miền riêng.
-const SITE = process.env.SITE_URL || 'https://trongnghiabui95.github.io';
+const SITE = process.env.SITE_URL || 'https://tuchanbaodien.pages.dev';
 const BASE = process.env.BASE_PATH || '/';
 // Mã AdSense (ca-pub-xxxxxxxx). Để trống = không chèn quảng cáo thật.
 const ADSENSE = process.env.PUBLIC_ADSENSE_CLIENT || '';

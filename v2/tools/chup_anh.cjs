@@ -1,8 +1,8 @@
-// Chuyển các ảnh SVG trong tools/_svg thành JPG trong assets/img/mau (cần Playwright).
-// Chạy: node tools/chup_anh.js
+// Chuyển các ảnh SVG trong tools/_svg thành JPG trong anh-goc/_tu-ve/ (cần Playwright).
+// Chạy trong thư mục v2/: node tools/chup_anh.cjs – rồi chép ảnh cần dùng vào anh-goc/<series>/… và khai báo trong .mdx
 const { chromium } = require('playwright');
 const fs = require('fs'), path = require('path');
-const VAO = path.join(__dirname, '_svg'), RA = path.join(__dirname, '..', 'assets', 'img', 'mau');
+const VAO = path.join(__dirname, '_svg'), RA = path.join(__dirname, '..', 'anh-goc', '_tu-ve');
 
 (async () => {
   fs.mkdirSync(RA, { recursive: true });

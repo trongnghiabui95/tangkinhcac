@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Tu Chân Bảo Điển đã chuyển nhà</title>
+<link rel="canonical" href="https://tuchanbaodien.pages.dev/">
+<script>
+  // Web cũ (GitHub Pages) đã ngừng – chuyển đúng trang tương ứng trên web mới.
+  (function () {
+    var MOI = 'https://tuchanbaodien.pages.dev';
+    var tep = location.pathname.split('/').pop() || 'index.html';
+    var q = new URLSearchParams(location.search), id = q.get('id') || '';
+    var dich = {
+      'review.html': id ? '/' + id + '/' : '/',
+      'nhan-vat.html': id ? '/tim-kiem/?q=' + encodeURIComponent(id.replace(/-/g, ' ')) : '/danh-muc/nhan-vat/',
+      'danh-sach.html': q.get('loai') === 'tu-tien' ? '/loai/tu-tien/' : '/',
+      'the-luc.html': id ? '/tim-kiem/?q=' + encodeURIComponent(id.replace(/-/g, ' ')) : '/danh-muc/the-luc/',
+      'tu-luyen.html': '/danh-muc/canh-gioi/',
+      'tim-kiem.html': '/tim-kiem/' + (q.get('q') ? '?q=' + encodeURIComponent(q.get('q')) : ''),
+      'de-cu.html': '/de-cu/',
+      'thuat-ngu.html': '/thuat-ngu/'
+    }[tep] || '/';
+    location.replace(MOI + dich);
+  })();
+</script>
+<style>body{font-family:system-ui,sans-serif;background:#0b121a;color:#ebe3cf;display:grid;place-items:center;min-height:100vh;margin:0;padding:16px;text-align:center}a{color:#d4a944}</style>
+</head>
+<body>
+<p>Tu Chân Bảo Điển đã chuyển sang địa chỉ mới:<br><a href="https://tuchanbaodien.pages.dev/">tuchanbaodien.pages.dev</a></p>
+</body>
+</html>

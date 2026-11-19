@@ -1,66 +1,63 @@
 # Tu Chân Bảo Điển – quy tắc dự án
 
-Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt. Chủ dự án **không chuyên lập trình**: mọi giải thích, mô tả PR, hướng dẫn đều viết tiếng Việt, rõ ràng, từng bước.
+Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt: https://tuchanbaodien.pages.dev. Chủ dự án **không chuyên lập trình**: mọi giải thích, mô tả PR, hướng dẫn đều viết tiếng Việt, rõ ràng, từng bước.
 
 **Trước khi sửa bất cứ thứ gì nhìn thấy được: đọc `DESIGN.md`** (token, quy tắc, bộ kiểm tra giao diện Floor/Reflex/Finish).
 
+Web cũ (HTML + Google Sheet, GitHub Pages) **đã bị xoá** ở Issue #52. Toàn bộ web nằm trong thư mục `v2/`. GitHub Pages chỉ còn trang chuyển hướng sang Cloudflare (`.github/chuyen-huong/`).
+
 ## Ngăn xếp
-- **HTML + CSS + JavaScript thuần**, không framework, **không bước build bắt buộc** (mở bằng `python3 -m http.server` là chạy).
-- Thư viện chỉ nạp qua CDN, ghim phiên bản cụ thể: Tailwind v4 browser, DaisyUI 5, Alpine.js, Swiper, GLightbox, PapaParse, AOS, Lucide (giai đoạn sau: Fuse.js, vis-network).
-- Dữ liệu: Google Sheet công bố CSV (link trong `config.js`) → `assets/js/data.js`. Khi chưa có link thì dùng `data/mau/*.csv`.
-- Ảnh: Google Drive (link chia sẻ) hoặc link ảnh thường; ảnh mẫu trong `assets/img/mau/`.
-- Deploy: GitHub Pages qua `.github/workflows/deploy.yml` (push lên `main`).
+- **Astro (SSG) + MDX + Pagefind + sharp**, chạy Node 22. Không thêm framework giao diện (React, Vue…) hay thư viện nặng; biểu tượng là SVG Lucide nội tuyến (`v2/src/lib/bieu-tuong.js`).
+- Nội dung: file `.mdx` trong `v2/content/` (không còn Google Sheet).
+- Ảnh gốc: `v2/anh-goc/<series>/…` → `scripts/process-images.mjs` tự cắt, nén WebP < 80KB lúc build.
+- Phông: tự lưu ở `v2/public/phong/` (`scripts/tai-phong-chu.mjs`).
+- Đăng web: **Cloudflare Pages** (thư mục gốc `v2`, lệnh `npm run build`, kết quả `dist`, biến `SITE_URL`, `NODE_VERSION`). Merge vào `main` là tự đăng; mỗi PR có bản xem trước.
 
 ## Cấu trúc thư mục
 ```
-*.html                    mỗi loại trang 1 file (index, review, nhan-vat, danh-sach, the-luc, tu-luyen, tim-kiem, de-cu, thuat-ngu, kiem-tra)
-config.js                 link CSV từng tab + cài đặt
-assets/css/giao-dien.css  biến màu/font/bo góc ở đầu file, rồi tới bố cục
-assets/js/data.js         tải dữ liệu, lưu tạm localStorage 30 phút, hàm DB.getWork(), DB.getCharacter()…
-assets/js/layout.js       menu, chân trang, sáng/tối, mẫu thẻ dùng chung (UI.*)
-assets/js/trang/*.js      mã riêng từng trang
-data/mau/*.csv            dữ liệu mẫu (sinh bởi tools/tao_du_lieu_mau.py – sửa script rồi chạy lại, đừng sửa tay CSV)
-tools/                    script phụ: dữ liệu mẫu, vẽ ảnh, kiem-tra/ (kiểm thử)
-.github/workflows/        deploy.yml (đăng web), kiem-tra.yml (kiểm thử PR)
+v2/content/<series>/index.mdx                trang bộ truyện
+v2/content/<series>/<category>/<slug>.mdx    bài viết (category: nhan-vat | canh-gioi | cot-truyen | phap-bao | the-luc)
+v2/anh-goc/                                  ảnh gốc (bìa, nhân vật, thư viện, bản đồ…)
+v2/src/lib/chuan-mdx.mjs                     MỌI giới hạn + danh mục + loại truyện (chỉ khai báo ở đây)
+v2/src/{pages,components,layouts,styles}     giao diện
+v2/scripts/                                  kiểm tra nội dung, xử lý ảnh, kiểm tra bản build, bảng tóm tắt PR, tải phông
+v2/tests/                                    kiểm thử
+v2/tools/                                    vẽ ảnh minh họa (ve_anh_mau.py → chup_anh.cjs)
+.github/workflows/                           v2-build.yml (kiểm tra PR + bot bảng tóm tắt), deploy.yml (chuyển hướng GitHub Pages)
 ```
 
-## Quy tắc dữ liệu
-- Cột `id`: **viết thường, không dấu, nối bằng gạch ngang** (`han-lap`, `hoang-phong-coc`), không trùng trong cùng tab.
-- Cột `..._id` / `..._ids` chỉ chứa id; nhiều id cách nhau bằng dấu phẩy.
-- Đoạn văn dài: xuống dòng trong ô = đoạn mới. `tom_tat` có dòng `[spoiler]` để chia phần che.
-- Thêm cột mới: cập nhật cùng lúc `tools/tao_du_lieu_mau.py` (COT + dữ liệu + giải thích `_HuongDan`), chạy lại script để sinh `data/mau/*.csv` và `Tu-Chan-Bao-Dien-Mau.xlsx`, cập nhật `HUONG-DAN.md`. Dữ liệu cũ không có cột mới vẫn phải chạy bình thường.
-- Mục nào không có dữ liệu thì tự ẩn (kể cả dòng trong mục lục).
+## Chuẩn file .mdx & Zero-Hardcode
+- Chuẩn đầy đủ: Issue #27 và `v2/README-V2.md` mục 3 (kể cả các trường tuỳ chọn: loại truyện, đánh giá chi tiết, bản đồ, hành trình, thư viện ảnh, thuật ngữ, đề cử, cuộc đời, quan hệ, bậc cảnh giới…).
+- Giới hạn: title 50–65 ký tự, description 140–160, faqs 3–6, thân bài 800–1.200 từ – chỉ khai báo ở `v2/src/lib/chuan-mdx.mjs`.
+- `id`/slug/tên thư mục: **viết thường, không dấu, nối bằng gạch ngang**; slug trùng tên file.
+- `npm run build` chạy `scripts/kiem-tra-noi-dung.mjs` trước: sai chuẩn là dừng build.
+- **Zero-Hardcode**: không viết cứng tên truyện, nhân vật, menu, bảng cảnh giới, đường dẫn bài trong `v2/src/`. Trang, menu, danh sách, JSON-LD, sitemap sinh từ `v2/content/`. Mục nào không có dữ liệu thì tự ẩn (kể cả trong mục lục, menu).
+- Thân bài .mdx chỉ Markdown; spoiler dùng `:::spoiler … :::`; không chèn HTML/component.
+- Thêm trường mới: khai báo trong `v2/src/content.config.ts` dạng **tuỳ chọn** (nội dung cũ không có vẫn chạy), cập nhật `v2/README-V2.md`.
 
 ## Quy tắc ảnh
 1. Ưu tiên ảnh trên mạng (poster/ảnh chính thức, bìa gốc, ảnh phim; ví dụ API wiki Fandom `api.php?action=query&prop=pageimages|imageinfo`).
-2. Không tìm được thì tự vẽ bằng `tools/ve_anh_mau.py` → `node tools/chup_anh.js`.
-3. Luôn ghi nguồn ở cột `nguon_anh`.
-4. Cắt đúng tỉ lệ: bìa 2:3 (hoặc 3:4), nhân vật 3:4 lấy mặt làm tâm, logo/vật phẩm vuông 400px, cảnh/bản đồ ngang ≤ 1400px.
-5. Tải lên thư mục Drive "Anh Tang Kinh Cac" (id `1cYx0rRSr3Zv0Yl6ytn4oGl0N4N51l0N1`), ghi link vào `tools/link_anh_drive.json`.
+2. Không tìm được thì tự vẽ bằng `v2/tools/ve_anh_mau.py` → `node v2/tools/chup_anh.cjs`.
+3. Luôn ghi nguồn (`image_source` / `nguon`). Không thêm bước xoá logo, watermark.
+4. Cạnh ngắn ảnh gốc ≥ 600px (bìa ≥ 500px). Tỉ lệ do `process-images.mjs` cắt: nhân vật 3:4, bìa 2:3, pháp bảo/thế lực 1:1, cảnh 16:9, thư viện 3:2 hoặc 3:4.
+5. Ảnh gửi chủ dự án/PR: thư mục Drive "Anh Tang Kinh Cac" (id `1cYx0rRSr3Zv0Yl6ytn4oGl0N4N51l0N1`).
 
 ## Điều cấm
-- **Không sửa link Google Sheet trong `config.js`** (chỉ chủ dự án sửa).
-- **Không thêm thư viện nặng** hay bước build bắt buộc; không thêm framework (React, Vue…).
-- **Không đụng dữ liệu thật** (Google Sheet, Drive của chủ dự án) khi chưa được yêu cầu; chỉ sửa dữ liệu mẫu.
+- **Không thêm thư viện nặng** hay framework giao diện.
+- **Không đụng dữ liệu thật** của chủ dự án (Drive, tài khoản Cloudflare…) khi chưa được yêu cầu.
 - Không sao chép nội dung/ảnh/quảng cáo của thuvienanime.net.
 - Không push thẳng lên `main` khi làm Issue.
 
 ## Quy trình làm Issue → PR
 1. **1 Issue = 1 PR.** Nhánh `dev/<so-issue>-<ten-ngan>` (ví dụ `dev/7-trang-the-luc`). Gắn nhãn `dang-lam` cho Issue khi bắt đầu.
 2. Tôn trọng mục **Phụ thuộc** của Issue; Issue có nhãn `bi-chan` thì bỏ qua cho tới khi nhãn được gỡ.
-3. Trước khi mở PR, chạy trên máy:
+3. Trước khi mở PR, chạy trong `v2/`:
    ```bash
-   python3 tools/kiem-tra/doc_csv.py
-   node tools/kiem-tra/e2e.mjs        # cần Playwright
+   npm run build
+   node scripts/kiem-tra-dist.mjs
+   npm run test:noi-dung && npm run test:seo && npm run test:anh
+   bash tests/thu-them-bai.sh
    ```
-   Kết quả phải `errors: []`.
-4. Mô tả PR (tiếng Việt): `Closes #<số>`, đã làm gì, cách kiểm tra từng tiêu chí, ảnh chụp màn hình trước/sau (với thay đổi giao diện), kết quả chạy thử trên máy.
-5. Workflow `kiem-tra` phải xanh. Chủ dự án là người merge. Đổi nhãn Issue sang `cho-duyet` khi PR sẵn sàng.
-
-## Web v2 (thư mục `v2/`, Astro) – CHUẨN FILE .MDX & ZERO-HARDCODE
-- Bài viết: `v2/content/<series>/<category>/<slug>.mdx` (category: nhan-vat | canh-gioi | cot-truyen | phap-bao | the-luc); trang bộ truyện `v2/content/<series>/index.mdx`. Chuẩn đầy đủ: Issue #27 và `v2/README-V2.md` mục 3.
-- Mọi giới hạn (title 50–65, description 140–160, faqs 3–6, 800–1.200 từ, danh mục) chỉ khai báo ở `v2/src/lib/chuan-mdx.mjs`.
-- `npm run build` chạy `scripts/kiem-tra-noi-dung.mjs` trước: sai chuẩn là dừng build. Kiểm thử: `npm run test:noi-dung`, `bash tests/thu-them-bai.sh`.
-- **Zero-Hardcode**: không viết cứng tên truyện, nhân vật, menu, bảng cảnh giới, đường dẫn bài trong `v2/src/`. Trang, menu, danh sách, JSON-LD, sitemap sinh từ `v2/content/`.
-- Thân bài .mdx chỉ Markdown; spoiler dùng `:::spoiler … :::`; không chèn HTML/component.
-- Web cũ (thư mục gốc) và web v2 độc lập: Issue v2 không sửa web cũ (trừ `.github/workflows` khi cần).
+   Kết quả phải `errors: []` / không lỗi.
+4. Mô tả PR (tiếng Việt): `Closes #<số>`, đã làm gì, cách kiểm tra từng tiêu chí, ảnh chụp màn hình trước/sau (điện thoại + máy tính với thay đổi giao diện), kết quả chạy thử trên máy.
+5. Workflow `v2-build` phải xanh (bot ghi bảng tóm tắt vào PR). Chủ dự án là người merge. Đổi nhãn Issue sang `cho-duyet` khi PR sẵn sàng.

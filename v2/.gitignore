@@ -4,3 +4,5 @@ dist/
 public/anh/
 src/data/anh.json
 bao-cao/
+tools/_svg/
+anh-goc/_tu-ve/
