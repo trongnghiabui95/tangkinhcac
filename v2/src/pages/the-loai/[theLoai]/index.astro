@@ -1,0 +1,22 @@
+---
+// /the-loai/<the-loai>/ – bộ truyện theo thể loại (lấy từ trường the_loai của index.mdx)
+import BoCuc from '../../../layouts/BoCuc.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import TheBoTruyen from '../../../components/TheBoTruyen.astro';
+import { schemaBreadcrumb } from '../../../lib/schema.js';
+import { cacTheLoai, layBai, slugSeries, url, urlTheLoai, urlDeCu } from '../../../lib/tien-ich.js';
+export async function getStaticPaths() {
+  return (await cacTheLoai()).map((t) => ({ params: { theLoai: t.slug }, props: { t } }));
+}
+const { t } = Astro.props;
+const bai = await layBai();
+const ds = [...t.ds].sort((a: any, b: any) => (b.data.diem ?? 0) - (a.data.diem ?? 0));
+const site = Astro.site!;
+const moTa = `Truyện ${t.ten} hay nên đọc: ${ds.length} bộ được review chi tiết – cốt truyện, nhân vật, hệ thống cảnh giới, xếp theo điểm.`;
+---
+<BoCuc tieuDe={`Truyện ${t.ten} hay nên đọc`} moTa={moTa} jsonLd={[schemaBreadcrumb([{ ten: 'Trang chủ', url: new URL(url(''), site).href }, { ten: 'Đề cử', url: new URL(urlDeCu(), site).href }, { ten: t.ten, url: new URL(urlTheLoai(t.ten), site).href }])]}>
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: 'Đề cử', href: urlDeCu() }, { ten: t.ten }]} />
+  <h1>Truyện {t.ten} hay nên đọc</h1>
+  <p class="sapo">{moTa}</p>
+  <ul class="luoi-the">{ds.map((s: any, i: number) => <TheBoTruyen s={s} soBai={bai.filter((b) => b.data.series === slugSeries(s)).length} uuTien={i < 2} />)}</ul>
+</BoCuc>

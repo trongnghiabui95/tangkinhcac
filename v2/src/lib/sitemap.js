@@ -1,5 +1,5 @@
 // Sitemap: URL tính hoàn toàn từ nội dung (Zero-Hardcode)
-import { layBai, laySeries, slugSeries, cacVuTru, url, urlBai, urlSeries, urlVuTru } from './tien-ich.js';
+import { layBai, laySeries, slugSeries, cacVuTru, url, urlBai, urlSeries, urlVuTru, cacLoaiCo, cacTheLoai, urlLoai, urlTheLoai, urlDeCu, urlThuatNgu } from './tien-ich.js';
 import { trangSeriesDanhMuc, trangDanhMuc } from './danh-sach.js';
 
 const moiNhat = (ds, macDinh) => ds.length ? new Date(Math.max(...ds.map((d) => d.getTime()))) : macDinh;
@@ -20,7 +20,16 @@ export async function urlTrangChinh() {
   const homNay = moiNhat(bai.map((b) => b.data.updated), new Date());
   const vt = (await cacVuTru()).map((v) => ({ loc: urlVuTru(v.slug), lastmod: moiNhat(bai.filter((b) => b.data.universe === v.slug).map((b) => b.data.updated), homNay) }));
   const dm = (await trangDanhMuc()).map((p) => ({ loc: urlTrang(url(`danh-muc/${p.category}/`), p.trang), lastmod: moiNhat(p.ds.map((b) => b.data.updated), homNay) }));
-  return [{ loc: url(''), lastmod: homNay }, ...vt, ...dm];
+  // Issue #51: trang loại, thể loại, đề cử, thuật ngữ
+  const series = await laySeries();
+  const capNhatBo = (ds) => moiNhat(ds.map((s) => s.data.ngay_cap_nhat), homNay);
+  const them = [
+    ...(await cacLoaiCo()).map((l) => ({ loc: urlLoai(l.loai), lastmod: capNhatBo(l.ds) })),
+    ...(await cacTheLoai()).map((t) => ({ loc: urlTheLoai(t.ten), lastmod: capNhatBo(t.ds) })),
+    ...(series.some((s) => s.data.cho_nguoi_moi || s.data.tuong_tu.length) ? [{ loc: urlDeCu(), lastmod: capNhatBo(series) }] : []),
+    { loc: urlThuatNgu(), lastmod: capNhatBo(series) },
+  ];
+  return [{ loc: url(''), lastmod: homNay }, ...vt, ...dm, ...them];
 }
 export const xml = (site, ds) => `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">

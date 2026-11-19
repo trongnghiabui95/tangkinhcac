@@ -35,7 +35,10 @@ const duongDan = Astro.url.pathname;
 const dangMo = (href: string) => (href === url('') ? duongDan === href : duongDan.startsWith(href));
 const mucMenu = [
   { ten: 'Trang chủ', href: url(''), bieuTuong: 'trang-chu' },
+  ...menu.loai.map((m) => ({ ten: m.ten, href: m.href, bieuTuong: m.loai })),
   ...menu.danhMuc.map((m) => ({ ten: m.ten, href: m.href, bieuTuong: m.c })),
+  ...(menu.deCu ? [{ ten: 'Đề cử', href: menu.deCu, bieuTuong: 'de-cu' }] : []),
+  ...(menu.thuatNgu ? [{ ten: 'Thuật ngữ', href: menu.thuatNgu, bieuTuong: 'thuat-ngu' }] : []),
 ];
 const mucCuoi = { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-kiem' };
 ---

@@ -1,0 +1,29 @@
+---
+// /de-cu/ – Đề cử (như web cũ): cho người mới · nếu thích bộ A thì đọc bộ B · theo thể loại · điểm cao nhất
+import BoCuc from '../../layouts/BoCuc.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import TieuDeKhoi from '../../components/TieuDeKhoi.astro';
+import TheBoTruyen from '../../components/TheBoTruyen.astro';
+import { schemaBreadcrumb } from '../../lib/schema.js';
+import { laySeries, slugSeries, cacTheLoai, url, urlSeries, urlTheLoai, urlDeCu } from '../../lib/tien-ich.js';
+const series = await laySeries();
+const nguoiMoi = series.filter((s) => s.data.cho_nguoi_moi).sort((a, b) => (b.data.diem ?? 0) - (a.data.diem ?? 0));
+const cap = series.flatMap((s) => s.data.tuong_tu.map((t) => ({ tu: s, toi: series.find((x) => slugSeries(x) === t.series), ly_do: t.ly_do }))).filter((c) => c.toi);
+const diemCao = [...series].filter((s) => s.data.diem != null).sort((a, b) => b.data.diem! - a.data.diem!).slice(0, 10);
+const theLoai = await cacTheLoai();
+const site = Astro.site!;
+const moTa = 'Đề cử truyện Tu Tiên, Huyền Huyễn và Anime: cho người mới, theo thể loại, nếu thích truyện này thì đọc truyện nào tiếp.';
+---
+<BoCuc tieuDe="Đề cử truyện Tu Tiên, Huyền Huyễn và Anime" moTa={moTa} jsonLd={[schemaBreadcrumb([{ ten: 'Trang chủ', url: new URL(url(''), site).href }, { ten: 'Đề cử', url: new URL(urlDeCu(), site).href }])]}>
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: 'Đề cử' }]} />
+  <h1>Đề cử truyện nên đọc</h1>
+  <p class="sapo">{moTa}</p>
+  {nguoiMoi.length > 0 && <section class="khoi"><TieuDeKhoi tieuDe="Cho người mới bắt đầu" bieuTuong="moi" />
+    <ul class="de-cu-cap">{nguoiMoi.map((s) => <li><p class="cap"><a href={urlSeries(slugSeries(s))}>{s.data.ten}</a>{s.data.diem != null && ` · ★ ${s.data.diem}`}</p><p>{s.data.cho_nguoi_moi}</p></li>)}</ul></section>}
+  {cap.length > 0 && <section class="khoi"><TieuDeKhoi tieuDe="Nếu thích truyện này, đọc tiếp truyện nào?" bieuTuong="de-cu" />
+    <ul class="de-cu-cap">{cap.map((c) => <li><p class="cap">Thích <a href={urlSeries(slugSeries(c.tu))}>{c.tu.data.ten}</a> → đọc <a href={urlSeries(slugSeries(c.toi!))}>{c.toi!.data.ten}</a></p><p>{c.ly_do}</p></li>)}</ul></section>}
+  {theLoai.length > 0 && <section class="khoi"><TieuDeKhoi tieuDe="Theo thể loại" bieuTuong="luoi" />
+    <ul class="chip-the-loai">{theLoai.map((t) => <li><a href={urlTheLoai(t.ten)}>{t.ten} <span>({t.ds.length})</span></a></li>)}</ul></section>}
+  {diemCao.length > 0 && <section class="khoi"><TieuDeKhoi tieuDe="Điểm cao nhất" bieuTuong="de-cu" />
+    <ul class="luoi-the">{diemCao.map((s) => <TheBoTruyen s={s} />)}</ul></section>}
+</BoCuc>

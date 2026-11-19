@@ -7,11 +7,19 @@ import TheBoTruyen from '../components/TheBoTruyen.astro';
 import BieuTuong from '../components/BieuTuong.astro';
 import KhoiCapNhat from '../components/KhoiCapNhat.astro';
 import { schemaWebSite } from '../lib/schema.js';
-import { layBai, laySeries, slugSeries, url, urlDanhMuc, DANH_MUC, CAC_DANH_MUC } from '../lib/tien-ich.js';
+import { layBai, laySeries, slugSeries, url, urlDanhMuc, urlSeries, urlTheLoai, urlDeCu, urlBai, tenBai, layAnh, boDau, cacTheLoai, DANH_MUC, CAC_DANH_MUC, NHAN_VAI_TRO } from '../lib/tien-ich.js';
 const [bai, series] = await Promise.all([layBai(), laySeries()]);
 const soBai = (s: any) => bai.filter((b) => b.data.series === slugSeries(s)).length;
 // Băng rôn: bộ truyện mới cập nhật trước, tối đa 5
 const bangRon = [...series].sort((a, b) => b.data.ngay_cap_nhat.getTime() - a.data.ngay_cap_nhat.getTime()).slice(0, 5);
+// Issue #51 – mục của trang chủ web cũ
+const tenBo = new Map(series.map((s) => [slugSeries(s), s.data.ten]));
+const noiBat = bai.filter((b) => b.data.category === 'nhan-vat' && b.data.noi_bat).slice(0, 12);
+const theLoai = await cacTheLoai();
+const az = new Map<string, any[]>();
+for (const s of [...series].sort((a, b) => a.data.ten.localeCompare(b.data.ten, 'vi'))) {
+  const c = boDau(s.data.ten).charAt(0).toUpperCase(); const k = /[A-Z]/.test(c) ? c : '#'; az.set(k, [...(az.get(k) || []), s]);
+}
 const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.category === c).length })).filter((x) => x.so);
 ---
 <BoCuc tieuDe="Tu Chân Bảo Điển" jsonLd={[schemaWebSite(Astro.site!.href, new URL(url('tim-kiem/'), Astro.site!).href)]} moTa="Bách khoa toàn thư & review truyện Tu Tiên, Huyền Huyễn: hồ sơ nhân vật, hệ thống cảnh giới, pháp bảo, tóm tắt cốt truyện.">
@@ -28,10 +36,28 @@ const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.categ
     <KhoiCapNhat series={series} bai={bai} />
   </section>
 
+  {noiBat.length > 0 && (
+    <section class="khoi">
+      <TieuDeKhoi tieuDe="Nhân vật nổi bật" bieuTuong="nhan-vat" href={url('danh-muc/nhan-vat/')} />
+      <ul class="dai-nhan-vat">{noiBat.map((b) => { const a = layAnh(b); return (
+        <li><a href={urlBai(b)}>
+          {a ? <img class="anh-tron" src={url(a.srcset.at(-1).src)} width="104" height="104" alt="" loading="lazy" /> : <span class="anh-tron" aria-hidden="true">{tenBai(b).charAt(0)}</span>}
+          <span class="ten">{tenBai(b)}</span><span class="phu">{b.data.vai_tro ? NHAN_VAI_TRO[b.data.vai_tro] : 'Nhân vật'} · {tenBo.get(b.data.series)}</span>
+        </a></li>); })}</ul>
+    </section>
+  )}
+
   {series.length > 0 && (
     <section class="khoi">
       <TieuDeKhoi tieuDe="Bộ truyện" bieuTuong="bo-truyen" />
       <ul class="luoi-the">{series.map((s) => <TheBoTruyen s={s} soBai={soBai(s)} />)}</ul>
+    </section>
+  )}
+
+  {theLoai.length > 0 && (
+    <section class="khoi">
+      <TieuDeKhoi tieuDe="Đề cử theo thể loại" bieuTuong="de-cu" href={urlDeCu()} />
+      <ul class="chip-the-loai">{theLoai.map((t) => <li><a href={urlTheLoai(t.ten)}>{t.ten} <span>({t.ds.length})</span></a></li>)}</ul>
     </section>
   )}
 
@@ -41,6 +67,14 @@ const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.categ
       <ul class="o-danh-muc">{danhMuc.map((x) => (
         <li><a href={urlDanhMuc(x.c)}><BieuTuong ten={x.c} /><span class="o-danh-muc-ten">{DANH_MUC[x.c].tenSoNhieu}</span><span class="o-danh-muc-so">{x.so} bài</span></a></li>
       ))}</ul>
+    </section>
+  )}
+  {series.length > 1 && (
+    <section class="khoi">
+      <TieuDeKhoi tieuDe="Danh mục truyện A–Z" bieuTuong="a-z" />
+      <div class="a-z">{[...az].map(([k, ds]) => (
+        <div class="a-z-nhom"><p class="a-z-chu">{k}</p><ul>{ds.map((s) => <li><a href={urlSeries(slugSeries(s))}>{s.data.ten}<span>{bai.filter((b) => b.data.series === slugSeries(s)).length} bài</span></a></li>)}</ul></div>
+      ))}</div>
     </section>
   )}
 </BoCuc>

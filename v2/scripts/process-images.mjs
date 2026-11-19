@@ -38,11 +38,15 @@ const LAM_LAI = process.argv.includes('--lam-lai');
 // Hồ sơ theo loại bài: tỉ lệ, các chiều rộng xuất ra (lớn nhất = bản chính), mức cắt mặc định
 const HO_SO = {
   'nhan-vat': { tiLe: 3 / 4, rong: [600, 300], catTren: 0.04, catDuoi: 0.12 },
-  'bia':      { tiLe: 2 / 3, rong: [1000, 500], catTren: 0, catDuoi: 0 },
+  'bia':      { tiLe: 2 / 3, rong: [1000, 500], catTren: 0, catDuoi: 0, canhToiThieu: 500 },   // bìa hiện tối đa ~240px trên thẻ
   'phap-bao': { tiLe: 1,     rong: [600, 300], catTren: 0.04, catDuoi: 0.1 },
   'canh-gioi':{ tiLe: 16 / 9, rong: [1000, 500], catTren: 0, catDuoi: 0.1 },
   'cot-truyen':{ tiLe: 16 / 9, rong: [1000, 500], catTren: 0, catDuoi: 0.1 },
   'the-luc':  { tiLe: 1,     rong: [600, 300], catTren: 0.04, catDuoi: 0.1 },
+  // Trang bộ truyện (Issue #51): thư viện ảnh (ảnh ngang 3:2, ảnh dọc 3:4) và bản đồ thế giới
+  'thu-vien': { tiLe: 3 / 2, rong: [1000, 500], catTren: 0, catDuoi: 0 },
+  'thu-vien-doc': { tiLe: 3 / 4, rong: [600, 300], catTren: 0, catDuoi: 0 },
+  'ban-do':   { tiLe: 3 / 2, rong: [1200, 600], catTren: 0, catDuoi: 0 },
 };
 // Mỗi file WebP phải nhỏ hơn TOI_DA_KB; thử lần lượt các mức chất lượng, lấy mức cao nhất đạt
 const TOI_DA_KB = 80;
@@ -63,7 +67,7 @@ async function nenWebp(nguon, rong, tenFile) {
 }
 
 /** Kiểm ảnh gốc: có file, đúng là ảnh, cạnh ngắn ≥ 600px. Trả metadata. */
-async function kiemTraGoc(fileGoc, viTri) {
+async function kiemTraGoc(fileGoc, viTri, toiThieu = CANH_TOI_THIEU) {
   const rel = path.relative(process.cwd(), fileGoc);
   if (!existsSync(fileGoc)) throw new Error(`không có file ảnh gốc ${rel} (khai báo ở ${viTri})`);
   let m;
@@ -71,7 +75,7 @@ async function kiemTraGoc(fileGoc, viTri) {
   catch { throw new Error(`file ${rel} không phải ảnh hợp lệ (hỏng hoặc sai định dạng) – khai báo ở ${viTri}`); }
   if (!m.width || !m.height) throw new Error(`file ${rel} không đọc được kích thước ảnh – khai báo ở ${viTri}`);
   const ngan = Math.min(m.width, m.height);
-  if (ngan < CANH_TOI_THIEU) throw new Error(`ảnh ${rel} quá nhỏ ${m.width}×${m.height}px: cạnh ngắn ${ngan}px, cần ≥ ${CANH_TOI_THIEU}px (khai báo ở ${viTri})`);
+  if (ngan < toiThieu) throw new Error(`ảnh ${rel} quá nhỏ ${m.width}×${m.height}px: cạnh ngắn ${ngan}px, cần ≥ ${toiThieu}px (khai báo ở ${viTri})`);
   return m;
 }
 
@@ -94,10 +98,10 @@ function phanTich(fileMdx) {
 
 async function xuLy(viec) {
   const { truyen, loai, slug, ten, anh } = viec;
-  const hs = HO_SO[loai];
+  const hs = HO_SO[viec.hoSo || loai];
   if (!hs) throw new Error(`Chưa có hồ sơ ảnh cho loại "${loai}"`);
   const fileGoc = path.join(THU_MUC_ANH_GOC, truyen, anh.goc);
-  const meta = await kiemTraGoc(fileGoc, `${truyen}/${loai}/${slug}`);
+  const meta = await kiemTraGoc(fileGoc, `${truyen}/${loai}/${slug}`, hs.canhToiThieu);
 
   const catTren = anh.cat_tren ?? hs.catTren, catDuoi = anh.cat_duoi ?? hs.catDuoi;
   const st = await fs.stat(fileGoc);
@@ -161,8 +165,20 @@ async function main() {
       ? { goc: data.image, nguon: data.image_source?.ten, nguon_url: data.image_source?.url,
           cat_tren: data.image_crop?.tren, cat_duoi: data.image_crop?.duoi, tam: data.image_crop?.tam }
       : data.anh;
+    const pt = phanTich(f);
+    // Trang bộ truyện: thư viện ảnh + bản đồ (mỗi ảnh 1 việc, khoá <truyen>/thu-vien/<tên file> và <truyen>/ban-do/ban-do)
+    if (pt.loai === 'bia') {
+      for (const a of data.thu_vien || []) {
+        const ten = path.basename(a.anh).replace(/\.[^.]+$/, '');
+        const m = await sharp(path.join(THU_MUC_ANH_GOC, pt.truyen, a.anh)).metadata().catch(() => ({}));
+        viecLam.push({ truyen: pt.truyen, loai: 'thu-vien', hoSo: m.height > m.width ? 'thu-vien-doc' : 'thu-vien', slug: ten, ten: `${ten}-${pt.truyen}`,
+          anh: { goc: a.anh, nguon: a.nguon, nguon_url: a.nguon_url } });
+      }
+      if (data.ban_do?.anh) viecLam.push({ truyen: pt.truyen, loai: 'ban-do', slug: 'ban-do', ten: `ban-do-${pt.truyen}`,
+        anh: { goc: data.ban_do.anh, nguon: data.ban_do.nguon, nguon_url: data.ban_do.nguon_url } });
+    }
     if (!anh?.goc) continue;
-    viecLam.push({ ...phanTich(f), anh });
+    viecLam.push({ ...pt, anh });
   }
   let daXuLy = 0, boQua = 0;
   const loi = [];
@@ -170,7 +186,7 @@ async function main() {
     const khoa = `${v.truyen}/${v.loai}/${v.slug}`;
     try {
       // Bộ nhớ đệm: dấu vết giống và file còn đó → giữ nguyên
-      const hs = HO_SO[v.loai];
+      const hs = HO_SO[v.hoSo || v.loai];
       const fileGoc = path.join(THU_MUC_ANH_GOC, v.truyen, v.anh.goc);
       if (!LAM_LAI && cu[khoa] && existsSync(fileGoc) && existsSync(path.join(GOC_PUBLIC, cu[khoa].src))) {
         const st = await fs.stat(fileGoc);
