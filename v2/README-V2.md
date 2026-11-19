@@ -112,7 +112,31 @@ npm run preview        # xem thử ở http://localhost:4321
 | `XEM_NHAP=1` | Build kèm bài nháp để xem thử (không đăng) |
 | `TIM_TOAN_VAN=1` | Tìm cả thân bài (chỉ mục lớn hơn nhiều, xem mục 6) |
 
-Đăng lên **Cloudflare Pages**: thư mục gốc `v2`, lệnh build `npm run build`, thư mục kết quả `dist`, biến `SITE_URL` = tên miền thật.
+### Kiểm tra tự động trên mỗi PR (workflow `v2-build`)
+Mỗi PR có sửa `v2/` chạy lần lượt:
+1. **Kiểm tra nội dung** – bài `.mdx` **mới/sửa trong PR** mà thân bài ngoài 800–1.200 từ là **lỗi** (bài cũ không sửa chỉ cảnh báo).
+2. **Build** – ảnh → HTML → chỉ mục tìm kiếm.
+3. **Kiểm tra bản build** (`node scripts/kiem-tra-dist.mjs`) – link nội bộ hỏng; mỗi bài đã xuất bản có trang, có JSON-LD Article; sitemap đủ URL. Chung cho mọi bài, không viết cứng tên bài.
+4. **Bot ghi bảng tóm tắt vào PR** (`scripts/bao-cao-pr.mjs`): số từ, độ dài title/description, số FAQ, dung lượng ảnh, số link nội bộ tự gắn của từng bài mới/sửa. Mỗi lần đẩy code, bot sửa lại đúng bình luận đó (không đăng chồng).
+5. Bước nào lỗi → dấu ❌ đỏ trên PR, chi tiết nằm trong bảng.
+
+### Đăng web: Cloudflare Pages (làm 1 lần)
+1. Vào <https://dash.cloudflare.com> → **Workers & Pages** → **Create** → tab **Pages** → **Connect to Git**.
+2. Chọn GitHub, cho phép Cloudflare đọc repo `tuchanbaodien`, chọn repo đó.
+3. Điền:
+   | Ô | Giá trị |
+   |---|---|
+   | Project name | `tuchanbaodien` (web sẽ ở `https://tuchanbaodien.pages.dev`) |
+   | Production branch | `main` |
+   | Framework preset | `Astro` (hoặc `None`) |
+   | Build command | `npm run build` |
+   | Build output directory | `dist` |
+   | Root directory (Advanced) | `v2` |
+4. **Environment variables** (mục Advanced) thêm 2 biến: `SITE_URL` = `https://tuchanbaodien.pages.dev`, `NODE_VERSION` = `22.23.5`.
+5. Bấm **Save and Deploy**. Lần đầu mất khoảng 2–3 phút.
+6. Bản xem trước cho từng PR: Cloudflare bật sẵn. Kiểm tra ở **Settings → Builds & deployments → Preview branches** = *All non-Production branches*. Mỗi PR sẽ có bình luận/nút "Cloudflare Pages" kèm link `https://<mã>.tuchanbaodien.pages.dev`.
+7. Từ nay merge vào `main` → Cloudflare tự build lại và cập nhật `tuchanbaodien.pages.dev`. Web cũ trên GitHub Pages vẫn chạy như trước.
+8. Khi có tên miền thật: **Custom domains** → thêm tên miền, rồi đổi `SITE_URL` sang tên miền đó và bấm **Retry deployment**.
 
 ## 5. Quy tắc quảng cáo đã cài
 - Giữa bài: sau mỗi 3 mục `##`, đặt trước tiêu đề mục kế tiếp. Không đặt sát ảnh, video, spoiler, component ảnh, nút chuyển chương, và không đặt trong mục Câu hỏi thường gặp. Vị trí vi phạm thì dời sang mục sau.
