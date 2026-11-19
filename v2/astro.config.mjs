@@ -25,7 +25,7 @@ export default defineConfig({
       remarkPlugins: [
         remarkDirective,                 // cú pháp :::spoiler … :::
         remarkSpoiler,
-        [remarkLienKetNoiBo, { thuMucNoiDung: 'content', base: BASE, toiDaMoiBai: 40 }],
+        [remarkLienKetNoiBo, { thuMucNoiDung: 'content', base: BASE }],   // tối đa GIOI_HAN.lienKetTuDong link/bài; báo cáo: bao-cao/lien-ket-noi-bo.json
       ],
       rehypePlugins: [
         [rehypeChenQuangCao, { moiSoH2: 3, adsenseClient: ADSENSE, slot: process.env.PUBLIC_ADSENSE_SLOT_GIUA_BAI || '' }],

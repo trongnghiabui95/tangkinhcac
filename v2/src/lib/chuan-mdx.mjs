@@ -17,7 +17,10 @@ export const GIOI_HAN = {
   faqs: [3, 6],             // số câu
   soTu: [800, 1200],        // số từ thân bài (build chỉ cảnh báo; workflow PR chặn file mới/sửa)
   canhAnhToiThieu: 600,     // px, cạnh ngắn ảnh gốc
+  lienKetTuDong: 10,        // số liên kết nội bộ tự gắn tối đa mỗi bài (remark-lien-ket-noi-bo)
 };
+/** Khoá infobox có giá trị là TÊN KHÁC của chính bài (dùng thêm cho liên kết nội bộ tự động) */
+export const KHOA_INFOBOX_TEN_KHAC = /^(biệt hiệu|biệt danh|tên khác|tên gọi khác|danh hiệu|ngoại hiệu|đạo hiệu|pháp hiệu)$/iu;
 export const SLUG = /^[a-z0-9]+(-[a-z0-9]+)*$/;
 
 /** Bỏ khối code để không bắt nhầm */
