@@ -1,4 +1,7 @@
-# Build thử bản v2 (Astro) trên mọi PR có sửa thư mục v2/: ảnh → HTML → chỉ mục tìm kiếm.
+# Kiểm tra bản v2 (Astro) trên mọi PR có sửa thư mục v2/:
+#   nội dung .mdx (bài mới/sửa ngoài 800–1.200 từ bị CHẶN) → build → link nội bộ hỏng, mỗi bài có trang + JSON-LD Article + sitemap
+#   → bot ghi bảng tóm tắt từng bài vào PR cho QA duyệt.
+# Đăng web thật do Cloudflare Pages tự làm (nối repo, thư mục v2) – xem v2/README-V2.md mục "Cloudflare Pages".
 name: v2-build
 on:
   pull_request:
@@ -6,24 +9,93 @@ on:
   workflow_dispatch:
 permissions:
   contents: read
+  pull-requests: write   # để bot ghi/cập nhật bình luận bảng tóm tắt
 jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      SITE_URL: https://tuchanbaodien.pages.dev
+      BAO_CAO: ${{ github.workspace }}/bao-cao
     defaults:
       run:
         working-directory: v2
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # cần lịch sử để biết file nào mới/sửa so với nhánh đích
       - uses: actions/setup-node@v4
         with:
           node-version: 22.23.5
           cache: npm
           cache-dependency-path: v2/package-lock.json
       - run: npm ci
+
+      - name: Liệt kê bài .mdx mới/sửa trong PR
+        run: |
+          mkdir -p "$BAO_CAO"
+          if [ -n "${{ github.base_ref }}" ]; then
+            # đang đứng trong v2/: --relative cho đường dẫn tính từ v2/ (vd. content/<series>/<category>/<slug>.mdx)
+            git diff --name-only --relative --diff-filter=AMR "origin/${{ github.base_ref }}...HEAD" -- 'content/**.mdx' > "$BAO_CAO/thay-doi.txt"
+          else
+            : > "$BAO_CAO/thay-doi.txt"
+          fi
+          echo "Bài mới/sửa:"; cat "$BAO_CAO/thay-doi.txt"
+
+      - name: Kiểm tra nội dung (bài mới/sửa ngoài 800–1.200 từ là LỖI)
+        id: noi_dung
+        continue-on-error: true
+        run: node scripts/kiem-tra-noi-dung.mjs --json "$BAO_CAO/noi-dung.json" --chat-so-tu $(cat "$BAO_CAO/thay-doi.txt")
+
       - name: Kiểm thử bộ kiểm tra nội dung (3 file sai phải bị chặn)
+        id: test_noi_dung
+        continue-on-error: true
         run: npm run test:noi-dung
+
       - name: Build (kiểm tra nội dung → ảnh → Astro → Pagefind)
+        id: build
+        if: steps.noi_dung.outcome == 'success'
+        continue-on-error: true
         run: npm run build
+
+      - name: Kiểm tra bản build (link nội bộ hỏng, mỗi bài có trang + JSON-LD Article, sitemap đủ URL)
+        id: dist
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
+        run: node scripts/kiem-tra-dist.mjs --json "$BAO_CAO/dist.json"
+
+      - name: Lập bảng tóm tắt cho QA
+        if: always()
+        run: |
+          node scripts/bao-cao-pr.mjs --noi-dung "$BAO_CAO/noi-dung.json" --dist "$BAO_CAO/dist.json" --thay-doi "$BAO_CAO/thay-doi.txt" \
+            --buoc "Kiểm tra nội dung=${{ steps.noi_dung.outcome }}" \
+            --buoc "Kiểm thử bộ kiểm tra=${{ steps.test_noi_dung.outcome }}" \
+            --buoc "Build=${{ steps.build.outcome }}" \
+            --buoc "Link & sitemap=${{ steps.dist.outcome }}" > "$BAO_CAO/bang.md"
+          cat "$BAO_CAO/bang.md" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Bot ghi bảng vào PR (sửa bình luận cũ nếu đã có)
+        if: always() && github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate -q '.[] | select(.body | startswith("<!-- bao-cao-v2 -->")) | .id' | head -1)
+          jq -Rs '{body: .}' "$BAO_CAO/bang.md" > "$BAO_CAO/body.json"
+          if [ -n "$id" ]; then gh api -X PATCH "repos/$REPO/issues/comments/$id" --input "$BAO_CAO/body.json" >/dev/null
+          else gh api -X POST "repos/$REPO/issues/$PR/comments" --input "$BAO_CAO/body.json" >/dev/null; fi
+
       - name: Thêm 1 bài .mdx hợp lệ → phải có trang mới, hiện ở trang chủ, bộ truyện, danh mục, menu, sitemap
+        id: them_bai
+        if: steps.build.outcome == 'success'
+        continue-on-error: true
         run: bash tests/thu-them-bai.sh
+
+      - name: Kết luận (đỏ nếu có bước lỗi – xem bảng ở trên hoặc bình luận của bot)
+        if: always()
+        run: |
+          kq="${{ steps.noi_dung.outcome }} ${{ steps.test_noi_dung.outcome }} ${{ steps.build.outcome }} ${{ steps.dist.outcome }} ${{ steps.them_bai.outcome }}"
+          echo "Kết quả các bước: $kq"
+          for x in $kq; do [ "$x" = success ] || { echo "::error::Có bước kiểm tra v2 bị lỗi – xem bảng tóm tắt."; exit 1; }; done
+          echo "Tất cả đạt."
