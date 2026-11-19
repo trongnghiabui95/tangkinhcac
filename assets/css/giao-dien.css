@@ -203,7 +203,9 @@ a:hover > .anh-tron { transform: scale(1.06); }
 .infobox a, .noi-dung a.lien-ket { color: var(--color-secondary); text-decoration: underline; text-decoration-color: color-mix(in srgb, var(--color-secondary) 40%, transparent); text-underline-offset: 3px; }
 
 /* ---------- Mục lục ---------- */
-.muc-luc { position: sticky; top: 84px; }
+/* Mục lục chỉ "dính" khi cuộn trên màn hình rộng (cột trái). Điện thoại: nằm yên đầu bài, mở/đóng bằng nút. */
+.muc-luc { position: static; }
+@media (min-width: 1024px) { .muc-luc { position: sticky; top: 84px; } }
 .muc-luc a { display: flex; gap: .5rem; align-items: center; padding: .35rem .6rem; border-radius: var(--bo-goc-nho); font-size: .87rem; border-left: 2px solid transparent; }
 .muc-luc a:hover { background: var(--color-base-300); }
 .muc-luc a.dang-xem { border-left-color: var(--color-primary); color: var(--color-primary); background: color-mix(in srgb, var(--color-primary) 8%, transparent); }

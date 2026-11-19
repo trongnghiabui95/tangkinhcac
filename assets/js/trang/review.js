@@ -260,6 +260,15 @@
       </div>`;
 
     // Tô sáng mục đang đọc trong mục lục
+    // Điện thoại: bấm 1 mục trong mục lục thu gọn thì tự đóng mục lục lại
+    document.querySelectorAll('.muc-luc details a[data-muc]').forEach((a) =>
+      a.addEventListener('click', (e) => {
+        e.preventDefault();
+        a.closest('details').open = false;               // đóng trước: trang ngắn lại
+        const dich = document.getElementById(a.dataset.muc);
+        history.replaceState(null, '', '#' + a.dataset.muc);
+        requestAnimationFrame(() => dich && UI.cuonToi(dich));   // rồi mới cuộn (vị trí thật, không bị hiệu ứng làm lệch)
+      }));
     const links = [...document.querySelectorAll('.muc-luc a[data-muc]')];
     const io = new IntersectionObserver((es) => es.forEach((e) => {
       if (e.isIntersecting) links.forEach((a) => a.classList.toggle('dang-xem', a.dataset.muc === e.target.id));
