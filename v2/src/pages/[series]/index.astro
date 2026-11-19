@@ -28,7 +28,7 @@ const jsonLd = [
   schemaBreadcrumb([{ ten: 'Trang chủ', url: tuyetDoi(url('')) }, { ten: d.ten, url: tuyetDoi(url(`${slug}/`)) }]),
 ];
 ---
-<BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article">
+<BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article" giuNguyenTieuDe>
   <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: d.ten }]} />
   <article data-pagefind-body data-pagefind-filter={`truyen:${d.ten}`} data-pagefind-meta="loai:Bộ truyện">
     <h1 data-pagefind-meta="title">{tieuDe}</h1>

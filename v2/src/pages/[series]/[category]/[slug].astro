@@ -11,7 +11,7 @@ import CharacterCardImage from '../../../components/CharacterCardImage.astro';
 import LuoiBai from '../../../components/LuoiBai.astro';
 import AdUnit from '../../../components/AdUnit.astro';
 import YouTubeFacade from '../../../components/YouTubeFacade.astro';
-import { layBai, laySeries, slugSeries, layAnh, tenBai, urlBai, urlSeries, urlSeriesDanhMuc, urlVuTru, url, boDau, DANH_MUC, NHAN_VAI_TRO, cacVuTru } from '../../../lib/tien-ich.js';
+import { layBai, laySeries, slugSeries, layAnh, layAnhSeries, tenBai, urlBai, urlSeries, urlSeriesDanhMuc, urlVuTru, url, boDau, DANH_MUC, NHAN_VAI_TRO, cacVuTru } from '../../../lib/tien-ich.js';
 import { schemaArticle, schemaBreadcrumb, schemaFaq } from '../../../lib/schema.js';
 
 export async function getStaticPaths() {
@@ -30,6 +30,8 @@ const phapBao = d.phap_bao.map((s) => cungBo.find((e) => e.data.category === 'ph
 const lienQuan = [...cungBo.filter((e) => e.data.category === d.category), ...cungBo.filter((e) => e.data.category !== d.category)].slice(0, 8);
 
 const anh = layAnh(bai);
+// Bài không có ảnh riêng: JSON-LD/Open Graph dùng ảnh bìa bộ truyện (Google cần image cho Article)
+const anhChiaSe = anh ?? (series ? layAnhSeries(series) : null);
 const ten = tenBai(bai);
 const tenDanhMuc = DANH_MUC[d.category].ten;
 const huyHieu = canhGioi ? tenBai(canhGioi) : Object.entries(d.infobox).find(([k]) => /cảnh giới/i.test(k))?.[1]?.toString();
@@ -49,7 +51,7 @@ const cap = [
   { ten },
 ];
 const jsonLd = [
-  schemaArticle({ title: d.title, description: d.description, urlTrang: tuyetDoi(urlBai(bai)), anh: anh ? tuyetDoi(url(anh.src)) : undefined,
+  schemaArticle({ title: d.title, description: d.description, urlTrang: tuyetDoi(urlBai(bai)), anh: anhChiaSe ? tuyetDoi(url(anhChiaSe.src)) : undefined, anhOg: anhChiaSe?.og ? tuyetDoi(url(anhChiaSe.og)) : undefined,
     date: d.date, updated: d.updated, keywords: d.keywords, site: site.href, tenSeries, urlSeries: tuyetDoi(urlSeries(d.series)),
     nhanVat: d.category === 'nhan-vat' ? { ten, aliases: d.aliases } : undefined }),
   schemaBreadcrumb(cap.map((c) => ({ ten: c.ten, url: tuyetDoi(c.href ?? urlBai(bai)) }))),
@@ -57,7 +59,7 @@ const jsonLd = [
 ];
 const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) === '1';
 ---
-<BoCuc tieuDe={d.title} moTa={d.description} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article" tuKhoa={d.keywords}>
+<BoCuc tieuDe={d.title} moTa={d.description} anhOg={anhChiaSe?.og} jsonLd={jsonLd} kieuOg="article" tuKhoa={d.keywords} giuNguyenTieuDe ngayDang={d.date} ngayCapNhat={d.updated}>
   <Breadcrumb cap={cap} />
   <article data-pagefind-body data-pagefind-filter={`truyen:${tenSeries}`} data-pagefind-meta={`loai:${tenDanhMuc}`}>
     <h1 data-pagefind-meta="title">{d.title}</h1>

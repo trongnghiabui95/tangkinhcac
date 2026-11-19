@@ -1,6 +1,6 @@
 // JSON-LD (schema.org) sinh từ frontmatter. Mọi URL tuyệt đối tính từ SITE_URL (Astro.site).
 const TEN_WEB = 'Tu Chân Bảo Điển';
-export const toChuc = (site) => ({ '@type': 'Organization', name: TEN_WEB, url: site, logo: { '@type': 'ImageObject', url: new URL('favicon.svg', site).href } });
+export const toChuc = (site) => ({ '@type': 'Organization', name: TEN_WEB, url: site, logo: { '@type': 'ImageObject', url: new URL('logo.png', site).href, width: 512, height: 512 } });
 
 /** BreadcrumbList từ [{ ten, url (tuyệt đối) }] */
 export const schemaBreadcrumb = (cap) => ({
@@ -9,10 +9,11 @@ export const schemaBreadcrumb = (cap) => ({
 });
 
 /** Article cho mọi bài viết. Bài nhân vật thêm `about` (nhân vật hư cấu, kiểu Person). */
-export function schemaArticle({ title, description, urlTrang, anh, date, updated, keywords, site, tenSeries, urlSeries, nhanVat }) {
+export function schemaArticle({ title, description, urlTrang, anh, anhOg, date, updated, keywords, site, tenSeries, urlSeries, nhanVat }) {
+  const anhDs = [anhOg, anh].filter(Boolean);   // Google khuyên ảnh rộng ≥ 1200px: đặt ảnh chia sẻ 1200×630 trước
   return {
     '@context': 'https://schema.org', '@type': 'Article',
-    headline: title, description, ...(anh ? { image: [anh] } : {}),
+    headline: title, description, ...(anhDs.length ? { image: anhDs } : {}), url: urlTrang,
     datePublished: date.toISOString(), dateModified: updated.toISOString(),
     mainEntityOfPage: { '@type': 'WebPage', '@id': urlTrang },
     author: toChuc(site), publisher: toChuc(site), inLanguage: 'vi',
@@ -35,4 +36,10 @@ export const schemaReviewTruyen = ({ ten, tacGia, moTa, urlTrang, anh, diem, nga
   author: toChuc(site), publisher: toChuc(site), inLanguage: 'vi',
   itemReviewed: { '@type': 'Book', name: ten, author: { '@type': 'Person', name: tacGia }, ...(anh ? { image: anh } : {}) },
   ...(diem != null ? { reviewRating: { '@type': 'Rating', ratingValue: diem, bestRating: 10, worstRating: 0 } } : {}),
+});
+
+/** Trang chủ: WebSite (kèm ô tìm kiếm) + Organization */
+export const schemaWebSite = (site, urlTimKiem) => ({
+  '@context': 'https://schema.org', '@type': 'WebSite', name: TEN_WEB, url: site, inLanguage: 'vi', publisher: toChuc(site),
+  potentialAction: { '@type': 'SearchAction', target: { '@type': 'EntryPoint', urlTemplate: `${urlTimKiem}?q={search_term_string}` }, 'query-input': 'required name=search_term_string' },
 });

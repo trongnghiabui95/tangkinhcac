@@ -9,7 +9,8 @@
     "test:noi-dung": "node tests/kiem-tra-fixtures.mjs",
     "dev": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro dev",
     "build": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro build && pagefind --site dist",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "test:seo": "node tests/kiem-tra-seo.mjs"
   },
   "engines": {
     "node": ">=22.23"
