@@ -5,11 +5,10 @@ import BangRon from '../components/BangRon.astro';
 import TieuDeKhoi from '../components/TieuDeKhoi.astro';
 import TheBoTruyen from '../components/TheBoTruyen.astro';
 import BieuTuong from '../components/BieuTuong.astro';
-import LuoiBai from '../components/LuoiBai.astro';
+import KhoiCapNhat from '../components/KhoiCapNhat.astro';
 import { schemaWebSite } from '../lib/schema.js';
 import { layBai, laySeries, slugSeries, url, urlDanhMuc, DANH_MUC, CAC_DANH_MUC } from '../lib/tien-ich.js';
 const [bai, series] = await Promise.all([layBai(), laySeries()]);
-const tenSeries = new Map(series.map((s) => [slugSeries(s), s.data.ten]));
 const soBai = (s: any) => bai.filter((b) => b.data.series === slugSeries(s)).length;
 // Băng rôn: bộ truyện mới cập nhật trước, tối đa 5
 const bangRon = [...series].sort((a, b) => b.data.ngay_cap_nhat.getTime() - a.data.ngay_cap_nhat.getTime()).slice(0, 5);
@@ -25,8 +24,8 @@ const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.categ
   )}
 
   <section class="khoi">
-    <TieuDeKhoi tieuDe="Bài mới cập nhật" bieuTuong="moi" />
-    <LuoiBai ds={bai.slice(0, 10)} tenBo={(b) => tenSeries.get(b.data.series)} uuTienDau={2} />
+    <TieuDeKhoi tieuDe="Truyện mới cập nhật" bieuTuong="moi" />
+    <KhoiCapNhat series={series} bai={bai} />
   </section>
 
   {series.length > 0 && (
