@@ -4,12 +4,13 @@
  * Tự tạo ảnh thử trong thư mục tạm (không commit ảnh lớn), chạy script rồi kiểm:
  *   1. Ảnh ~2MB có EXIF → .webp 3:4, mọi cỡ < 80KB, không còn EXIF, manifest ghi chat_luong + kb.
  *   1b. Ảnh nhiều chi tiết (chất lượng 80 > 80KB) → tự giảm chất lượng tới khi < 80KB.
- *   2. Ảnh 400px → bị chặn, thông báo rõ "quá nhỏ … cần ≥ 600px".
+ *   2. Ảnh 400px → bị chặn, thông báo rõ "quá nhỏ … cần ≥ <GIOI_HAN.canhAnhToiThieu>px".
  *   3. File hỏng (không phải ảnh) → báo "không phải ảnh hợp lệ", không crash.
  *   4. Khai báo ảnh không có file → báo "không có file ảnh gốc".
  *   5. Ảnh nhiễu cực mạnh, xuống chất lượng 40 vẫn > 80KB → báo lỗi có tên file + cỡ KB.
  * Chạy: npm run test:anh   (in thêm kết quả exiftool nếu máy có cài)
  */
+import { GIOI_HAN } from '../src/lib/chuan-mdx.mjs';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -98,7 +99,7 @@ try {
     console.log(r.stdout + r.stderr);
     kiem(r.status === 1, 'build dừng (exit 1) khi có ảnh lỗi');
     kiem(!/at .*\.mjs:\d+/.test(r.stderr), 'không in stack trace (không crash)');
-    kiem(/anh-nho: .*quá nhỏ 400×533px: cạnh ngắn 400px, cần ≥ 600px/.test(r.stderr), 'ảnh 400px bị chặn với thông báo rõ');
+    kiem(new RegExp(`anh-nho: .*quá nhỏ 400×533px: cạnh ngắn 400px, cần ≥ ${GIOI_HAN.canhAnhToiThieu}px`).test(r.stderr), 'ảnh 400px bị chặn với thông báo rõ');
     kiem(/anh-hong: .*hong\.jpg không phải ảnh hợp lệ/.test(r.stderr), 'file hỏng báo "không phải ảnh hợp lệ"');
     kiem(/thieu-anh: không có file ảnh gốc .*khong-co\.jpg/.test(r.stderr), 'thiếu file báo "không có file ảnh gốc"');
   }

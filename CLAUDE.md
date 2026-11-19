@@ -39,7 +39,7 @@ v2/tools/                                    vẽ ảnh minh họa (ve_anh_mau.p
 1. Ưu tiên ảnh trên mạng (poster/ảnh chính thức, bìa gốc, ảnh phim; ví dụ API wiki Fandom `api.php?action=query&prop=pageimages|imageinfo`).
 2. Không tìm được thì tự vẽ bằng `v2/tools/ve_anh_mau.py` → `node v2/tools/chup_anh.cjs`.
 3. Luôn ghi nguồn (`image_source` / `nguon`). Không thêm bước xoá logo, watermark.
-4. Cạnh ngắn ảnh gốc ≥ 600px (bìa ≥ 500px). Tỉ lệ do `process-images.mjs` cắt: nhân vật 3:4, bìa 2:3, pháp bảo/thế lực 1:1, cảnh 16:9, thư viện 3:2 hoặc 3:4.
+4. Cạnh ngắn ảnh gốc ≥ 480px (khai báo ở `chuan-mdx.mjs`; nên chọn ảnh ≥ 600px khi có). Tỉ lệ do `process-images.mjs` cắt: nhân vật 3:4, bìa 2:3, pháp bảo/thế lực 1:1, cảnh 16:9, thư viện 3:2 hoặc 3:4.
 5. Ảnh gửi chủ dự án/PR: thư mục Drive "Anh Tang Kinh Cac" (id `1cYx0rRSr3Zv0Yl6ytn4oGl0N4N51l0N1`).
 
 ## Điều cấm
