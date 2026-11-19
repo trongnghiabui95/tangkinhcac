@@ -255,3 +255,26 @@ h2 { font-size: 1.4rem; margin: 2em 0 .6em; color: var(--vang); }
 .the-anh .chua-co-anh .bieu-tuong { width: 40px; height: 40px; color: var(--vang-tren-anh); }
 .the-anh .nhan { z-index: 2; }
 @media (hover: hover) { .the-bai:hover .the-anh img.anh-muon { transform: scale(1.16); } }
+
+/* ---------- Truyện mới cập nhật (mỗi bộ 1 khung) ---------- */
+.ds-cap-nhat { list-style: none; padding: 0; margin: 0; display: grid; gap: 16px; }
+@media (min-width: 900px) { .ds-cap-nhat { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.khung-cap-nhat { display: grid; grid-template-columns: 112px minmax(0, 1fr); gap: 16px; padding: 14px; background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); box-shadow: var(--bong-the); }
+.cap-nhat-bia { display: block; aspect-ratio: 2 / 3; border-radius: var(--bo-nho); overflow: hidden; background: var(--be-mat-2); align-self: start; }
+.cap-nhat-bia img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.cap-nhat-ten { margin: 0; font-size: 1.15rem; }
+.cap-nhat-ten a { color: var(--chu); text-decoration: none; display: inline-flex; min-height: 44px; align-items: center; }
+.cap-nhat-phu { margin: 0 0 6px; font-size: 14px; color: var(--chu-phu); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.nhan-moi-so { padding: 1px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--ngoc); color: var(--nen); }
+.cap-nhat-bai { list-style: none; padding: 0; margin: 0; }
+.cap-nhat-bai li { display: flex; align-items: center; gap: 8px; border-top: 1px dashed var(--vien); }
+.cap-nhat-bai a { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 44px; color: var(--chu); text-decoration: none; }
+.cap-nhat-loai { flex-shrink: 0; font-size: 13px; color: var(--vang); }
+.cap-nhat-tieu-de { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.cap-nhat-trang-thai { flex-shrink: 0; display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--chu-phu); }
+.cham-moi { padding: 0 8px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--nhan-phan-dien); color: #fff; }
+.cham-moi.sua { background: transparent; color: var(--ngoc); border: 1px solid var(--ngoc); }
+.cap-nhat-tat-ca { display: inline-flex; align-items: center; min-height: 44px; font-size: 14px; font-weight: 600; color: var(--vang); text-decoration: none; }
+@media (hover: hover) { .cap-nhat-bai a:hover .cap-nhat-tieu-de, .cap-nhat-ten a:hover { color: var(--vang); } .cap-nhat-tat-ca:hover { text-decoration: underline; } }
+@media (max-width: 420px) { .khung-cap-nhat { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; padding: 12px; } .cap-nhat-loai { display: none; } }
+.ds-cap-nhat > li:only-child { grid-column: 1 / -1; }

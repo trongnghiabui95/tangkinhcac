@@ -1,0 +1,56 @@
+---
+// "Truyện mới cập nhật": mỗi bộ truyện 1 khung (bìa, tên, ngày cập nhật, vài bài mới nhất), bộ mới nhất lên trước.
+// Nhãn "Mới" / "+N bài mới" tính trên máy người xem (so với ngày hôm nay) để không bị cũ khi lâu chưa build lại;
+// tắt JavaScript thì chỉ hiện ngày.
+import { layAnhSeries, slugSeries, urlSeries, urlBai, tenBai, url, DANH_MUC } from '../lib/tien-ich.js';
+interface Props { series: any[]; bai: any[]; soBo?: number; soBai?: number }
+const { series, bai, soBo = 6, soBai = 4 } = Astro.props;
+const ngay = (d: Date) => d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+const moiNhat = (b: any) => Math.max(b.data.date.getTime(), b.data.updated.getTime());
+const nhom = series.map((s) => {
+  const ds = bai.filter((b) => b.data.series === slugSeries(s)).sort((a, b) => moiNhat(b) - moiNhat(a) || b.data.date.getTime() - a.data.date.getTime());
+  return { s, ds, luc: ds.length ? moiNhat(ds[0]) : s.data.ngay_cap_nhat.getTime() };
+}).filter((n) => n.ds.length).sort((a, b) => b.luc - a.luc).slice(0, soBo);
+---
+{nhom.length > 0 && (
+  <ul class="ds-cap-nhat">
+    {nhom.map(({ s, ds, luc }) => {
+      const anh = layAnhSeries(s);
+      return (
+        <li class="khung-cap-nhat" data-cap-nhat>
+          <a class="cap-nhat-bia" href={urlSeries(slugSeries(s))} tabindex="-1" aria-hidden="true">
+            {anh ? <img src={url(anh.srcset.at(-1).src)} width={anh.width} height={anh.height} alt="" loading="lazy" decoding="async" /> : <span>{s.data.ten}</span>}
+          </a>
+          <div class="cap-nhat-than">
+            <h3 class="cap-nhat-ten"><a href={urlSeries(slugSeries(s))}>{s.data.ten}</a></h3>
+            <p class="cap-nhat-phu">Cập nhật <time datetime={new Date(luc).toISOString()}>{ngay(new Date(luc))}</time>
+              <span class="nhan-moi-so" hidden></span></p>
+            <ol class="cap-nhat-bai">
+              {ds.slice(0, soBai).map((b) => (
+                <li data-ngay-dang={b.data.date.toISOString()} data-ngay-sua={b.data.updated.toISOString()}>
+                  <a href={urlBai(b)}><span class="cap-nhat-loai">{DANH_MUC[b.data.category].ten}</span><span class="cap-nhat-tieu-de">{tenBai(b)}</span></a>
+                  <span class="cap-nhat-trang-thai"><span class="cham-moi" hidden></span><time datetime={new Date(moiNhat(b)).toISOString()}>{ngay(new Date(moiNhat(b))).slice(0, 5)}</time></span>
+                </li>
+              ))}
+            </ol>
+            <a class="cap-nhat-tat-ca" href={urlSeries(slugSeries(s))}>Xem tất cả {ds.length} bài →</a>
+          </div>
+        </li>
+      );
+    })}
+  </ul>
+)}
+<script>
+  // Bài đăng trong 7 ngày gần đây → chấm "Mới"; bài cũ vừa sửa → "Sửa"; đếm "+N bài mới" cho từng bộ
+  const BAY_NGAY = 7 * 864e5, nay = Date.now();
+  document.querySelectorAll<HTMLElement>('[data-cap-nhat]').forEach((k) => {
+    let so = 0;
+    k.querySelectorAll<HTMLElement>('[data-ngay-dang]').forEach((li) => {
+      const cham = li.querySelector<HTMLElement>('.cham-moi')!;
+      if (nay - Date.parse(li.dataset.ngayDang!) < BAY_NGAY) { so++; cham.textContent = 'Mới'; cham.hidden = false; }
+      else if (nay - Date.parse(li.dataset.ngaySua!) < BAY_NGAY) { cham.textContent = 'Sửa'; cham.classList.add('sua'); cham.hidden = false; }
+    });
+    const n = k.querySelector<HTMLElement>('.nhan-moi-so')!;
+    if (so) { n.textContent = `+${so} bài mới`; n.hidden = false; }
+  });
+</script>
