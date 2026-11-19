@@ -15,12 +15,15 @@ interface Props {
   kieuOg?: 'website' | 'article';
   noindex?: boolean;
   tuKhoa?: string[];
+  giuNguyenTieuDe?: boolean;  // true: <title> đúng bằng tieuDe (trang bài – title 50–65 ký tự đã tối ưu)
+  ngayDang?: Date;            // trang bài: article:published_time
+  ngayCapNhat?: Date;         // trang bài: article:modified_time
 }
-const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false, tuKhoa = [] } = Astro.props;
+const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false, tuKhoa = [], giuNguyenTieuDe = false, ngayDang, ngayCapNhat } = Astro.props;
 const menu = await layMenu();   // sinh từ nội dung: bộ truyện + danh mục đang có bài
 const XEM_NHAP = (import.meta.env.XEM_NHAP ?? process.env.XEM_NHAP) === '1';
 const TEN_WEB = 'Tu Chân Bảo Điển';
-const title = tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
+const title = giuNguyenTieuDe || tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = anhOg ? new URL(url(anhOg), Astro.site).href : undefined;
 const adsense = import.meta.env.PUBLIC_ADSENSE_CLIENT;
@@ -46,6 +49,9 @@ const ld = jsonLd.filter(Boolean);
   {og && <meta property="og:image" content={og} />}
   {og && <meta property="og:image:width" content="1200" />}
   {og && <meta property="og:image:height" content="630" />}
+  {og && <meta name="twitter:image" content={og} />}
+  {ngayDang && <meta property="article:published_time" content={ngayDang.toISOString()} />}
+  {ngayCapNhat && <meta property="article:modified_time" content={ngayCapNhat.toISOString()} />}
   <meta name="twitter:card" content={og ? 'summary_large_image' : 'summary'} />
   <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
   <link rel="sitemap" href={url('sitemap-index.xml')} />
