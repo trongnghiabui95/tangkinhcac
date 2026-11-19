@@ -16,7 +16,7 @@ kt dist/index.html "href=\"${URL}\"" "trang chủ (Bài mới cập nhật) có 
 kt dist/pham-nhan-tu-tien/index.html "href=\"${URL}\"" "trang bộ truyện có link bài"
 kt dist/danh-muc/the-luc/index.html "href=\"${URL}\"" "trang danh mục /danh-muc/the-luc/ có link bài"
 kt dist/pham-nhan-tu-tien/the-luc/index.html "href=\"${URL}\"" "trang /pham-nhan-tu-tien/the-luc/ có link bài"
-kt dist/index.html 'href="/danh-muc/the-luc/"' "menu có mục Thế lực (sinh từ nội dung)"
+kt dist/index.html 'href="/pham-nhan-tu-tien/the-luc/"' "menu: Truyện Tu Tiên → Phàm Nhân Tu Tiên → Thế lực (sinh từ nội dung)"
 kt dist/sitemap-pham-nhan-tu-tien.xml "${URL}" "sitemap của bộ truyện có URL bài"
 kt "dist${URL}index.html" '"@type":"Article"' "trang bài có JSON-LD Article"
 kt "dist${URL}index.html" '"@type":"FAQPage"' "trang bài có JSON-LD FAQPage"
