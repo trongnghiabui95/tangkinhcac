@@ -412,3 +412,36 @@ html { scroll-padding-top: 80px; }
 .ban-do { margin: 0; }
 .ban-do img { width: 100%; height: auto; border-radius: var(--bo-the); border: 1px solid var(--vien); display: block; }
 .ost { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr)); }
+
+/* =====================================================================
+   MENU THEO THỨ BẬC: Loại truyện → Bộ truyện → Danh mục (Issue #56)
+   ===================================================================== */
+.menu-ngang { overflow: visible; }
+.menu-loai > summary::after { content: '▾'; font-size: 13px; }
+.menu-loai > summary.dang-mo, .dt-nhom > summary.dang-mo { color: var(--vang); }
+.bang-menu { position: absolute; left: 0; top: calc(100% + 4px); z-index: 6; width: min(720px, calc(100vw - 32px)); max-height: 75vh; overflow: auto;
+  padding: 12px; background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); box-shadow: var(--bong-the); }
+.bang-menu-tat-ca { display: flex; align-items: center; min-height: 44px; padding: 0 10px; color: var(--vang); font-weight: 600; text-decoration: none; border-bottom: 1px solid var(--vien); margin-bottom: 8px; }
+.bang-menu-luoi { display: grid; gap: 8px 16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+.bang-menu-ten { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; font: 700 1rem var(--font-tieu-de); color: var(--chu); text-decoration: none; border-radius: var(--bo-nho); }
+.bang-menu-bo ul { list-style: none; margin: 0; padding: 0 0 0 18px; border-left: 1px solid var(--vien); margin-left: 19px; }
+.bang-menu-bo li a { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 10px; color: var(--chu-phu); text-decoration: none; font-size: 15px; border-radius: var(--bo-nho); }
+.bang-menu .bieu-tuong { width: 16px; height: 16px; }
+@media (hover: hover) { .bang-menu a:hover { background: var(--be-mat-2); color: var(--vang); } }
+
+/* Điện thoại: mỗi loại truyện là 1 nhóm bấm mở/thu */
+.dt-nhom > summary { list-style: none; display: flex; align-items: center; gap: 12px; min-height: 44px; padding: 0 12px; border-radius: var(--bo-nho); cursor: pointer; color: var(--chu); }
+.dt-nhom > summary::-webkit-details-marker { display: none; }
+.dt-nhom > summary .mui-ten { margin-left: auto; width: 18px; height: 18px; transition: transform .2s; }
+.dt-nhom[open] > summary .mui-ten { transform: rotate(180deg); }
+.dt-nhom-than { margin: 0 0 6px 21px; padding-left: 12px; border-left: 1px solid var(--vien); }
+.menu-dt-noi-dung .dt-tat-ca { color: var(--vang); font-size: 15px; font-weight: 600; }
+.menu-dt-noi-dung .dt-bo-ten { font-weight: 600; }
+.dt-danh-muc { list-style: none; margin: 0 0 4px; padding: 0 0 0 24px; }
+.menu-dt-noi-dung .dt-danh-muc a { color: var(--chu-phu); font-size: 15px; gap: 10px; }
+.dt-danh-muc .bieu-tuong { width: 16px; height: 16px; }
+@media (hover: hover) { .dt-nhom > summary:hover { background: var(--be-mat-2); } }
+@media (prefers-reduced-motion: reduce) { .dt-nhom > summary .mui-ten { transition: none; } }
+/* danh sách danh mục trong bảng menu: nằm ngay dưới tên bộ (ghi đè kiểu ô nổi của .menu-con ul) */
+.bang-menu .bang-menu-bo ul { position: static; min-width: 0; max-height: none; overflow: visible; margin: 0 0 0 19px; padding: 0 0 0 10px;
+  background: none; border: 0; border-left: 1px solid var(--vien); border-radius: 0; box-shadow: none; }

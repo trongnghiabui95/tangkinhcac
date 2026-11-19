@@ -54,7 +54,15 @@ export async function layMenu() {
   const danhMucCo = CAC_DANH_MUC.filter((c) => bai.some((b) => b.data.category === c));
   return {
     // Issue #51: loại bộ truyện (Tu Tiên, Anime…), Đề cử, Thuật ngữ – chỉ hiện khi có dữ liệu
-    loai: CAC_LOAI_TRUYEN_MENU.filter((l) => series.some((s) => s.data.loai === l)).map((l) => ({ loai: l, ten: LOAI_TRUYEN_MENU[l].ten, href: url(`loai/${l}/`) })),
+    // Issue #56: menu theo thứ bậc Loại truyện → Bộ truyện → Danh mục của bộ đó
+    loai: CAC_LOAI_TRUYEN_MENU.filter((l) => series.some((s) => s.data.loai === l)).map((l) => ({
+      loai: l, ten: LOAI_TRUYEN_MENU[l].ten, href: url(`loai/${l}/`),
+      series: series.filter((s) => s.data.loai === l).map((s) => ({
+        ten: s.data.ten, href: urlSeries(slugSeries(s)),
+        danhMuc: CAC_DANH_MUC.filter((c) => bai.some((b) => b.data.series === slugSeries(s) && b.data.category === c))
+          .map((c) => ({ c, ten: DANH_MUC[c].tenSoNhieu, href: urlSeriesDanhMuc(slugSeries(s), c) })),
+      })),
+    })),
     deCu: series.some((s) => s.data.cho_nguoi_moi || s.data.tuong_tu.length) ? url('de-cu/') : null,
     thuatNgu: series.some((s) => s.data.thuat_ngu.length) ? url('thuat-ngu/') : null,
     series: series.map((s) => ({ ten: s.data.ten, href: urlSeries(slugSeries(s)) })),

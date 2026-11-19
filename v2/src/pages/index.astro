@@ -20,7 +20,6 @@ const az = new Map<string, any[]>();
 for (const s of [...series].sort((a, b) => a.data.ten.localeCompare(b.data.ten, 'vi'))) {
   const c = boDau(s.data.ten).charAt(0).toUpperCase(); const k = /[A-Z]/.test(c) ? c : '#'; az.set(k, [...(az.get(k) || []), s]);
 }
-const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.category === c).length })).filter((x) => x.so);
 ---
 <BoCuc tieuDe="Tu Chân Bảo Điển" jsonLd={[schemaWebSite(Astro.site!.href, new URL(url('tim-kiem/'), Astro.site!).href)]} moTa="Bách khoa toàn thư & review truyện Tu Tiên, Huyền Huyễn: hồ sơ nhân vật, hệ thống cảnh giới, pháp bảo, tóm tắt cốt truyện.">
   <h1 class="sr-only">Tu Chân Bảo Điển – Bách khoa truyện Tu Tiên, Huyền Huyễn</h1>
@@ -38,7 +37,7 @@ const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.categ
 
   {noiBat.length > 0 && (
     <section class="khoi">
-      <TieuDeKhoi tieuDe="Nhân vật nổi bật" bieuTuong="nhan-vat" href={url('danh-muc/nhan-vat/')} />
+      <TieuDeKhoi tieuDe="Nhân vật nổi bật" bieuTuong="nhan-vat" />
       <ul class="dai-nhan-vat">{noiBat.map((b) => { const a = layAnh(b); return (
         <li><a href={urlBai(b)}>
           {a ? <img class="anh-tron" src={url(a.srcset.at(-1).src)} width="104" height="104" alt="" loading="lazy" /> : <span class="anh-tron" aria-hidden="true">{tenBai(b).charAt(0)}</span>}
@@ -61,14 +60,6 @@ const danhMuc = CAC_DANH_MUC.map((c) => ({ c, so: bai.filter((b) => b.data.categ
     </section>
   )}
 
-  {danhMuc.length > 0 && (
-    <section class="khoi">
-      <TieuDeKhoi tieuDe="Theo danh mục" bieuTuong="luoi" />
-      <ul class="o-danh-muc">{danhMuc.map((x) => (
-        <li><a href={urlDanhMuc(x.c)}><BieuTuong ten={x.c} /><span class="o-danh-muc-ten">{DANH_MUC[x.c].tenSoNhieu}</span><span class="o-danh-muc-so">{x.so} bài</span></a></li>
-      ))}</ul>
-    </section>
-  )}
   {series.length > 1 && (
     <section class="khoi">
       <TieuDeKhoi tieuDe="Danh mục truyện A–Z" bieuTuong="a-z" />

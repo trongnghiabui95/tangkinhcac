@@ -33,14 +33,14 @@ const ld = jsonLd.filter(Boolean);
 // Menu ngang kiểu web cũ – sinh từ nội dung (danh mục đang có bài, bộ truyện)
 const duongDan = Astro.url.pathname;
 const dangMo = (href: string) => (href === url('') ? duongDan === href : duongDan.startsWith(href));
-const mucMenu = [
-  { ten: 'Trang chủ', href: url(''), bieuTuong: 'trang-chu' },
-  ...menu.loai.map((m) => ({ ten: m.ten, href: m.href, bieuTuong: m.loai })),
-  ...menu.danhMuc.map((m) => ({ ten: m.ten, href: m.href, bieuTuong: m.c })),
+const mucDau = { ten: 'Trang chủ', href: url(''), bieuTuong: 'trang-chu' };
+// Sau các nhóm loại truyện: Đề cử, Thuật ngữ (khi có dữ liệu), Tìm kiếm
+const mucSau = [
   ...(menu.deCu ? [{ ten: 'Đề cử', href: menu.deCu, bieuTuong: 'de-cu' }] : []),
   ...(menu.thuatNgu ? [{ ten: 'Thuật ngữ', href: menu.thuatNgu, bieuTuong: 'thuat-ngu' }] : []),
+  { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-kiem' },
 ];
-const mucCuoi = { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-kiem' };
+const trongLoai = (l: any) => duongDan.startsWith(l.href) || l.series.some((s: any) => duongDan.startsWith(s.href));
 ---
 <!doctype html>
 <html lang="vi" data-theme="toi">
@@ -89,20 +89,42 @@ const mucCuoi = { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-ki
         <summary aria-label="Mở menu"><BieuTuong ten="menu" /></summary>
         <nav aria-label="Menu (điện thoại)" class="menu-dt-noi-dung">
           <form action={url('tim-kiem/')} role="search" class="o-tim-dt"><BieuTuong ten="tim-kiem" /><input type="search" name="q" placeholder="Tìm truyện, nhân vật…" aria-label="Tìm kiếm" /></form>
-          {[...mucMenu, ...menu.series.map((m) => ({ ...m, bieuTuong: 'bo-truyen' })), mucCuoi].map((m) => (
-            <a href={m.href} class:list={{ 'dang-mo': dangMo(m.href) }} aria-current={duongDan === m.href ? 'page' : undefined}><BieuTuong ten={m.bieuTuong} />{m.ten}</a>
+          <a href={mucDau.href} class:list={{ 'dang-mo': duongDan === mucDau.href }} aria-current={duongDan === mucDau.href ? 'page' : undefined}><BieuTuong ten={mucDau.bieuTuong} />{mucDau.ten}</a>
+          {menu.loai.map((l) => (
+            <details class="dt-nhom" open={trongLoai(l)}>
+              <summary class:list={{ 'dang-mo': trongLoai(l) }}><BieuTuong ten={l.loai} />{l.ten}<BieuTuong ten="xuong" class="mui-ten" /></summary>
+              <div class="dt-nhom-than">
+                <a class="dt-tat-ca" href={l.href}>Tất cả {l.ten.toLowerCase()} ({l.series.length})</a>
+                {l.series.map((s) => (
+                  <div class="dt-bo">
+                    <a class:list={['dt-bo-ten', { 'dang-mo': duongDan.startsWith(s.href) }]} href={s.href}><BieuTuong ten="bo-truyen" />{s.ten}</a>
+                    {s.danhMuc.length > 0 && <ul class="dt-danh-muc">{s.danhMuc.map((c) => <li><a href={c.href} class:list={{ 'dang-mo': duongDan.startsWith(c.href) }}><BieuTuong ten={c.c} />{c.ten}</a></li>)}</ul>}
+                  </div>
+                ))}
+              </div>
+            </details>
           ))}
+          {mucSau.map((m) => <a href={m.href} class:list={{ 'dang-mo': dangMo(m.href) }} aria-current={duongDan === m.href ? 'page' : undefined}><BieuTuong ten={m.bieuTuong} />{m.ten}</a>)}
         </nav>
       </details>
     </div>
     <nav aria-label="Menu chính" class="khung menu-ngang">
-      {mucMenu.map((m) => <a href={m.href} class:list={{ 'dang-mo': dangMo(m.href) }} aria-current={duongDan === m.href ? 'page' : undefined}><BieuTuong ten={m.bieuTuong} />{m.ten}</a>)}
-      {menu.series.length === 1 && <a href={menu.series[0].href} class:list={{ 'dang-mo': dangMo(menu.series[0].href) }}><BieuTuong ten="bo-truyen" />{menu.series[0].ten}</a>}
-      {menu.series.length > 1 && (
-        <details class="menu-con"><summary><BieuTuong ten="bo-truyen" />Bộ truyện</summary>
-          <ul>{menu.series.map((m) => <li><a href={m.href}>{m.ten}</a></li>)}</ul></details>
-      )}
-      <a href={mucCuoi.href} class:list={{ 'dang-mo': dangMo(mucCuoi.href) }}><BieuTuong ten={mucCuoi.bieuTuong} />{mucCuoi.ten}</a>
+      <a href={mucDau.href} class:list={{ 'dang-mo': duongDan === mucDau.href }} aria-current={duongDan === mucDau.href ? 'page' : undefined}><BieuTuong ten={mucDau.bieuTuong} />{mucDau.ten}</a>
+      {menu.loai.map((l) => (
+        <details class="menu-con menu-loai">
+          <summary class:list={{ 'dang-mo': trongLoai(l) }}><BieuTuong ten={l.loai} />{l.ten}</summary>
+          <div class="bang-menu">
+            <a class="bang-menu-tat-ca" href={l.href}>Tất cả {l.ten.toLowerCase()} ({l.series.length}) →</a>
+            <div class="bang-menu-luoi">{l.series.map((s) => (
+              <div class="bang-menu-bo">
+                <a class="bang-menu-ten" href={s.href}><BieuTuong ten="bo-truyen" />{s.ten}</a>
+                {s.danhMuc.length > 0 && <ul>{s.danhMuc.map((c) => <li><a href={c.href}><BieuTuong ten={c.c} />{c.ten}</a></li>)}</ul>}
+              </div>
+            ))}</div>
+          </div>
+        </details>
+      ))}
+      {mucSau.map((m) => <a href={m.href} class:list={{ 'dang-mo': dangMo(m.href) }} aria-current={duongDan === m.href ? 'page' : undefined}><BieuTuong ten={m.bieuTuong} />{m.ten}</a>)}
     </nav>
   </header>
   {XEM_NHAP && <p class="bang-xem-nhap">Bản xem thử có cả bài nháp (XEM_NHAP=1) – không đăng bản này.</p>}
@@ -121,8 +143,9 @@ const mucCuoi = { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-ki
       try { localStorage.setItem('tkc2-giao-dien', h.dataset.theme); } catch (e) {}
     });
     // Đóng menu điện thoại / menu con khi bấm ra ngoài hoặc nhấn Esc
-    const dongMenu = (tru?: Element | null) => document.querySelectorAll('details.menu-dt[open], details.menu-con[open]').forEach((d) => { if (d !== tru) d.removeAttribute('open'); });
-    document.addEventListener('click', (e) => dongMenu((e.target as Element).closest('details')));
+    // (chỉ đóng menu không chứa chỗ vừa bấm – để bấm mở nhóm con trong menu điện thoại không làm đóng cả menu)
+    const dongMenu = (cho?: Node | null) => document.querySelectorAll('details.menu-dt[open], details.menu-con[open]').forEach((d) => { if (!cho || !d.contains(cho)) d.removeAttribute('open'); });
+    document.addEventListener('click', (e) => dongMenu(e.target as Node));
     document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dongMenu(); });
     // AdSense: chỉ yêu cầu quảng cáo khi ô sắp lọt vào màn hình (đỡ tốn tài nguyên, đúng chính sách hiển thị)
     const ins = document.querySelectorAll('ins.adsbygoogle');
