@@ -1,0 +1,30 @@
+---
+import TrangThongTin from '../../components/TrangThongTin.astro';
+import { TEN_WEB, THUONG_HIEU } from '../../lib/thong-tin-web.mjs';
+import { laySeries, layBai, url } from '../../lib/tien-ich.js';
+const [series, bai] = await Promise.all([laySeries(), layBai()]);
+---
+<TrangThongTin tieuDe="Giới thiệu" duongDan="gioi-thieu/" moTa={`${TEN_WEB} là bách khoa review truyện Tu Tiên, Huyền Huyễn và Anime bằng tiếng Việt: hồ sơ nhân vật, hệ thống cảnh giới, pháp bảo, thế lực, có ghi nguồn rõ ràng.`}>
+  <p>{TEN_WEB} là trang bách khoa và review truyện <strong>Tu Tiên, Huyền Huyễn</strong> và <strong>Anime</strong> bằng tiếng Việt, do người hâm mộ biên soạn. Hiện web có {series.length} bộ truyện với {bai.length} bài viết.</p>
+
+  <h2>Web có gì</h2>
+  <ul>
+    <li><strong>Review bộ truyện</strong>: tóm tắt (phần tiết lộ nội dung được thu gọn), bối cảnh, ưu và nhược điểm, đánh giá theo từng mặt.</li>
+    <li><strong>Hồ sơ nhân vật</strong>: tiểu sử, cuộc đời theo từng giai đoạn, cảnh giới, mối quan hệ, pháp bảo.</li>
+    <li><strong>Hệ thống cảnh giới, pháp bảo, thế lực</strong>: tra cứu nhanh theo từng bộ truyện.</li>
+    <li><strong>Đề cử</strong> truyện cho người mới và gợi ý "thích bộ này thì đọc bộ nào", cùng <a href={url('thuat-ngu/')}>thuật ngữ tu tiên</a>.</li>
+  </ul>
+
+  <h2>Cách chúng tôi viết bài</h2>
+  <ul>
+    <li>Nội dung tự viết bằng lời của mình dựa trên truyện gốc và bản phim; không sao chép nguyên văn từ trang khác.</li>
+    <li>Mỗi bài được kiểm tra trước khi đăng: độ dài, câu hỏi thường gặp, nguồn ảnh, không bịa chi tiết.</li>
+    <li>Ảnh minh họa luôn ghi nguồn; ảnh không tìm được nguồn chính thức thì dùng tranh tự vẽ.</li>
+    <li>Phát hiện sai sót? Hãy báo qua trang <a href={url('lien-he/')}>Liên hệ</a>, chúng tôi sửa sớm nhất có thể.</li>
+  </ul>
+
+  <h2>Về bản quyền</h2>
+  <p>{TEN_WEB} không liên kết với tác giả, nhà xuất bản hay hãng phim. Tên truyện, nhân vật và hình ảnh thuộc về chủ sở hữu tương ứng, được dùng ở độ phân giải thấp nhằm mục đích bình luận, giới thiệu. Chủ sở hữu muốn gỡ nội dung xin xem trang <a href={url('lien-he/')}>Liên hệ</a>.</p>
+
+  <p>{TEN_WEB} là một sản phẩm của {THUONG_HIEU}.</p>
+</TrangThongTin>

@@ -1,0 +1,36 @@
+---
+import TrangThongTin from '../../components/TrangThongTin.astro';
+import { TEN_WEB, TEN_MIEN, EMAIL_LIEN_HE, NGAY_CHINH_SACH } from '../../lib/thong-tin-web.mjs';
+import { url } from '../../lib/tien-ich.js';
+const coQuangCao = !!import.meta.env.PUBLIC_ADSENSE_CLIENT;
+---
+<TrangThongTin tieuDe="Chính sách bảo mật" duongDan="chinh-sach-bao-mat/" moTa={`Chính sách bảo mật của ${TEN_WEB}: dữ liệu nào được thu thập, cookie, thống kê lượt xem, quảng cáo Google và cách bạn kiểm soát thông tin của mình.`}>
+  <p><em>Cập nhật lần cuối: {NGAY_CHINH_SACH}</em></p>
+  <p>Chính sách này giải thích {TEN_WEB} ({TEN_MIEN}) thu thập những thông tin gì khi bạn đọc web và dùng chúng ra sao. Web <strong>không có tài khoản, không có ô đăng nhập hay bình luận</strong>, nên chúng tôi không yêu cầu bạn cung cấp thông tin cá nhân.</p>
+
+  <h2>Thống kê lượt xem</h2>
+  <p>Chúng tôi dùng <strong>Cloudflare Web Analytics</strong> để biết số lượt xem, trang được đọc nhiều, loại thiết bị và quốc gia. Công cụ này <strong>không dùng cookie</strong>, không theo dõi bạn qua các trang web khác và không lưu địa chỉ IP để nhận diện cá nhân.</p>
+
+  <h2>Lưu trên trình duyệt của bạn</h2>
+  <p>Web chỉ ghi nhớ <strong>lựa chọn giao diện sáng/tối</strong> trong bộ nhớ trình duyệt (localStorage) để lần sau mở lại vẫn đúng giao diện. Thông tin này nằm trên máy bạn, không gửi về máy chủ. Ô tìm kiếm chạy ngay trên trình duyệt, từ khoá bạn gõ không được gửi đi đâu.</p>
+
+  <h2>Quảng cáo</h2>
+  <p>{coQuangCao ? 'Web hiển thị' : 'Web có thể hiển thị'} quảng cáo của <strong>Google AdSense</strong>. Google và các đối tác dùng <strong>cookie</strong> để hiển thị quảng cáo dựa trên các lần bạn truy cập web này và các web khác. Bạn có thể:</p>
+  <ul>
+    <li>Tắt quảng cáo theo sở thích cá nhân tại <a href="https://adssettings.google.com" rel="nofollow noopener" target="_blank">Cài đặt quảng cáo của Google</a>.</li>
+    <li>Tìm hiểu cách Google dùng dữ liệu tại <a href="https://policies.google.com/technologies/partner-sites" rel="nofollow noopener" target="_blank">policies.google.com/technologies/partner-sites</a>.</li>
+    <li>Tắt cookie của bên thứ ba của các nhà quảng cáo khác tại <a href="https://www.aboutads.info/choices" rel="nofollow noopener" target="_blank">aboutads.info/choices</a>.</li>
+  </ul>
+
+  <h2>Nội dung nhúng từ web khác</h2>
+  <p>Một số bài có video YouTube. Video chỉ được tải khi bạn bấm phát; lúc đó YouTube (Google) có thể ghi nhận lượt xem theo chính sách của họ.</p>
+
+  <h2>Liên kết ra ngoài</h2>
+  <p>Các link nguồn ảnh và link tham khảo dẫn sang web khác. Chúng tôi không chịu trách nhiệm về cách các web đó xử lý dữ liệu của bạn.</p>
+
+  <h2>Trẻ em</h2>
+  <p>Web không cố ý thu thập thông tin của trẻ em dưới 13 tuổi.</p>
+
+  <h2>Liên hệ</h2>
+  <p>Mọi câu hỏi về chính sách này, xin gửi về <a href={`mailto:${EMAIL_LIEN_HE}`}>{EMAIL_LIEN_HE}</a> hoặc xem trang <a href={url('lien-he/')}>Liên hệ</a>. Khi chính sách thay đổi, ngày cập nhật ở đầu trang sẽ được sửa theo.</p>
+</TrangThongTin>

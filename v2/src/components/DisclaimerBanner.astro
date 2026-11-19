@@ -1,9 +1,11 @@
 ---
 // Khối miễn trừ trách nhiệm ở chân trang (mọi trang).
+import { TEN_WEB } from '../lib/thong-tin-web.mjs';
+import { url } from '../lib/tien-ich.js';
 ---
 <aside class="mien-tru" aria-label="Miễn trừ trách nhiệm" data-pagefind-ignore="all">
-  <p><strong>Miễn trừ trách nhiệm:</strong> Tu Chân Bảo Điển là trang bình luận, review và tra cứu do người hâm mộ biên soạn,
+  <p><strong>Miễn trừ trách nhiệm:</strong> {TEN_WEB} là trang bình luận, review và tra cứu do người hâm mộ biên soạn,
   không liên kết với tác giả, nhà xuất bản hay hãng phim. Tên truyện, nhân vật và hình ảnh minh họa thuộc bản quyền của chủ sở hữu tương ứng;
   ảnh được dùng ở độ phân giải thấp, có ghi nguồn, nhằm mục đích bình luận.</p>
-  <p>Nếu bạn là chủ sở hữu và muốn gỡ hoặc chỉnh sửa nội dung, hãy liên hệ qua fanpage – chúng tôi xử lý trong vòng 72 giờ.</p>
+  <p>Nếu bạn là chủ sở hữu và muốn gỡ hoặc chỉnh sửa nội dung, hãy <a href={url('lien-he/')}>liên hệ với chúng tôi</a> – chúng tôi xử lý trong vòng 72 giờ.</p>
 </aside>

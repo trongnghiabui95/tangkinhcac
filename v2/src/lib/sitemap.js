@@ -28,6 +28,8 @@ export async function urlTrangChinh() {
     ...(await cacTheLoai()).map((t) => ({ loc: urlTheLoai(t.ten), lastmod: capNhatBo(t.ds) })),
     ...(series.some((s) => s.data.cho_nguoi_moi || s.data.tuong_tu.length) ? [{ loc: urlDeCu(), lastmod: capNhatBo(series) }] : []),
     { loc: urlThuatNgu(), lastmod: capNhatBo(series) },
+    // Issue #67: trang thông tin
+    ...['gioi-thieu/', 'lien-he/', 'chinh-sach-bao-mat/'].map((p) => ({ loc: url(p), lastmod: new Date('2026-11-19') })),
   ];
   return [{ loc: url(''), lastmod: homNay }, ...vt, ...dm, ...them];
 }

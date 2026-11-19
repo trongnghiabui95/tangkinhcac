@@ -8,6 +8,7 @@ import '../styles/giao-dien.css';
 import DisclaimerBanner from '../components/DisclaimerBanner.astro';
 import BieuTuong from '../components/BieuTuong.astro';
 import { url, layMenu } from '../lib/tien-ich.js';
+import { TEN_WEB } from '../lib/thong-tin-web.mjs';
 
 interface Props {
   tieuDe: string;            // không gồm tên web
@@ -24,7 +25,7 @@ interface Props {
 const { tieuDe, moTa, anhOg, jsonLd = [], kieuOg = 'website', noindex = false, tuKhoa = [], giuNguyenTieuDe = false, ngayDang, ngayCapNhat } = Astro.props;
 const menu = await layMenu();   // sinh từ nội dung: bộ truyện + danh mục đang có bài
 const XEM_NHAP = (import.meta.env.XEM_NHAP ?? process.env.XEM_NHAP) === '1';
-const TEN_WEB = 'Tu Chân Bảo Điển';
+
 const title = giuNguyenTieuDe || tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = anhOg ? new URL(url(anhOg), Astro.site).href : undefined;
@@ -133,6 +134,7 @@ const trongLoai = (l: any) => duongDan.startsWith(l.href) || l.series.some((s: a
     <div class="khung">
       <DisclaimerBanner />
       <p class="thuong-hieu">Một sản phẩm của <img class="khi-toi" src={url('yendan.svg')} alt="yendan" width="84" height="32" loading="lazy" /><img class="khi-sang" src={url('yendan-sang.svg')} alt="yendan" width="84" height="32" loading="lazy" /></p>
+      <nav aria-label="Thông tin" class="lien-ket-chan"><a href={url('gioi-thieu/')}>Giới thiệu</a><a href={url('lien-he/')}>Liên hệ</a><a href={url('chinh-sach-bao-mat/')}>Chính sách bảo mật</a></nav>
       <p class="ban-quyen">© {new Date().getFullYear()} {TEN_WEB}</p>
     </div>
   </footer>
