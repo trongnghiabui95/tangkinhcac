@@ -2,7 +2,7 @@
 
 Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt: hồ sơ nhân vật, hệ thống cảnh giới, pháp bảo, thế lực, đề cử, thuật ngữ.
 
-🌐 Web: **https://tuchanbaodien.pages.dev**
+🌐 Web: **https://tuchanbaodien.com**
 
 - Toàn bộ mã nguồn và nội dung nằm trong thư mục [`v2/`](v2/) (Astro + MDX + Pagefind).
 - Hướng dẫn chi tiết (thêm bài, ảnh, lệnh, đăng web): **[v2/README-V2.md](v2/README-V2.md)**.

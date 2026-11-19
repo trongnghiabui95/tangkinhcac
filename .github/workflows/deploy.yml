@@ -1,6 +1,6 @@
 # Web cũ (GitHub Pages) đã ngừng (Issue #52) – web chính chạy trên Cloudflare Pages (thư mục v2/).
 # Workflow này chỉ đăng 1 trang CHUYỂN HƯỚNG lên GitHub Pages, để các link cũ
-# (…github.io/tuchanbaodien/review.html?id=…) tự sang đúng trang trên tuchanbaodien.pages.dev.
+# (…github.io/tuchanbaodien/review.html?id=…) tự sang đúng trang trên tuchanbaodien.com.
 name: Chuyển hướng GitHub Pages sang web mới
 
 on:

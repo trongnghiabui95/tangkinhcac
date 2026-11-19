@@ -1,6 +1,6 @@
 # Tu Chân Bảo Điển v2: Astro + MDX + Pagefind
 
-Đây là **web chính thức** của Tu Chân Bảo Điển, đăng trên Cloudflare Pages: https://tuchanbaodien.pages.dev. Web cũ (HTML/JS + Google Sheet) đã được chuyển hết tính năng sang đây (Issue #51) và xoá khỏi repo (Issue #52); địa chỉ GitHub Pages cũ tự chuyển hướng sang web này.
+Đây là **web chính thức** của Tu Chân Bảo Điển, đăng trên Cloudflare Pages: https://tuchanbaodien.com. Web cũ (HTML/JS + Google Sheet) đã được chuyển hết tính năng sang đây (Issue #51) và xoá khỏi repo (Issue #52); địa chỉ GitHub Pages cũ tự chuyển hướng sang web này.
 
 ## 1. Vì sao Astro (không phải Next.js)
 | Tiêu chí | Astro | Next.js (App Router, `output: 'export'`) |
@@ -135,7 +135,7 @@ npm run preview        # xem thử ở http://localhost:4321
 ```
 | Biến | Ý nghĩa |
 |---|---|
-| `SITE_URL` | Địa chỉ web thật (canonical, sitemap, Open Graph). Mặc định `https://tuchanbaodien.pages.dev` |
+| `SITE_URL` | Địa chỉ web thật (canonical, sitemap, Open Graph). Mặc định `https://tuchanbaodien.com` |
 | `BASE_PATH` | Đường dẫn con nếu web không nằm ở gốc tên miền (ví dụ `/tu-chan/`) |
 | `PUBLIC_ADSENSE_CLIENT` | Mã `ca-pub-…`. Trống = không có quảng cáo |
 | `PUBLIC_ADSENSE_SLOT_GIUA_BAI`, `PUBLIC_ADSENSE_SLOT_CUOI_BAI` | Mã ô quảng cáo (nếu dùng ô cố định thay vì quảng cáo tự động) |
@@ -165,16 +165,16 @@ Mỗi PR có sửa `v2/` chạy lần lượt:
 3. Điền:
    | Ô | Giá trị |
    |---|---|
-   | Project name | `tuchanbaodien` (web sẽ ở `https://tuchanbaodien.pages.dev`) |
+   | Project name | `tuchanbaodien` (web sẽ ở `https://tuchanbaodien.com`) |
    | Production branch | `main` |
    | Framework preset | `Astro` (hoặc `None`) |
    | Build command | `npm run build` |
    | Build output directory | `dist` |
    | Root directory (Advanced) | `v2` |
-4. **Environment variables** (mục Advanced) thêm 2 biến: `SITE_URL` = `https://tuchanbaodien.pages.dev`, `NODE_VERSION` = `22.23.5`.
+4. **Environment variables** (mục Advanced) thêm 2 biến: `SITE_URL` = `https://tuchanbaodien.com`, `NODE_VERSION` = `22.23.5`.
 5. Bấm **Save and Deploy**. Lần đầu mất khoảng 2–3 phút.
 6. Bản xem trước cho từng PR: Cloudflare bật sẵn. Kiểm tra ở **Settings → Builds & deployments → Preview branches** = *All non-Production branches*. Mỗi PR sẽ có bình luận/nút "Cloudflare Pages" kèm link `https://<mã>.tuchanbaodien.pages.dev`.
-7. Từ nay merge vào `main` → Cloudflare tự build lại và cập nhật `tuchanbaodien.pages.dev`. Địa chỉ GitHub Pages cũ chỉ còn trang chuyển hướng (`.github/chuyen-huong/`).
+7. Từ nay merge vào `main` → Cloudflare tự build lại và cập nhật `tuchanbaodien.com`. Địa chỉ GitHub Pages cũ chỉ còn trang chuyển hướng (`.github/chuyen-huong/`).
 8. Khi có tên miền thật: **Custom domains** → thêm tên miền, rồi đổi `SITE_URL` sang tên miền đó và bấm **Retry deployment**.
 
 ## 5. Quy tắc quảng cáo đã cài

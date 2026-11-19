@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     env:
-      SITE_URL: https://tuchanbaodien.pages.dev
+      SITE_URL: https://tuchanbaodien.com
       BAO_CAO: ${{ github.workspace }}/bao-cao
     defaults:
       run:
