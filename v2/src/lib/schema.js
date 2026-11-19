@@ -1,5 +1,5 @@
 // JSON-LD (schema.org) sinh từ frontmatter. Mọi URL tuyệt đối tính từ SITE_URL (Astro.site).
-const TEN_WEB = 'Tu Chân Bảo Điển';
+import { TEN_WEB } from './thong-tin-web.mjs';
 export const toChuc = (site) => ({ '@type': 'Organization', name: TEN_WEB, url: site, logo: { '@type': 'ImageObject', url: new URL('logo.png', site).href, width: 512, height: 512 } });
 
 /** BreadcrumbList từ [{ ten, url (tuyệt đối) }] */

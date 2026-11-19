@@ -1,0 +1,27 @@
+---
+import TrangThongTin from '../../components/TrangThongTin.astro';
+import { TEN_WEB, EMAIL_LIEN_HE, FANPAGE } from '../../lib/thong-tin-web.mjs';
+---
+<TrangThongTin tieuDe="Liên hệ" duongDan="lien-he/" moTa={`Liên hệ ${TEN_WEB}: góp ý, báo sai sót nội dung, đề xuất truyện cần review, hợp tác, hoặc yêu cầu gỡ nội dung bản quyền (xử lý trong 72 giờ).`}>
+  <p>Bạn có thể liên hệ {TEN_WEB} qua:</p>
+  <ul class="ds-lien-he">
+    <li><strong>Email:</strong> <a href={`mailto:${EMAIL_LIEN_HE}`}>{EMAIL_LIEN_HE}</a></li>
+    {FANPAGE && <li><strong>Fanpage:</strong> <a href={FANPAGE} rel="noopener" target="_blank">{FANPAGE.replace(/^https?:\/\//, '')}</a></li>}
+  </ul>
+
+  <h2>Chúng tôi nhận</h2>
+  <ul>
+    <li>Báo sai sót trong bài (ghi kèm link bài và chỗ sai).</li>
+    <li>Đề xuất bộ truyện, anime hoặc nhân vật bạn muốn có bài.</li>
+    <li>Hợp tác, quảng cáo.</li>
+  </ul>
+
+  <h2>Yêu cầu gỡ nội dung bản quyền</h2>
+  <p>Nếu bạn là chủ sở hữu bản quyền (hoặc được ủy quyền) và cho rằng nội dung, hình ảnh trên web vi phạm quyền của bạn, hãy gửi email kèm:</p>
+  <ol>
+    <li>Link trang có nội dung cần gỡ.</li>
+    <li>Mô tả nội dung (ảnh, đoạn văn) và tác phẩm gốc của bạn.</li>
+    <li>Thông tin liên hệ để chúng tôi phản hồi.</li>
+  </ol>
+  <p>Chúng tôi xử lý trong vòng <strong>72 giờ</strong> kể từ khi nhận đủ thông tin.</p>
+</TrangThongTin>

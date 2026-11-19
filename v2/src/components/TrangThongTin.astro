@@ -1,0 +1,17 @@
+---
+// Khung chung cho các trang thông tin (Giới thiệu, Liên hệ, Chính sách bảo mật)
+import BoCuc from '../layouts/BoCuc.astro';
+import Breadcrumb from './Breadcrumb.astro';
+import { schemaBreadcrumb } from '../lib/schema.js';
+import { url } from '../lib/tien-ich.js';
+interface Props { tieuDe: string; moTa: string; duongDan: string }
+const { tieuDe, moTa, duongDan } = Astro.props;
+const site = Astro.site!;
+---
+<BoCuc tieuDe={tieuDe} moTa={moTa} jsonLd={[schemaBreadcrumb([{ ten: 'Trang chủ', url: new URL(url(''), site).href }, { ten: tieuDe, url: new URL(url(duongDan), site).href }])]}>
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: tieuDe }]} />
+  <article class="trang-thong-tin muc">
+    <h1>{tieuDe}</h1>
+    <slot />
+  </article>
+</BoCuc>
