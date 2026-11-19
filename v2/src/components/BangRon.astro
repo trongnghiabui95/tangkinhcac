@@ -3,16 +3,22 @@
 // laTieuDe = true: tên truyện là <h1> (trang bộ truyện); ngược lại là <h2> (trang chủ).
 import BieuTuong from './BieuTuong.astro';
 import { layAnhSeries, slugSeries, urlSeries, url } from '../lib/tien-ich.js';
-interface Props { s: any; laTieuDe?: boolean; nut?: boolean }
-const { s, laTieuDe = false, nut = true } = Astro.props;
+// uuTien = false (băng rôn thứ 2 trở đi ở trang chủ): ảnh tải chậm (lazy), không tranh băng thông với băng rôn đầu
+interface Props { s: any; laTieuDe?: boolean; nut?: boolean; uuTien?: boolean }
+const { s, laTieuDe = false, nut = true, uuTien = true } = Astro.props;
+const nho = anhNho();
+function anhNho() { const a = layAnhSeries(s); return a ? a.srcset.at(-1).src : null; }
 const d = s.data;
 const anh = layAnhSeries(s);
 const H = laTieuDe ? 'h1' : 'h2';
 ---
 <section class="bang-ron">
-  {anh && <div class="bang-ron-nen" style={`background-image:url('${url(anh.srcset.at(-1).src)}')`} aria-hidden="true"></div>}
+  {anh && (uuTien
+    ? <div class="bang-ron-nen" style={`background-image:url('${url(nho!)}')`} aria-hidden="true"></div>
+    : <img class="bang-ron-nen bang-ron-nen-anh" src={url(nho!)} alt="" loading="lazy" decoding="async" aria-hidden="true" />)}
   <div class="bang-ron-noi-dung">
-    {anh && <img src={url(anh.src)} width={anh.width} height={anh.height} alt={`Bìa ${d.ten}`} fetchpriority="high" />}
+    {anh && <img src={url(nho!)} srcset={anh.srcset.map((x: any) => `${url(x.src)} ${x.w}w`).join(', ')} sizes="(max-width: 640px) 110px, 170px" width={anh.width} height={anh.height}
+                 alt={`Bìa ${d.ten}`} loading={uuTien ? 'eager' : 'lazy'} fetchpriority={uuTien ? 'high' : 'auto'} decoding="async" />}
     <div class="bang-ron-chu">
       <ul class="hang-nhan">{d.the_loai.map((g: string, i: number) => <li><span class:list={['nhan', i ? 'nhan-vien' : 'nhan-tu-tien']}>{g}</span></li>)}</ul>
       <H class="bang-ron-ten">{laTieuDe && <span class="bang-ron-kicker">Review </span>}{d.ten}</H>

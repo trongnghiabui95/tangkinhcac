@@ -60,7 +60,9 @@ export const collections = {
 
   // Bài viết theo chuẩn .mdx mới
   baiViet: defineCollection({
-    loader: glob({ pattern: '*/*/*.mdx', base: './content' }),
+    // generateId: mã bài = đường dẫn file (<series>/<category>/<slug>). Mặc định Astro lấy trường `slug` làm mã,
+    // khiến 2 bộ truyện có bài trùng slug (vd. cùng có he-thong-canh-gioi) đè mất bài của nhau.
+    loader: glob({ pattern: '*/*/*.mdx', base: './content', generateId: ({ entry }) => entry.replace(/\.mdx$/, '') }),
     schema: z.object({
       title: doDai('title', GIOI_HAN.title),
       slug: slug('slug'),

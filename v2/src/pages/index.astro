@@ -26,7 +26,7 @@ for (const s of [...series].sort((a, b) => a.data.ten.localeCompare(b.data.ten, 
 
   {bangRon.length > 0 && (
     <div class="dai-bang-ron" aria-label="Bộ truyện nổi bật">
-      {bangRon.map((s) => <BangRon s={s} />)}
+      {bangRon.map((s, i) => <BangRon s={s} uuTien={i === 0} />)}
     </div>
   )}
 
