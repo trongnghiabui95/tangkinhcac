@@ -1,7 +1,7 @@
 // Kiểm tra SEO trên dist/ sau build: JSON-LD hợp lệ + đủ trường Google yêu cầu, URL tuyệt đối theo SITE_URL,
 // <title>/description/canonical/og đúng. Chạy: node tests/kiem-tra-seo.mjs [SITE_URL]
 import fs from 'node:fs'; import path from 'node:path';
-const SITE = (process.argv[2] || process.env.SITE_URL || 'https://trongnghiabui95.github.io').replace(/\/$/, '');
+const SITE = (process.argv[2] || process.env.SITE_URL || 'https://tuchanbaodien.pages.dev').replace(/\/$/, '');
 const loi = []; let soTrang = 0;
 const duyet = (d) => fs.readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? duyet(path.join(d, e.name)) : e.name === 'index.html' ? [path.join(d, e.name)] : []);
 const lay = (h, re) => (h.match(re) || [])[1];

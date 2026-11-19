@@ -3,7 +3,7 @@ version: alpha
 name: Tu Chân Bảo Điển
 description: Web review truyện Tu Tiên / Huyền Huyễn và Anime tiếng Việt, phong cách cổ phong tiên hiệp. Nền mực xanh đen (mặc định) hoặc giấy dó (sáng), điểm nhấn vàng kim và ngọc bích, họa tiết mây nhẹ, tiêu đề serif Noto Serif, nội dung Be Vietnam Pro. Bố cục kiểu wiki: thẻ bìa dọc 2:3, khung thông tin, mục lục bám theo.
 colors:
-  # Giao diện tối "tien-hiep" (mặc định). Tên biến trong CSS: token DaisyUI 5 (--color-*)
+  # Giao diện tối (mặc định, data-theme="toi"). Tên biến trong CSS: --vang, --ngoc, --nen, --be-mat… (v2/src/styles/giao-dien.css)
   primary: "#D4A944"          # vàng kim: link, nút chính, tiêu đề mục, điểm số
   on-primary: "#1B1405"
   secondary: "#3FB59B"        # ngọc bích: link trong infobox/đoạn văn, mốc thời gian
@@ -14,7 +14,7 @@ colors:
   surface-2: "#1B2735"        # nền phụ trong thẻ, khung chờ ảnh (--color-base-300)
   on-surface: "#EBE3CF"
   line: "rgba(212,169,68,.28)" # viền vàng mờ (--vien-vang)
-  # Giao diện sáng "ngoc-sang"
+  # Giao diện sáng (data-theme="sang")
   light-primary: "#A87A16"
   light-on-primary: "#FFFFFF"
   light-secondary: "#1F8A72"
@@ -113,7 +113,7 @@ components:
 
 # Tu Chân Bảo Điển — hệ thống thiết kế
 
-File này mô tả giao diện cho mọi AI agent (Claude Code, Codex…) và người làm web. Phần token ở đầu file là giá trị chuẩn; phần chữ bên dưới giải thích **khi nào và vì sao** dùng. Giá trị thật nằm ở đầu `assets/css/giao-dien.css` (khối `:root`, `[data-theme="tien-hiep"]`, `[data-theme="ngoc-sang"]`); hai nơi phải khớp nhau. Định dạng theo [google-labs-code/design.md](https://github.com/google-labs-code/design.md), cùng khuôn với `DESIGN.md` của Hôm Nay Nấu Gì.
+File này mô tả giao diện cho mọi AI agent (Claude Code, Codex…) và người làm web. Phần token ở đầu file là giá trị chuẩn; phần chữ bên dưới giải thích **khi nào và vì sao** dùng. Giá trị thật nằm ở đầu `v2/src/styles/giao-dien.css` (khối `:root, [data-theme="toi"]` và `[data-theme="sang"]`); hai nơi phải khớp nhau. Định dạng theo [google-labs-code/design.md](https://github.com/google-labs-code/design.md), cùng khuôn với `DESIGN.md` của Hôm Nay Nấu Gì.
 
 **Đọc file này trước khi sửa bất cứ thứ gì nhìn thấy được.** Sau khi sửa, chạy mục [Kiểm tra giao diện](#kiểm-tra-giao-diện).
 
@@ -122,15 +122,15 @@ File này mô tả giao diện cho mọi AI agent (Claude Code, Codex…) và ng
 Hình mẫu: **một bộ bảo điển tu chân**: sách cổ quý, ánh đèn vàng trên nền mực, mỗi quyển (tác phẩm) có bìa dọc và một tờ thông tin kiểu wiki. Người đọc là fan tu tiên/anime, đọc trên điện thoại buổi tối, muốn biết nhanh: truyện có hay không, nhân vật là ai, cảnh giới thế nào, rồi đào sâu bằng các liên kết.
 
 Đặc điểm nhận diện:
-- **Thư viện:** Tailwind v4 (browser) + DaisyUI 5 qua CDN, ghim phiên bản. Màu và bo góc đi qua token DaisyUI (`--color-*`, `--radius-*`); mọi ghi đè nằm trong `giao-dien.css` (không nằm trong `@layer` nên luôn thắng).
-- **Phong cách cổ phong:** nền tối mực xanh đen là **mặc định**; giao diện sáng "giấy dó" bật bằng nút ☀/☾, lưu ở `localStorage` `tkc-giao-dien`.
+- **Công nghệ:** Astro sinh HTML tĩnh, CSS thuần trong `v2/src/styles/giao-dien.css` (không Tailwind/DaisyUI). Phông tự lưu ở `v2/public/phong/` có phông dự phòng khớp cỡ (không nhảy chữ).
+- **Phong cách cổ phong:** nền tối mực xanh đen là **mặc định**; giao diện sáng "giấy dó" bật bằng nút ☀/☾, lưu ở `localStorage` `tkc2-giao-dien`.
 - **Chữ:** tiêu đề Noto Serif 700 (có tiếng Việt, gợi sách cổ); nội dung Be Vietnam Pro. Chữ Hán chỉ dùng trên ảnh/logo, không dùng làm chữ giao diện.
 - **Màu:** vàng kim là màu nhấn chính (link, nút, tiêu đề mục, điểm), ngọc bích cho liên kết trong đoạn văn và mốc thời gian, chu sa cho con dấu. Nhãn chuyên mục có màu riêng, luôn kèm chữ.
-- **Ảnh là nhân vật chính:** bìa dọc 2:3, ảnh nhân vật 3:4. Ưu tiên ảnh chính thức có ghi nguồn (`nguon_anh`); không có thì tranh minh họa thủy mặc tự vẽ (`tools/ve_anh_mau.py`), không dùng ảnh giả trộn lẫn ảnh thật.
+- **Ảnh là nhân vật chính:** bìa dọc 2:3, ảnh nhân vật 3:4. Ưu tiên ảnh chính thức có ghi nguồn (`nguon_anh`); không có thì tranh minh họa thủy mặc tự vẽ (`v2/tools/ve_anh_mau.py`), không dùng ảnh giả trộn lẫn ảnh thật.
 - **Họa tiết mây** trên nền trang là lựa chọn có chủ đích của chủ dự án (yêu cầu ban đầu): giữ thật mờ (≤ 7% độ đậm), không thêm họa tiết khác.
-- **Thương hiệu chủ quản yendan** chỉ xuất hiện ở chân trang ("Một sản phẩm của yendan"); thanh menu chỉ dùng logo Tu Chân Bảo Điển: **quyển bảo điển mở, phía trên là ngọn linh khí ngọc bích, trên nền tròn vàng kim** (`assets/img/logo.svg`, không dùng chữ Hán). Con dấu thương hiệu trên tranh tự vẽ là chữ **TCBĐ**.
+- **Thương hiệu chủ quản yendan** chỉ xuất hiện ở chân trang ("Một sản phẩm của yendan"); thanh menu chỉ dùng logo Tu Chân Bảo Điển: **quyển bảo điển mở, phía trên là ngọn linh khí ngọc bích, trên nền tròn vàng kim** (`v2/public/favicon.svg`, `v2/public/logo.png`; không dùng chữ Hán). Con dấu thương hiệu trên tranh tự vẽ là chữ **TCBĐ**.
 
-Trang review và trang nhân vật là trang **để đọc**: ưu tiên rõ ràng, liên kết chính xác; trang chủ được phép sinh động hơn ở banner trượt.
+Trang review và trang nhân vật là trang **để đọc**: ưu tiên rõ ràng, liên kết chính xác; trang chủ được phép sinh động hơn ở băng rôn bộ truyện.
 
 ## Colors
 
@@ -172,21 +172,21 @@ Trang review và trang nhân vật là trang **để đọc**: ưu tiên rõ rà
 
 - Bo góc: `sm` 8px (nút, ảnh nhỏ), `md` 14px (thẻ, mục, infobox), `full` (nhãn, chip, ảnh tròn nhân vật).
 - Ảnh: bìa 2:3, nhân vật 3:4 (đầu ảnh ở trên – `object-position: top` trong thư viện ảnh nhân vật), logo/vật phẩm vuông, ảnh cảnh 3:2. Luôn `object-fit: cover`, có `aspect-ratio` để không nhảy bố cục, `loading="lazy"` trừ ảnh đầu trang.
-- Icon: Lucide (cùng bộ nét). Không dùng emoji làm icon tính năng.
+- Icon: Lucide dạng SVG nội tuyến (`v2/src/lib/bieu-tuong.js`, component `BieuTuong`). Không dùng emoji làm icon tính năng.
 
 ## Components
 
-- **Thẻ tác phẩm** (`UI.workCard`): bìa 2:3, nhãn loại góc trên trái, điểm ★ góc trên phải, tên serif 2 dòng, ngày đăng.
-- **Thẻ nhân vật** (`UI.charCard`): ảnh 3:4, nhãn vai trò (Phản diện màu `tag-phan-dien`), tên, biệt danh hoặc ghi chú quan hệ.
-- **Chip nhân vật** (`UI.chip`): ảnh tròn 44px + tên, dùng trong danh sách thành viên, chủ sở hữu, nhân vật tiêu biểu.
+- **Thẻ bộ truyện** (`TheBoTruyen.astro`): bìa 2:3, nhãn loại góc trên trái, điểm ★ góc trên phải, tên serif 2 dòng, số bài.
+- **Thẻ bài** (`TheBai.astro`): ảnh 3:4 (chưa có ảnh thì bìa bộ truyện làm mờ + biểu tượng danh mục), nhãn danh mục/vai trò (Phản diện màu `tag-phan-dien`), tên, tên bộ truyện.
+- **Chip nhân vật** (`ChipNhanVat.astro`): ảnh tròn 44px + tên, dùng trong danh sách thành viên, chủ sở hữu, nhân vật tiêu biểu.
 - **Infobox** (`.infobox`): tiêu đề nền gradient vàng–ngọc nhạt, ảnh, bảng `th` vàng / `td`, dòng ngăn nét đứt; dòng nào trống thì bỏ.
 - **Mục nội dung** (`.muc`): h2 serif vàng + icon, gạch dưới mảnh.
 - **Mục lục** (`.muc-luc`): dính khi cuộn, tô sáng mục đang xem.
 - **Spoiler**: phần sau dòng `[spoiler]` bị làm mờ, nút "Hiện phần có spoiler".
 - **Bậc thang cảnh giới** (`.bac`): số tròn vàng + thẻ cảnh giới + chip nhân vật ở cảnh giới đó, nối bằng vạch 2px.
 - **Dòng thời gian** (`.dong-thoi-gian`): chấm tròn viền ngọc, nhãn địa điểm + nhãn cảnh giới.
-- **Ghi nguồn ảnh** (`UI.nguon`): dòng nghiêng nhỏ "Ảnh: …" dưới ảnh và trong chú thích khi phóng to.
-- **Logo yendan** (chân trang): SVG nội tuyến `YENDAN` trong `layout.js`, cao 32px, chữ `currentColor` (`--mau-yendan`), quả cherry `#D21F3C`, lá xanh. Bộ gốc ở `assets/img/thuong-hieu/`.
+- **Ghi nguồn ảnh** (`.nguon-anh`): **1 dòng** nhỏ, mờ, không gạch chân, dài thì "…" (đủ nội dung trong `title`), link mở trang nguồn. Không để nguồn ảnh dài nhiều dòng (yêu cầu chủ dự án 19/11/2026).
+- **Logo yendan** (chân trang): `v2/public/yendan.svg` (nền tối) và `yendan-sang.svg` (nền sáng), cao 32px, tự đổi theo giao diện.
 - **Trạng thái rỗng**: nói cái gì trống và làm gì tiếp ("Chưa có tác phẩm nào. Hãy thêm dòng vào tab TacPham.").
 - **Lỗi tải dữ liệu**: khung `alert-error` nói nguyên nhân và cách sửa (`config.js`, `?lammoi=1`).
 - **Khung chờ** (`.cho`): khối phẳng nhấp nháy nhẹ đúng hình dạng nội dung sắp hiện.
@@ -213,20 +213,20 @@ Không được:
 motion:
   duration-press: 120ms
   duration-state: 200ms       # hover, đổi giao diện
-  duration-enter: 600ms       # AOS hiện dần (đã đặt trong UI.refresh)
+  duration-enter: 600ms
   ease-out: cubic-bezier(0.23, 1, 0.32, 1)
 ```
 
-- Hiện dần khi cuộn (AOS, `once: true`) là yêu cầu của chủ dự án: chỉ dùng cho khối/thẻ, không cho chữ trong đoạn; phải gọi `AOS.refresh()` sau khi bố cục đổi (đã có trong `layout.js`).
+- Web v2 không dùng AOS (hiệu ứng hiện dần làm sai vị trí cuộn, xem lỗi mục lục PR #35); chỉ hover nổi thẻ và chuyển màu.
 - Banner tự trượt 5 giây/lần, dừng khi người dùng chạm.
 - Chỉ animate `transform` và `opacity`. Không `transition: all`.
-- `prefers-reduced-motion`: tắt AOS, tắt banner tự trượt, giữ đổi màu ngắn (xem Known Gaps).
+- `prefers-reduced-motion`: tắt chuyển động hover, giữ đổi màu ngắn.
 
 ## Kiểm tra giao diện
 
 Chạy sau mỗi thay đổi nhìn thấy được. **Floor** sai thì chưa mở PR; **Reflex** sai thì sửa hoặc ghi lý do trong PR; **Finish** soi bằng mắt.
 
-Ma trận: độ rộng 320, 390, 768, 1280 · giao diện tối (mặc định) và sáng (`localStorage` `tkc-giao-dien` = `ngoc-sang`) · trang chủ, review, nhân vật, danh sách, id không tồn tại.
+Ma trận: độ rộng 320, 390, 768, 1280 · giao diện tối (mặc định) và sáng (`localStorage` `tkc2-giao-dien` = `sang`) · trang chủ, bộ truyện, bài nhân vật, bài cảnh giới, danh mục, đề cử, thuật ngữ, 404.
 
 **Floor**
 1. Không cuộn ngang: `document.documentElement.scrollWidth <= innerWidth`.
@@ -236,7 +236,7 @@ Ma trận: độ rộng 320, 390, 768, 1280 · giao diện tối (mặc định)
 5. Cỡ chữ tính toán ≥ 13px.
 6. Ảnh có `alt`, có tỉ lệ giữ chỗ; ảnh hỏng tự thay ảnh dự phòng.
 7. Đúng một `h1`, tiêu đề không nhảy cấp.
-8. `node tools/kiem-tra/e2e.mjs`: mọi dòng `OK`, `errors: []` (workflow `kiem-tra` chạy tự động trên PR).
+8. Trong `v2/`: `npm run build`, `node scripts/kiem-tra-dist.mjs`, `npm run test:seo` không lỗi (workflow `v2-build` chạy tự động trên PR).
 
 **Reflex** (dò nhanh trong `giao-dien.css`)
 - `transition: all`; animate `width|height|top|left`.
@@ -251,17 +251,11 @@ Ma trận: độ rộng 320, 390, 768, 1280 · giao diện tối (mặc định)
 
 ## Known Gaps
 
-Đo ngày 2026-11-18 (trang chủ, review, nhân vật × 320/390/1280 × tối/sáng). Sửa dần, mỗi PR một nhóm:
+Danh sách cũ (đo trên web cũ ngày 2026-11-18) đã hết hiệu lực khi web cũ bị xoá (Issue #52). Web v2 đo ngày 2026-11-19 (Issue #32, #51): Lighthouse 99–100 mọi mục, CLS 0, không cuộn ngang 320–1280px, chữ ≥ 13px, đúng 1 h1. Còn lại:
 
-1. **Trang chủ không có `h1`** (0 ở mọi độ rộng): thêm h1 (có thể ẩn chữ, giữ cho trình đọc màn hình) "Tu Chân Bảo Điển – Review truyện Tu Tiên, Huyền Huyễn và Anime".
-2. **Vùng bấm nhỏ hơn 44px**: 19–28 phần tử ở trang chủ, 42–50 ở review, 36–46 ở nhân vật (nút `btn-sm/xs`, nhãn thể loại là link, nút A–Z, chip).
-3. **Chữ nhỏ hơn 13px**: 11px (dòng nguồn ảnh `text-[11px]`), 11.5px (nhãn `.nhan`), 12px (`text-xs`: ngày đăng, chú thích): nâng lên 13px.
-4. **Sọc trái**: `.tieu-de-khoi h2::before` 6px, `.cau-noi` 4px, `.muc-luc a.dang-xem` 2px.
-5. **Kính mờ** `backdrop-filter: blur(10px)` ở thanh menu: cân nhắc nền đặc.
-6. **Hover** chưa bọc `@media (hover: hover)`; hover phóng to ảnh (`scale(1.05–1.06)`) ở thẻ bìa, ảnh tròn, thư viện ảnh.
-7. **Chưa xử lý `prefers-reduced-motion`** (AOS, banner tự trượt, cuộn mượt).
-8. **Màu viết trực tiếp** ngoài khối token: 8 chỗ (nhãn điểm `.the-diem`, chữ kem trên ảnh `#FFF6DC`/`#F5D27A`, họa tiết mây trong `url()`).
-9. **Nội dung chờ JS**: toàn bộ trang dựng bằng JavaScript, tắt JS thì trống. Giai đoạn 3 (trang tĩnh, Issue #10) sẽ khắc phục.
+1. **Link chữ trong đoạn văn** (liên kết nội bộ tự gắn) thấp hơn 44px: được miễn như quy tắc Floor #2.
+2. **Màu chữ trên ảnh** (`--chu-tren-anh`, `--vang-tren-anh`) chỉ có 1 bản cho cả 2 giao diện vì ảnh luôn được làm tối.
+3. **Tranh minh họa tự vẽ** (Hàn Lập, Nam Cung Uyển) còn đơn giản; thay bằng ảnh chính thức khi có nguồn.
 
 ## Nguồn tham khảo
 

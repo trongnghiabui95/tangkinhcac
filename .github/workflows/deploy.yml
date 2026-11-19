@@ -1,11 +1,12 @@
-# Giai đoạn 1: mỗi lần đẩy code lên nhánh main (hoặc bấm tay "Run workflow"),
-# GitHub tự đăng toàn bộ web lên GitHub Pages.
-# (Giai đoạn 3 sẽ thêm bước đọc Google Sheet và sinh trang tĩnh mỗi ngày.)
-name: Đăng web lên GitHub Pages
+# Web cũ (GitHub Pages) đã ngừng (Issue #52) – web chính chạy trên Cloudflare Pages (thư mục v2/).
+# Workflow này chỉ đăng 1 trang CHUYỂN HƯỚNG lên GitHub Pages, để các link cũ
+# (…github.io/tuchanbaodien/review.html?id=…) tự sang đúng trang trên tuchanbaodien.pages.dev.
+name: Chuyển hướng GitHub Pages sang web mới
 
 on:
   push:
     branches: [main]
+    paths: ['.github/chuyen-huong/**', '.github/workflows/deploy.yml']
   workflow_dispatch:
 
 permissions:
@@ -24,22 +25,17 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: Lấy code
-        uses: actions/checkout@v4
-
-      - name: Gom file web (bỏ file công cụ và file Excel)
+      - uses: actions/checkout@v4
+      - name: Tạo các trang chuyển hướng (đủ tên file của web cũ)
         run: |
           mkdir -p _site
-          rsync -a --exclude '.git' --exclude '.github' --exclude '_site' --exclude 'tools' --exclude '*.xlsx' --exclude '*.md' --exclude 'v2' ./ _site/
-
-      - name: Cấu hình Pages
-        uses: actions/configure-pages@v5
-
-      - name: Tải gói web lên
-        uses: actions/upload-pages-artifact@v3
+          for f in index review nhan-vat danh-sach the-luc tu-luyen tim-kiem de-cu thuat-ngu kiem-tra 404; do
+            cp .github/chuyen-huong/index.html "_site/$f.html"
+          done
+          touch _site/.nojekyll
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
         with:
           path: _site
-
-      - name: Đăng web
-        id: deployment
+      - id: deployment
         uses: actions/deploy-pages@v4

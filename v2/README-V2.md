@@ -1,6 +1,6 @@
-# Tu Chân Bảo Điển v2: Astro + MDX + Pagefind (bản đề xuất)
+# Tu Chân Bảo Điển v2: Astro + MDX + Pagefind
 
-Đây là **bản kiến trúc mới, chạy song song** với web hiện tại (HTML/JS thuần + Google Sheet). Web hiện tại **không bị ảnh hưởng**. Thư mục `v2/` không được đăng lên GitHub Pages cho tới khi bạn quyết định chuyển.
+Đây là **web chính thức** của Tu Chân Bảo Điển, đăng trên Cloudflare Pages: https://tuchanbaodien.pages.dev. Web cũ (HTML/JS + Google Sheet) đã được chuyển hết tính năng sang đây (Issue #51) và xoá khỏi repo (Issue #52); địa chỉ GitHub Pages cũ tự chuyển hướng sang web này.
 
 ## 1. Vì sao Astro (không phải Next.js)
 | Tiêu chí | Astro | Next.js (App Router, `output: 'export'`) |
@@ -135,8 +135,8 @@ npm run preview        # xem thử ở http://localhost:4321
 ```
 | Biến | Ý nghĩa |
 |---|---|
-| `SITE_URL` | Địa chỉ web thật (canonical, sitemap, Open Graph). Mặc định `https://trongnghiabui95.github.io` |
-| `BASE_PATH` | Đường dẫn con nếu web không nằm ở gốc tên miền (ví dụ `/tangkinhcac/v2/`) |
+| `SITE_URL` | Địa chỉ web thật (canonical, sitemap, Open Graph). Mặc định `https://tuchanbaodien.pages.dev` |
+| `BASE_PATH` | Đường dẫn con nếu web không nằm ở gốc tên miền (ví dụ `/tu-chan/`) |
 | `PUBLIC_ADSENSE_CLIENT` | Mã `ca-pub-…`. Trống = không có quảng cáo |
 | `PUBLIC_ADSENSE_SLOT_GIUA_BAI`, `PUBLIC_ADSENSE_SLOT_CUOI_BAI` | Mã ô quảng cáo (nếu dùng ô cố định thay vì quảng cáo tự động) |
 | `QC_XEM_THU=1` | Hiện khung giữ chỗ quảng cáo để xem vị trí (chỉ dùng khi làm việc, **không** bật khi đăng thật) |
@@ -174,7 +174,7 @@ Mỗi PR có sửa `v2/` chạy lần lượt:
 4. **Environment variables** (mục Advanced) thêm 2 biến: `SITE_URL` = `https://tuchanbaodien.pages.dev`, `NODE_VERSION` = `22.23.5`.
 5. Bấm **Save and Deploy**. Lần đầu mất khoảng 2–3 phút.
 6. Bản xem trước cho từng PR: Cloudflare bật sẵn. Kiểm tra ở **Settings → Builds & deployments → Preview branches** = *All non-Production branches*. Mỗi PR sẽ có bình luận/nút "Cloudflare Pages" kèm link `https://<mã>.tuchanbaodien.pages.dev`.
-7. Từ nay merge vào `main` → Cloudflare tự build lại và cập nhật `tuchanbaodien.pages.dev`. Web cũ trên GitHub Pages vẫn chạy như trước.
+7. Từ nay merge vào `main` → Cloudflare tự build lại và cập nhật `tuchanbaodien.pages.dev`. Địa chỉ GitHub Pages cũ chỉ còn trang chuyển hướng (`.github/chuyen-huong/`).
 8. Khi có tên miền thật: **Custom domains** → thêm tên miền, rồi đổi `SITE_URL` sang tên miền đó và bấm **Retry deployment**.
 
 ## 5. Quy tắc quảng cáo đã cài
@@ -204,7 +204,7 @@ Cộng thêm **~140–170 KB phần cố định** (bộ máy Pagefind, tải 1 
 - Google AdSense có thể hạn chế quảng cáo trên trang dùng nội dung vi phạm bản quyền. Ưu tiên ảnh quảng bá chính thức, poster, hoặc tranh tự vẽ (`tools/ve_anh_mau.py` của bản hiện tại).
 
 ## 8. Chưa làm / cần quyết
-- **Nhập liệu:** bản hiện tại nhập bằng Google Sheet. Bản này viết file `.mdx`, khó hơn với người không chuyên. Nên có thêm script **Sheet → MDX** chạy trên GitHub mỗi ngày, để vẫn nhập bằng Sheet.
+- **Nhập liệu:** nội dung viết bằng file `.mdx` (BA/AI viết, chủ dự án duyệt qua PR). Google Sheet của web cũ không còn dùng.
 - **Chuyển dữ liệu cũ:** chưa chuyển (mới có 1 truyện mẫu).
 - **Next.js:** không làm, lý do ở mục 1.
 - **ProfilePage:** `schemaNhanVat({ kieu: 'ProfilePage' })` có sẵn, nhưng Google dành loại này cho hồ sơ người thật, nên mặc định dùng Article.
