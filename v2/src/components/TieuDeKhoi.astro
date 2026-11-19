@@ -1,0 +1,10 @@
+---
+// Tiêu đề mục kiểu web cũ: biểu tượng + chữ serif vàng, nút "Xem thêm" bên phải (nếu có)
+import BieuTuong from './BieuTuong.astro';
+interface Props { tieuDe: string; bieuTuong?: string; href?: string; chuNut?: string }
+const { tieuDe, bieuTuong, href, chuNut = 'Xem thêm' } = Astro.props;
+---
+<div class="tieu-de-khoi">
+  <h2>{bieuTuong && <BieuTuong ten={bieuTuong} />}{tieuDe}</h2>
+  {href && <a class="nut-vien" href={href}>{chuNut}<BieuTuong ten="phai" /></a>}
+</div>

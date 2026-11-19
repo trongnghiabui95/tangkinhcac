@@ -54,7 +54,7 @@ export async function layMenu() {
   const danhMucCo = CAC_DANH_MUC.filter((c) => bai.some((b) => b.data.category === c));
   return {
     series: series.map((s) => ({ ten: s.data.ten, href: urlSeries(slugSeries(s)) })),
-    danhMuc: danhMucCo.map((c) => ({ ten: DANH_MUC[c].tenSoNhieu, href: urlDanhMuc(c) })),
+    danhMuc: danhMucCo.map((c) => ({ c, ten: DANH_MUC[c].tenSoNhieu, href: urlDanhMuc(c) })),
   };
 }
 /** Chia trang: [{ trang, tongTrang, ds }] */
@@ -62,3 +62,5 @@ export function chiaTrang(ds, moiTrang = MOI_TRANG) {
   const tong = Math.max(1, Math.ceil(ds.length / moiTrang));
   return Array.from({ length: tong }, (_, i) => ({ trang: i + 1, tongTrang: tong, ds: ds.slice(i * moiTrang, (i + 1) * moiTrang) }));
 }
+/** Ảnh cho thẻ bài: ảnh riêng của bài, không có thì mượn ảnh bìa bộ truyện (để thẻ không bị khung trống) */
+export const layAnhThe = (e) => layAnh(e) || anhJson[`${e.data.series}/bia/bia`] || null;

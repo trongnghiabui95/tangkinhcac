@@ -3,7 +3,8 @@
 import { render } from 'astro:content';
 import BoCuc from '../../layouts/BoCuc.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
-import CharacterCardImage from '../../components/CharacterCardImage.astro';
+import BangRon from '../../components/BangRon.astro';
+import TieuDeKhoi from '../../components/TieuDeKhoi.astro';
 import LuoiBai from '../../components/LuoiBai.astro';
 import AdUnit from '../../components/AdUnit.astro';
 import { laySeries, slugSeries, layBai, layAnhSeries, url, urlSeriesDanhMuc, urlVuTru, boDau, DANH_MUC, CAC_DANH_MUC, cacVuTru } from '../../lib/tien-ich.js';
@@ -31,30 +32,32 @@ const jsonLd = [
 <BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article" giuNguyenTieuDe>
   <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: d.ten }]} />
   <article data-pagefind-body data-pagefind-filter={`truyen:${d.ten}`} data-pagefind-meta="loai:Bộ truyện">
-    <h1 data-pagefind-meta="title">{tieuDe}</h1>
-    <p class="sapo">{d.mo_ta}</p>
+    <span hidden data-pagefind-meta={`title:${tieuDe}`}></span>
+    <BangRon s={s} laTieuDe nut={false} />
     {vuTru && vuTru.series.length > 1 && <p class="thuoc-bo">Thuộc vũ trụ <a href={urlVuTru(d.universe)}>{vuTru.ten}</a></p>}
     <span class="sr-only" data-pagefind-weight="8">{boDau([d.ten, ...d.ten_khac].join(' ')).toLowerCase()}</span>
     <div class="bo-cuc-bai">
       <aside class="cot-phu"><div class="infobox" data-pagefind-ignore>
-        <CharacterCardImage anh={anh} alt={`Bìa ${d.ten}`} uuTien sizes="(max-width: 960px) 90vw, 290px" />
+        <p class="infobox-tieu-de">{d.ten}</p>
         <table><tbody>
           {d.ten_trung && <tr><th scope="row">Tên gốc</th><td>{d.ten_trung}</td></tr>}
+          {d.ten_khac.length > 0 && <tr><th scope="row">Tên khác</th><td>{d.ten_khac.join(', ')}</td></tr>}
           <tr><th scope="row">Tác giả</th><td>{d.tac_gia}</td></tr>
           <tr><th scope="row">Thể loại</th><td>{d.the_loai.join(', ')}</td></tr>
           <tr><th scope="row">Tình trạng</th><td>{d.tinh_trang}</td></tr>
           {d.diem != null && <tr><th scope="row">Điểm</th><td>★ {d.diem}/10</td></tr>}
+          <tr><th scope="row">Số bài</th><td>{bai.length}</td></tr>
         </tbody></table>
+        {anh?.nguon && <p class="infobox-nguon">Ảnh bìa: {anh.nguon_url ? <a href={anh.nguon_url} rel="nofollow noopener" target="_blank">{anh.nguon}</a> : anh.nguon}</p>}
       </div></aside>
-      <div class="noi-dung-bai" data-pagefind-ignore="all"><Content /></div>
+      <div class="noi-dung-bai muc" data-pagefind-ignore="all"><Content /></div>
     </div>
   </article>
   <AdUnit viTri="sau-review" />
   {nhom.map((n) => (
-    <section data-pagefind-ignore="all">
-      <h2>{DANH_MUC[n.c].tenSoNhieu}</h2>
+    <section class="khoi" data-pagefind-ignore="all">
+      <TieuDeKhoi tieuDe={DANH_MUC[n.c].tenSoNhieu} bieuTuong={n.c} href={n.ds.length > 8 ? urlSeriesDanhMuc(slug, n.c) : undefined} chuNut={`Xem tất cả ${n.ds.length}`} />
       <LuoiBai ds={n.ds.slice(0, 8)} />
-      {n.ds.length > 8 && <p><a class="nut" href={urlSeriesDanhMuc(slug, n.c)}>Xem tất cả {n.ds.length} bài</a></p>}
     </section>
   ))}
   {!nhom.length && <p class="trong">Bộ truyện này chưa có bài viết đã xuất bản.</p>}

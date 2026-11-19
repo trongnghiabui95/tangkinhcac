@@ -1,0 +1,27 @@
+---
+// Băng rôn kiểu web cũ cho 1 bộ truyện: nền bìa làm mờ, bìa, nhãn thể loại, tên, tên gốc, mô tả, điểm, nút.
+// laTieuDe = true: tên truyện là <h1> (trang bộ truyện); ngược lại là <h2> (trang chủ).
+import BieuTuong from './BieuTuong.astro';
+import { layAnhSeries, slugSeries, urlSeries, url } from '../lib/tien-ich.js';
+interface Props { s: any; laTieuDe?: boolean; nut?: boolean }
+const { s, laTieuDe = false, nut = true } = Astro.props;
+const d = s.data;
+const anh = layAnhSeries(s);
+const H = laTieuDe ? 'h1' : 'h2';
+---
+<section class="bang-ron">
+  {anh && <div class="bang-ron-nen" style={`background-image:url('${url(anh.srcset.at(-1).src)}')`} aria-hidden="true"></div>}
+  <div class="bang-ron-noi-dung">
+    {anh && <img src={url(anh.src)} width={anh.width} height={anh.height} alt={`Bìa ${d.ten}`} fetchpriority="high" />}
+    <div class="bang-ron-chu">
+      <ul class="hang-nhan">{d.the_loai.map((g: string, i: number) => <li><span class:list={['nhan', i ? 'nhan-vien' : 'nhan-tu-tien']}>{g}</span></li>)}</ul>
+      <H class="bang-ron-ten">{laTieuDe && <span class="bang-ron-kicker">Review </span>}{d.ten}</H>
+      {d.ten_trung && <p class="bang-ron-goc">{d.ten_trung}{d.tac_gia && ` · ${d.tac_gia}`}</p>}
+      <p class="bang-ron-mo-ta">{d.mo_ta}</p>
+      <div class="bang-ron-hanh-dong">
+        {nut && <a class="nut" href={urlSeries(slugSeries(s))}><BieuTuong ten="doc" />Đọc review</a>}
+        {d.diem != null && <span class="bang-ron-diem" aria-label={`Điểm ${d.diem} trên 10`}>★ {d.diem.toFixed(1)}</span>}
+      </div>
+    </div>
+  </div>
+</section>
