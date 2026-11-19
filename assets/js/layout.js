@@ -224,12 +224,26 @@
     return DB.load().then(() => { veDauTrang(); veChanTrang(); veTrang(); refresh(); cuonToiNeo(); })
       .catch((e) => { console.error(e); const m = document.getElementById('noi-dung'); if (m) m.innerHTML = loi(e); refresh(); });
   }
+  // Cuộn tới 1 khối theo vị trí THẬT (offsetTop, bỏ qua transform của hiệu ứng AOS – khối chưa hiện bị đẩy xuống 100px,
+  // scrollIntoView sẽ tính sai và tiêu đề bị lệch lên trên). Chừa khoảng = scroll-padding-top của trang.
+  function cuonToi(el, kieu = 'smooth') {
+    let y = 0;
+    for (let n = el; n; n = n.offsetParent) y += n.offsetTop;
+    const le = parseFloat(getComputedStyle(document.documentElement).scrollPaddingTop) || 0;
+    window.scrollTo({ top: Math.max(0, y - le), behavior: kieu });
+  }
   // Sau khi vẽ xong, cuộn tới #neo trên URL (vì nội dung được vẽ sau khi trang đã mở)
   function cuonToiNeo() {
     if (!location.hash) return;
     const el = document.getElementById(decodeURIComponent(location.hash.slice(1)));
-    if (el) setTimeout(() => el.scrollIntoView({ behavior: 'smooth', block: 'start' }), 150);
+    if (!el) return;
+    // Bố cục còn đổi vài trăm ms đầu (thư viện giao diện dựng CSS, ảnh, hiệu ứng) → cuộn rồi chỉnh lại,
+    // dừng ngay nếu người xem tự cuộn/chạm.
+    let tuCuon = false;
+    const dung = () => { tuCuon = true; };
+    ['wheel', 'touchstart', 'keydown'].forEach((ev) => window.addEventListener(ev, dung, { once: true, passive: true }));
+    [150, 600, 1200, 2000].forEach((ms, i) => setTimeout(() => { if (!tuCuon) cuonToi(el, i ? 'auto' : 'smooth'); }, ms));
   }
 
-  window.UI = { NHAN, nhan, LINK, icon, anh, anhLoi, nguon, tieuDeAnh, nhanLoai, workCard, charCard, avatar, chip, breadcrumb, luoi, khungCho, trong, loi, setMeta, refresh, doiGiaoDien, khoiDong };
+  window.UI = { cuonToi, NHAN, nhan, LINK, icon, anh, anhLoi, nguon, tieuDeAnh, nhanLoai, workCard, charCard, avatar, chip, breadcrumb, luoi, khungCho, trong, loi, setMeta, refresh, doiGiaoDien, khoiDong };
 })();
