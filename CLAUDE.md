@@ -1,6 +1,6 @@
 # Tu Chân Bảo Điển – quy tắc dự án
 
-Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt: https://tuchanbaodien.pages.dev. Chủ dự án **không chuyên lập trình**: mọi giải thích, mô tả PR, hướng dẫn đều viết tiếng Việt, rõ ràng, từng bước.
+Web review truyện Tu Tiên / Huyền Huyễn và Anime bằng tiếng Việt: https://tuchanbaodien.com. Chủ dự án **không chuyên lập trình**: mọi giải thích, mô tả PR, hướng dẫn đều viết tiếng Việt, rõ ràng, từng bước.
 
 **Trước khi sửa bất cứ thứ gì nhìn thấy được: đọc `DESIGN.md`** (token, quy tắc, bộ kiểm tra giao diện Floor/Reflex/Finish).
 

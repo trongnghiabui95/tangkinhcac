@@ -1,0 +1,2 @@
+# Cloudflare Pages: www → tên miền chính (chỉ có tác dụng sau khi thêm www.tuchanbaodien.com vào Custom domains)
+https://www.tuchanbaodien.com/* https://tuchanbaodien.com/:splat 301

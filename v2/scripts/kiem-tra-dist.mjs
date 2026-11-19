@@ -14,7 +14,7 @@ const GOC = path.resolve(path.dirname(new URL(import.meta.url).pathname), '..');
 const DIST = path.join(GOC, 'dist');
 const CONTENT = path.join(GOC, 'content');
 const BASE = (process.env.BASE_PATH || '/').replace(/\/?$/, '/');
-const SITE = process.env.SITE_URL || 'https://tuchanbaodien.pages.dev';
+const SITE = process.env.SITE_URL || 'https://tuchanbaodien.com';
 const iJson = process.argv.indexOf('--json');
 const FILE_JSON = iJson > 0 ? process.argv[iJson + 1] : '';
 
