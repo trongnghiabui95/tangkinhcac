@@ -1,13 +1,32 @@
 ---
-// Thẻ 1 bài viết trong lưới danh sách (ảnh + tên + nhãn). Không có ảnh thì hiện khung chữ.
-import CharacterCardImage from './CharacterCardImage.astro';
-import { layAnh, tenBai, urlBai, DANH_MUC, NHAN_VAI_TRO } from '../lib/tien-ich.js';
+// Thẻ 1 bài viết kiểu web cũ: ảnh 3:4, nhãn màu theo danh mục/vai trò, tên serif 2 dòng, tên bộ truyện.
+// Bài chưa có ảnh riêng: nền là ảnh bìa bộ truyện làm mờ + biểu tượng danh mục + tên bài.
+// Nguồn ảnh ghi đầy đủ (có link) ở trang bài; trên thẻ chỉ ghi trong title để thẻ gọn như web cũ.
+import { layAnh, layAnhThe, tenBai, urlBai, url, DANH_MUC, NHAN_VAI_TRO } from '../lib/tien-ich.js';
+import { lopNhan } from '../lib/bieu-tuong.js';
+import BieuTuong from './BieuTuong.astro';
 interface Props { bai: any; uuTien?: boolean; hienBo?: string }
 const { bai, uuTien = false, hienBo } = Astro.props;
 const d = bai.data;
+const ten = tenBai(bai);
 const nhan = d.category === 'nhan-vat' && d.vai_tro ? NHAN_VAI_TRO[d.vai_tro] : DANH_MUC[d.category]?.ten;
+const anh = layAnhThe(bai);
+const muonBia = anh && !layAnh(bai);
+const srcset = anh?.srcset.map((s: any) => `${url(s.src)} ${s.w}w`).join(', ');
 ---
-<li class="the-bai">
-  <CharacterCardImage anh={layAnh(bai)} alt={tenBai(bai)} ten={tenBai(bai)} nhan={nhan} gon href={urlBai(bai)} uuTien={uuTien} />
-  {hienBo && <p class="the-phu">{hienBo}</p>}
+<li>
+  <a class="the-bai" href={urlBai(bai)} title={anh?.nguon && !muonBia ? `Ảnh: ${anh.nguon}` : undefined}>
+    <div class="the-anh">
+      {anh
+        ? <img src={url(anh.src)} srcset={srcset} sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 240px" width={anh.width} height={anh.height}
+               alt={muonBia ? '' : ten} loading={uuTien ? 'eager' : 'lazy'} fetchpriority={uuTien ? 'high' : 'auto'} decoding="async" class:list={{ 'anh-muon': muonBia }} />
+        : null}
+      {(!anh || muonBia) && <span class="chua-co-anh" aria-hidden="true"><BieuTuong ten={d.category} />{ten}</span>}
+      {nhan && <span class={lopNhan(d.category, d.vai_tro)}>{nhan}</span>}
+    </div>
+    <div class="the-than">
+      <h3 class="the-ten">{ten}</h3>
+      {hienBo && <p class="the-phu">{hienBo}</p>}
+    </div>
+  </a>
 </li>

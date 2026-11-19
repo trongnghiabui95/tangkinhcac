@@ -5,6 +5,7 @@
  */
 import '../styles/giao-dien.css';
 import DisclaimerBanner from '../components/DisclaimerBanner.astro';
+import BieuTuong from '../components/BieuTuong.astro';
 import { url, layMenu } from '../lib/tien-ich.js';
 
 interface Props {
@@ -28,6 +29,14 @@ const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = anhOg ? new URL(url(anhOg), Astro.site).href : undefined;
 const adsense = import.meta.env.PUBLIC_ADSENSE_CLIENT;
 const ld = jsonLd.filter(Boolean);
+// Menu ngang kiểu web cũ – sinh từ nội dung (danh mục đang có bài, bộ truyện)
+const duongDan = Astro.url.pathname;
+const dangMo = (href: string) => (href === url('') ? duongDan === href : duongDan.startsWith(href));
+const mucMenu = [
+  { ten: 'Trang chủ', href: url(''), bieuTuong: 'trang-chu' },
+  ...menu.danhMuc.map((m) => ({ ten: m.ten, href: m.href, bieuTuong: m.c })),
+];
+const mucCuoi = { ten: 'Tìm kiếm', href: url('tim-kiem/'), bieuTuong: 'tim-kiem' };
 ---
 <!doctype html>
 <html lang="vi" data-theme="toi">
@@ -68,26 +77,37 @@ const ld = jsonLd.filter(Boolean);
   <header class="dau-trang">
     <div class="khung dau-trang-hang">
       <a class="logo" href={url('')}><img class="logo-dau" src={url('favicon.svg')} alt="" width="36" height="36" />{TEN_WEB}</a>
-      <nav aria-label="Menu chính" class="menu">
-        {menu.series.length > 0 && (
-          <details class="menu-con"><summary>Bộ truyện</summary>
-            <ul>{menu.series.map((m) => <li><a href={m.href}>{m.ten}</a></li>)}</ul></details>
-        )}
-        {menu.danhMuc.length > 0 && (
-          <details class="menu-con"><summary>Danh mục</summary>
-            <ul>{menu.danhMuc.map((m) => <li><a href={m.href}>{m.ten}</a></li>)}</ul></details>
-        )}
-        <a href={url('tim-kiem/')}>Tìm kiếm</a>
-        <button type="button" class="nut-giao-dien" aria-label="Đổi giao diện sáng/tối" title="Sáng / Tối">☯</button>
-      </nav>
+      <form class="o-tim-dau" action={url('tim-kiem/')} role="search">
+        <BieuTuong ten="tim-kiem" />
+        <input type="search" name="q" placeholder="Tìm truyện, nhân vật, pháp bảo…" aria-label="Tìm kiếm" />
+      </form>
+      <button type="button" class="nut-giao-dien" aria-label="Đổi giao diện sáng/tối" title="Sáng / Tối"><BieuTuong ten="mat-troi" class="khi-toi" /><BieuTuong ten="mat-trang" class="khi-sang" /></button>
+      <details class="menu-dt">
+        <summary aria-label="Mở menu"><BieuTuong ten="menu" /></summary>
+        <nav aria-label="Menu (điện thoại)" class="menu-dt-noi-dung">
+          <form action={url('tim-kiem/')} role="search" class="o-tim-dt"><BieuTuong ten="tim-kiem" /><input type="search" name="q" placeholder="Tìm truyện, nhân vật…" aria-label="Tìm kiếm" /></form>
+          {[...mucMenu, ...menu.series.map((m) => ({ ...m, bieuTuong: 'bo-truyen' })), mucCuoi].map((m) => (
+            <a href={m.href} class:list={{ 'dang-mo': dangMo(m.href) }} aria-current={duongDan === m.href ? 'page' : undefined}><BieuTuong ten={m.bieuTuong} />{m.ten}</a>
+          ))}
+        </nav>
+      </details>
     </div>
+    <nav aria-label="Menu chính" class="khung menu-ngang">
+      {mucMenu.map((m) => <a href={m.href} class:list={{ 'dang-mo': dangMo(m.href) }} aria-current={duongDan === m.href ? 'page' : undefined}><BieuTuong ten={m.bieuTuong} />{m.ten}</a>)}
+      {menu.series.length === 1 && <a href={menu.series[0].href} class:list={{ 'dang-mo': dangMo(menu.series[0].href) }}><BieuTuong ten="bo-truyen" />{menu.series[0].ten}</a>}
+      {menu.series.length > 1 && (
+        <details class="menu-con"><summary><BieuTuong ten="bo-truyen" />Bộ truyện</summary>
+          <ul>{menu.series.map((m) => <li><a href={m.href}>{m.ten}</a></li>)}</ul></details>
+      )}
+      <a href={mucCuoi.href} class:list={{ 'dang-mo': dangMo(mucCuoi.href) }}><BieuTuong ten={mucCuoi.bieuTuong} />{mucCuoi.ten}</a>
+    </nav>
   </header>
   {XEM_NHAP && <p class="bang-xem-nhap">Bản xem thử có cả bài nháp (XEM_NHAP=1) – không đăng bản này.</p>}
   <main id="noi-dung" class="khung"><slot /></main>
   <footer class="chan-trang">
     <div class="khung">
       <DisclaimerBanner />
-      <p class="thuong-hieu">Một sản phẩm của <img src={url('yendan.svg')} alt="yendan" width="84" height="32" loading="lazy" /></p>
+      <p class="thuong-hieu">Một sản phẩm của <img class="khi-toi" src={url('yendan.svg')} alt="yendan" width="84" height="32" loading="lazy" /><img class="khi-sang" src={url('yendan-sang.svg')} alt="yendan" width="84" height="32" loading="lazy" /></p>
       <p class="ban-quyen">© {new Date().getFullYear()} {TEN_WEB}</p>
     </div>
   </footer>
@@ -97,6 +117,10 @@ const ld = jsonLd.filter(Boolean);
       const h = document.documentElement; h.dataset.theme = h.dataset.theme === 'sang' ? 'toi' : 'sang';
       try { localStorage.setItem('tkc2-giao-dien', h.dataset.theme); } catch (e) {}
     });
+    // Đóng menu điện thoại / menu con khi bấm ra ngoài hoặc nhấn Esc
+    const dongMenu = (tru?: Element | null) => document.querySelectorAll('details.menu-dt[open], details.menu-con[open]').forEach((d) => { if (d !== tru) d.removeAttribute('open'); });
+    document.addEventListener('click', (e) => dongMenu((e.target as Element).closest('details')));
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') dongMenu(); });
     // AdSense: chỉ yêu cầu quảng cáo khi ô sắp lọt vào màn hình (đỡ tốn tài nguyên, đúng chính sách hiển thị)
     const ins = document.querySelectorAll('ins.adsbygoogle');
     if (ins.length && 'IntersectionObserver' in window) {

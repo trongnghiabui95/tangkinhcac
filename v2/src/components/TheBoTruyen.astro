@@ -1,0 +1,24 @@
+---
+// Thẻ bộ truyện kiểu web cũ: bìa 2:3, nhãn thể loại đầu tiên, điểm ★, tên, số bài.
+import { layAnhSeries, slugSeries, urlSeries, url } from '../lib/tien-ich.js';
+interface Props { s: any; soBai?: number; uuTien?: boolean }
+const { s, soBai, uuTien = false } = Astro.props;
+const d = s.data;
+const anh = layAnhSeries(s);
+const srcset = anh?.srcset.map((x: any) => `${url(x.src)} ${x.w}w`).join(', ');
+---
+<li>
+  <a class="the-bai" href={urlSeries(slugSeries(s))}>
+    <div class="the-anh bia">
+      {anh
+        ? <img src={url(anh.src)} srcset={srcset} sizes="(max-width: 640px) 50vw, 240px" width={anh.width} height={anh.height} alt={`Bìa ${d.ten}`} loading={uuTien ? 'eager' : 'lazy'} decoding="async" />
+        : <span class="chua-co-anh" aria-hidden="true">{d.ten}</span>}
+      {d.the_loai[0] && <span class="nhan nhan-tu-tien">{d.the_loai[0]}</span>}
+      {d.diem != null && <span class="the-diem">★ {d.diem.toFixed(1)}</span>}
+    </div>
+    <div class="the-than">
+      <h3 class="the-ten">{d.ten}</h3>
+      {soBai != null && <p class="the-phu">{soBai} bài · {d.tinh_trang}</p>}
+    </div>
+  </a>
+</li>
