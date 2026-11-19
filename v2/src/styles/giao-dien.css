@@ -2,7 +2,7 @@
 :root, [data-theme="toi"] {
   --nen: #0b121a; --be-mat: #111a24; --be-mat-2: #1b2735; --chu: #ebe3cf; --chu-phu: #b9b09b;
   --vang: #d4a944; --tren-vang: #1b1405; --ngoc: #3fb59b; --vien: rgba(212,169,68,.28);
-  --font-tieu-de: 'Noto Serif', Georgia, serif; --font-noi-dung: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-tieu-de: 'Noto Serif', 'Times New Roman', serif; --font-noi-dung: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
   --bo-the: 14px; --bo-nho: 8px; --rong: 1180px; --le: 16px; color-scheme: dark;
 }
 [data-theme="sang"] {
