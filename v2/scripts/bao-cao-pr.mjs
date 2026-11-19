@@ -39,7 +39,7 @@ for (const f of thayDoi) {
   const a1 = anh[`${series}/${category}/${slug}`];
   const anhFile = a1 && path.join(GOC, 'public', a1.src);
   const kb = anhFile && fs.existsSync(anhFile) ? Math.round(fs.statSync(anhFile).size / 1024) : null;
-  dong.push(`| \`${category}/${slug}\` | ${t.nhap ? '📝 nháp' : '🌐 xuất bản'} | ${dau(trongKhoang(t.soTu, GIOI_HAN.soTu))} ${t.soTu} | ${dau(trongKhoang(t.title, GIOI_HAN.title))} ${t.title} | ${dau(trongKhoang(t.description, GIOI_HAN.description))} ${t.description} | ${dau(trongKhoang(t.faqs, GIOI_HAN.faqs))} ${t.faqs} | ${kb == null ? '—' : `${dau(kb < 80)} ${kb} KB`} | ${soLink == null ? '—' : soLink} |`);
+  dong.push(`| \`${category}/${slug}\` | ${t.nhap ? '📝 nháp' : '🌐 xuất bản'} | ${dau(trongKhoang(t.soTu, GIOI_HAN.soTu))} ${t.soTu} | ${dau(trongKhoang(t.title, GIOI_HAN.title))} ${t.title} | ${dau(trongKhoang(t.description, GIOI_HAN.description))} ${t.description} | ${dau(trongKhoang(t.faqs, GIOI_HAN.faqs))} ${t.faqs} | ${kb != null ? `${dau(kb < 80)} ${kb} KB` : t.anhGocKB != null ? `gốc ${t.anhGocKB} KB` : '—'} | ${soLink == null ? '—' : soLink} |`);
 }
 
 const loi = [
