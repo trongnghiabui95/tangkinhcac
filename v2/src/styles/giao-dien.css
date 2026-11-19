@@ -1,19 +1,29 @@
 /* Tu Chân Bảo Điển v2 – token theo DESIGN.md (tối mặc định, sáng tuỳ chọn) */
+
+/* Phông dự phòng (dùng trong tích tắc trước khi phông thật tải xong) được phóng cho bằng độ rộng phông thật,
+   để lúc đổi phông chữ không xuống dòng khác → trang không bị xê dịch (CLS). Số đo: Issue #32. */
+@font-face { font-family: 'Noto Serif du phong'; font-weight: 700; src: local('Times New Roman Bold'), local('TimesNewRomanPS-BoldMT'), local('Liberation Serif Bold'), local('Tinos Bold');
+  size-adjust: 115.8%; ascent-override: 92.4%; descent-override: 25%; line-gap-override: 0%; }
+@font-face { font-family: 'Be Vietnam Pro du phong'; font-weight: 100 500; src: local('Arial'), local('ArialMT'), local('Liberation Sans'), local('Arimo');
+  size-adjust: 106%; ascent-override: 94.4%; descent-override: 25.5%; line-gap-override: 0%; }
+@font-face { font-family: 'Be Vietnam Pro du phong'; font-weight: 600 900; src: local('Arial Bold'), local('Arial-BoldMT'), local('Liberation Sans Bold'), local('Arimo Bold');
+  size-adjust: 103.3%; ascent-override: 96.8%; descent-override: 26.1%; line-gap-override: 0%; }
+
 :root, [data-theme="toi"] {
   --nen: #0b121a; --be-mat: #111a24; --be-mat-2: #1b2735; --chu: #ebe3cf; --chu-phu: #b9b09b;
   --vang: #d4a944; --tren-vang: #1b1405; --ngoc: #3fb59b; --vien: rgba(212,169,68,.28);
-  --font-tieu-de: 'Noto Serif', 'Times New Roman', serif; --font-noi-dung: 'Be Vietnam Pro', 'Segoe UI', system-ui, sans-serif;
+  --font-tieu-de: 'Noto Serif', 'Noto Serif du phong', serif; --font-noi-dung: 'Be Vietnam Pro', 'Be Vietnam Pro du phong', sans-serif;
   --bo-the: 14px; --bo-nho: 8px; --rong: 1240px; --le: 16px; color-scheme: dark;
   --chu-tren-anh: #fff6dc; --vang-tren-anh: #f5d27a; --phu-anh: rgba(0,0,0,.7); --nen-menu: rgba(17,26,36,.92);
-  --hoa-tiet: rgba(212,169,68,.07); --quang-ngoc: rgba(63,181,155,.10); --quang-vang: rgba(212,169,68,.09);
+  --tren-ngoc: #0b121a; --hoa-tiet: rgba(212,169,68,.07); --quang-ngoc: rgba(63,181,155,.10); --quang-vang: rgba(212,169,68,.09);
   --bong-the: 0 6px 22px rgba(0,0,0,.35); --bong-noi: 0 10px 30px rgba(212,169,68,.22);
-  --nhan-tu-tien: #a8771c; --nhan-nhan-vat: #3a74b8; --nhan-the-luc: #7f52bb; --nhan-tu-luyen: #1f8566;
+  --nhan-tu-tien: #93661a; --nhan-nhan-vat: #3a74b8; --nhan-the-luc: #7f52bb; --nhan-tu-luyen: #1f8566;
   --nhan-vat-pham: #b25a26; --nhan-phan-dien: #b23b3b;
 }
 [data-theme="sang"] {
   --nen: #f2ebdb; --be-mat: #fbf7ee; --be-mat-2: #e4dac4; --chu: #2a2418; --chu-phu: #5a5040;
   --vang: #8a6410; --tren-vang: #fff; --ngoc: #1f7a64; --vien: rgba(138,100,16,.3); color-scheme: light;
-  --nen-menu: rgba(251,247,238,.94); --hoa-tiet: rgba(168,122,22,.08); --quang-ngoc: rgba(31,122,100,.08); --quang-vang: rgba(168,122,22,.08);
+  --tren-ngoc: #fff; --nen-menu: rgba(251,247,238,.94); --hoa-tiet: rgba(168,122,22,.08); --quang-ngoc: rgba(31,122,100,.08); --quang-vang: rgba(168,122,22,.08);
   --bong-the: 0 6px 18px rgba(60,40,10,.12); --bong-noi: 0 10px 26px rgba(138,100,16,.22);
 }
 *, *::before, *::after { box-sizing: border-box; }
@@ -265,7 +275,7 @@ h2 { font-size: 1.4rem; margin: 2em 0 .6em; color: var(--vang); }
 .cap-nhat-ten { margin: 0; font-size: 1.15rem; }
 .cap-nhat-ten a { color: var(--chu); text-decoration: none; display: inline-flex; min-height: 44px; align-items: center; }
 .cap-nhat-phu { margin: 0 0 6px; font-size: 14px; color: var(--chu-phu); display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.nhan-moi-so { padding: 1px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--ngoc); color: var(--nen); }
+.nhan-moi-so { padding: 1px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; background: var(--ngoc); color: var(--tren-ngoc); }
 .cap-nhat-bai { list-style: none; padding: 0; margin: 0; }
 .cap-nhat-bai li { display: flex; align-items: center; gap: 8px; border-top: 1px dashed var(--vien); }
 .cap-nhat-bai a { flex: 1; min-width: 0; display: flex; align-items: center; gap: 8px; min-height: 44px; color: var(--chu); text-decoration: none; }
@@ -278,3 +288,12 @@ h2 { font-size: 1.4rem; margin: 2em 0 .6em; color: var(--vang); }
 @media (hover: hover) { .cap-nhat-bai a:hover .cap-nhat-tieu-de, .cap-nhat-ten a:hover { color: var(--vang); } .cap-nhat-tat-ca:hover { text-decoration: underline; } }
 @media (max-width: 420px) { .khung-cap-nhat { grid-template-columns: 76px minmax(0, 1fr); gap: 12px; padding: 12px; } .cap-nhat-loai { display: none; } }
 .ds-cap-nhat > li:only-child { grid-column: 1 / -1; }
+
+/* Đầu trang máy tính cao 2 hàng (~122px): khung thông tin bám dưới đầu trang, nhảy tới mục lục không bị che */
+html { scroll-padding-top: 80px; }
+@media (min-width: 1024px) {
+  html { scroll-padding-top: 140px; }
+  .cot-phu .infobox { top: 138px; }
+}
+:root, [data-theme="toi"] { --nen-menu: rgba(17,26,36,.97); }
+[data-theme="sang"] { --nen-menu: rgba(251,247,238,.97); }

@@ -3,8 +3,9 @@
  * AdUnit – ô quảng cáo AdSense đặt thủ công (đầu/cuối bài). Ô giữa bài do rehype-chen-quang-cao tự chèn.
  * Chưa có PUBLIC_ADSENSE_CLIENT → không hiện gì (QC_XEM_THU=1 để thấy khung giữ chỗ khi làm việc).
  */
-interface Props { slot?: string; viTri: string }
-const { slot = '', viTri } = Astro.props;
+// Lưu ý: KHÔNG đặt tên prop là `slot` – Astro coi `slot=` là tên khe cắm nên cả ô quảng cáo bị bỏ (lỗi cũ, Issue #32)
+interface Props { maO?: string; viTri: string }
+const { maO = '', viTri } = Astro.props;
 const client = import.meta.env.PUBLIC_ADSENSE_CLIENT;
 const xemThu = import.meta.env.QC_XEM_THU === '1' || process.env.QC_XEM_THU === '1';
 ---
@@ -12,7 +13,7 @@ const xemThu = import.meta.env.QC_XEM_THU === '1' || process.env.QC_XEM_THU === 
   <aside class="quang-cao" aria-label="Quảng cáo" data-vi-tri={viTri} data-pagefind-ignore="all">
     <span class="nhan-quang-cao">Quảng cáo</span>
     {client
-      ? <ins class="adsbygoogle" style="display:block" data-ad-client={client} data-ad-slot={slot || undefined} data-ad-format="auto" data-full-width-responsive="true"></ins>
+      ? <ins class="adsbygoogle" style="display:block" data-ad-client={client} data-ad-slot={maO || undefined} data-ad-format="auto" data-full-width-responsive="true"></ins>
       : <div class="quang-cao-xem-thu">Vị trí quảng cáo “{viTri}” (chưa cấu hình AdSense)</div>}
   </aside>
 )}

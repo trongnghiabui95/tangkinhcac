@@ -1,0 +1,5 @@
+# Cloudflare Pages: cho trình duyệt giữ lâu phông và file CSS/JS có mã băm (đổi nội dung là đổi tên file)
+/phong/*
+  Cache-Control: public, max-age=31536000, immutable
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
