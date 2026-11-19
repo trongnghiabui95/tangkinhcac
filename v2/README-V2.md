@@ -63,7 +63,7 @@ keywords: ["hàn lập là ai", "đạo lữ hàn lập"]
 universe: pham-nhan-tu-tien        # vũ trụ (nhiều bộ chung thế giới thì dùng chung)
 series: pham-nhan-tu-tien          # TRÙNG thư mục bộ truyện
 category: nhan-vat                 # TRÙNG thư mục con
-aliases: ["Hàn lão ma"]            # tên khác: tìm kiếm + tự gắn liên kết
+aliases: ["Hàn lão ma"]            # tên khác: tìm kiếm + tự gắn liên kết (xem "Liên kết nội bộ tự động" bên dưới)
 date: 2026-11-20
 updated: 2026-11-20
 infobox:                           # bảng thông tin cạnh ảnh; giá trị trùng tên bài khác cùng bộ tự thành link
@@ -123,12 +123,20 @@ npm run preview        # xem thử ở http://localhost:4321
 | `XEM_NHAP=1` | Build kèm bài nháp để xem thử (không đăng) |
 | `TIM_TOAN_VAN=1` | Tìm cả thân bài (chỉ mục lớn hơn nhiều, xem mục 6) |
 
+### Liên kết nội bộ tự động
+Lúc build, plugin `src/lib/remark-lien-ket-noi-bo.mjs` tự biến tên bài khác **cùng bộ truyện** thành link (chỉ lần nhắc đầu tiên):
+- **Tên dùng để nhận ra bài**: tên ngắn rút từ `title` (phần trước "là ai/là gì"), `aliases`, và giá trị infobox có khoá *Biệt hiệu / Biệt danh / Tên khác / Danh hiệu / Đạo hiệu…* (bỏ tên chữ Hán). Tên truyện thì nối ở mọi bộ.
+- **Tối đa 10 link mỗi bài** (`GIOI_HAN.lienKetTuDong` trong `src/lib/chuan-mdx.mjs`). Quá 10 thì ưu tiên bài *cũng nhắc lại* bài này → 2 bài nhắc tên nhau có link 2 chiều.
+- **Không gắn link** trong tiêu đề, khối `:::spoiler`, mục "Câu hỏi thường gặp" trong thân bài, FAQ và infobox ở frontmatter.
+- Danh sách link của từng bài được ghi ra `bao-cao/lien-ket-noi-bo.json` (không đưa lên git); bot PR đưa vào bảng tóm tắt (cột "Link nội bộ tự gắn" + mục xổ xuống, ⇄ = có link 2 chiều).
+- Kiểm thử: `npm run test:lien-ket` (cũng chạy trong `npm run test:noi-dung`).
+
 ### Kiểm tra tự động trên mỗi PR (workflow `v2-build`)
 Mỗi PR có sửa `v2/` chạy lần lượt:
 1. **Kiểm tra nội dung** – bài `.mdx` **mới/sửa trong PR** mà thân bài ngoài 800–1.200 từ là **lỗi** (bài cũ không sửa chỉ cảnh báo).
 2. **Build** – ảnh → HTML → chỉ mục tìm kiếm.
 3. **Kiểm tra bản build** (`node scripts/kiem-tra-dist.mjs`) – link nội bộ hỏng; mỗi bài đã xuất bản có trang, có JSON-LD Article; sitemap đủ URL. Chung cho mọi bài, không viết cứng tên bài.
-4. **Bot ghi bảng tóm tắt vào PR** (`scripts/bao-cao-pr.mjs`): số từ, độ dài title/description, số FAQ, dung lượng ảnh, số link nội bộ tự gắn của từng bài mới/sửa. Mỗi lần đẩy code, bot sửa lại đúng bình luận đó (không đăng chồng).
+4. **Bot ghi bảng tóm tắt vào PR** (`scripts/bao-cao-pr.mjs`): số từ, độ dài title/description, số FAQ, dung lượng ảnh, số link nội bộ tự gắn (≤ 10) và danh sách link của từng bài mới/sửa. Mỗi lần đẩy code, bot sửa lại đúng bình luận đó (không đăng chồng).
 5. Bước nào lỗi → dấu ❌ đỏ trên PR, chi tiết nằm trong bảng.
 
 ### Đăng web: Cloudflare Pages (làm 1 lần)
