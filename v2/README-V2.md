@@ -103,6 +103,26 @@ nhap: false                        # true = chưa xuất bản
 
 **Xem cả bài nháp khi làm việc**: `XEM_NHAP=1 npm run build && npm run preview` (bản này có dải đỏ cảnh báo và `noindex`, **không đăng**).
 
+### Trường tuỳ chọn chuyển từ web cũ (Issue #51)
+Không bắt buộc; bỏ trống thì mục tương ứng tự ẩn. Ví dụ đầy đủ: `content/pham-nhan-tu-tien/index.mdx`, `nhan-vat/han-lap.mdx`, `canh-gioi/he-thong-canh-gioi.mdx`.
+
+**Trang bộ truyện (`index.mdx`)**
+| Trường | Hiện ở đâu |
+|---|---|
+| `loai: tu-tien` / `anime` | Menu "Truyện Tu Tiên" / "Anime", trang `/loai/<loai>/` |
+| `so_chuong`, `so_tap`, `so_mua`, `nen_tang`, `nam`, `studio` | Khung thông tin |
+| `diem_chi_tiet: { cot_truyen, nhan_vat, the_gioi, hinh_anh }` | Mục "Đánh giá" (thanh điểm) |
+| `ban_do: { anh, nguon }` + `dia_diem: [{ ten, cap, thuoc, mo_ta }]` | Mục "Bản đồ thế giới" (ảnh trong `anh-goc/<series>/ban-do/`) |
+| `hanh_trinh: [{ dia_diem, canh_gioi, su_kien }]` | Mục "Hành trình nhân vật chính" |
+| `thu_vien: [{ anh, nguon, chu_thich, nhan_vat? }]` | Mục "Thư viện ảnh" (ảnh trong `anh-goc/<series>/thu-vien/`); có `nhan_vat` thì hiện cả ở trang nhân vật |
+| `ost: [{ youtube, ten }]` | Mục "OST" |
+| `thuat_ngu: [{ ten, giai_thich }]` | Mục "Thuật ngữ" + trang `/thuat-ngu/` (tìm được bằng ô tìm kiếm) |
+| `tuong_tu: [{ series, ly_do }]`, `cho_nguoi_moi` | "Tác phẩm tương tự" + trang `/de-cu/` |
+
+**Bài nhân vật**: `noi_bat: true` (trang chủ), `bac` (tên bậc cảnh giới cao nhất – hiện ở bậc thang cảnh giới), `the_luc: ["Tên/slug"]`, `cuoc_doi: [{ giai_doan, dia_diem, canh_gioi, su_kien }]`, `quan_he: [{ nhan_vat: slug, quan_he: dao-lu|su-phu|de-tu|ke-thu|ban-be|gia-dinh|dong-mon|chữ tự do, ghi_chu }]`.
+**Bài cảnh giới**: `cac_bac: [{ ten, the_gioi, mo_ta }]` theo thứ tự → bậc thang kèm nhân vật ở từng bậc.
+**Bài thế lực**: `thu_linh` (slug nhân vật), `tru_so`; thành viên tự lấy từ `the_luc` của bài nhân vật.
+
 ## 4. Lệnh và biến môi trường
 ```bash
 cd v2

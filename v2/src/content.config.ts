@@ -4,7 +4,7 @@
 import { defineCollection } from 'astro:content';
 import { glob } from 'astro/loaders';
 import { z } from 'astro/zod';
-import { CAC_DANH_MUC, GIOI_HAN, SLUG } from './lib/chuan-mdx.mjs';
+import { CAC_DANH_MUC, CAC_LOAI_TRUYEN, GIOI_HAN, SLUG } from './lib/chuan-mdx.mjs';
 
 const doDai = (ten: string, [min, max]: number[]) =>
   z.string().refine((s) => s.length >= min && s.length <= max, (s) => ({ message: `${ten} phải dài ${min}–${max} ký tự (đang có ${s.length})` }));
@@ -36,6 +36,25 @@ export const collections = {
       ngay_dang: z.coerce.date(),
       ngay_cap_nhat: z.coerce.date(),
       nhap: z.boolean().default(false),
+      // ---- Chuyển từ web cũ (Issue #51) – TUỲ CHỌN, bộ truyện cũ không có vẫn chạy ----
+      loai: z.enum(CAC_LOAI_TRUYEN as [string, ...string[]]).default('tu-tien'),   // tu-tien | anime
+      so_chuong: z.number().int().optional(),
+      so_tap: z.number().int().optional(),
+      so_mua: z.number().int().optional(),
+      nen_tang: z.string().optional(),               // Khởi Điểm, Bilibili…
+      nam: z.number().int().optional(),
+      studio: z.string().optional(),
+      diem_chi_tiet: z.object({ cot_truyen: z.number().min(0).max(10).optional(), nhan_vat: z.number().min(0).max(10).optional(),
+        the_gioi: z.number().min(0).max(10).optional(), hinh_anh: z.number().min(0).max(10).optional() }).optional(),
+      thu_vien: z.array(z.object({ anh: z.string(), nguon: z.string(), nguon_url: z.string().url().optional(),
+        chu_thich: z.string(), nhan_vat: z.string().optional() })).default([]),   // ảnh trong anh-goc/<series>/
+      ban_do: z.object({ anh: z.string(), nguon: z.string(), nguon_url: z.string().url().optional() }).optional(),
+      dia_diem: z.array(z.object({ ten: z.string(), cap: z.string().optional(), thuoc: z.string().optional(), mo_ta: z.string() })).default([]),
+      hanh_trinh: z.array(z.object({ dia_diem: z.string().optional(), su_kien: z.string(), canh_gioi: z.string().optional() })).default([]),
+      thuat_ngu: z.array(z.object({ ten: z.string(), giai_thich: z.string() })).default([]),
+      tuong_tu: z.array(z.object({ series: slug('tuong_tu.series'), ly_do: z.string() })).default([]),   // "Thích bộ này thì đọc…"
+      cho_nguoi_moi: z.string().optional(),          // lý do đề cử cho người mới đọc (trang Đề cử)
+      ost: z.array(z.object({ youtube: z.string(), ten: z.string() })).default([]),
     }),
   }),
 
@@ -68,6 +87,15 @@ export const collections = {
       phap_bao: z.array(z.string()).default([]),     // slug bài phap-bao cùng series
       thu_tu: z.number().int().optional(),           // thứ tự bậc (bài canh-gioi)
       youtube: z.string().optional(),
+      // ---- Chuyển từ web cũ (Issue #51) – TUỲ CHỌN ----
+      noi_bat: z.boolean().default(false),           // nhân vật nổi bật ở trang chủ
+      bac: z.string().optional(),                    // nhân vật: tên bậc cảnh giới cao nhất (khớp cac_bac của bài canh-gioi)
+      the_luc: z.array(z.string()).default([]),      // nhân vật: slug bài the-luc cùng bộ
+      cuoc_doi: z.array(z.object({ giai_doan: z.string(), dia_diem: z.string().optional(), su_kien: z.string(), canh_gioi: z.string().optional() })).default([]),
+      quan_he: z.array(z.object({ nhan_vat: z.string(), quan_he: z.string(), ghi_chu: z.string().optional() })).default([]),  // nhan_vat = slug bài nhân vật cùng bộ, hoặc tên
+      cac_bac: z.array(z.object({ ten: z.string(), mo_ta: z.string(), the_gioi: z.string().optional() })).default([]),       // bài canh-gioi: các bậc theo thứ tự
+      thu_linh: z.string().optional(),               // bài the-luc: slug bài nhân vật
+      tru_so: z.string().optional(),                 // bài the-luc: tên địa điểm
     }).refine((d) => !d.image || d.image_source, { message: 'Có image thì phải có image_source (ten + url)', path: ['image_source'] }),
   }),
 };

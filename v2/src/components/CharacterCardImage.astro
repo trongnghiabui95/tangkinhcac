@@ -36,7 +36,7 @@ const Bao = href ? 'a' : 'div';
     {ten && <span class="ten-tren-anh">{ten}</span>}
   </Bao>
   {anh?.nguon && (
-    <figcaption>Ảnh: {anh.nguon_url
+    <figcaption class="nguon-anh" title={`Ảnh: ${anh.nguon}`}>Ảnh: {anh.nguon_url
       ? <a href={anh.nguon_url} rel="nofollow noopener" target="_blank">{anh.nguon}</a>
       : anh.nguon}</figcaption>
   )}

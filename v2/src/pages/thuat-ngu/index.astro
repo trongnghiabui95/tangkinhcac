@@ -1,0 +1,29 @@
+---
+// /thuat-ngu/ – Thuật ngữ tu tiên A–Z, gom từ trường thuat_ngu của mọi bộ truyện (tìm được bằng ô tìm kiếm)
+import BoCuc from '../../layouts/BoCuc.astro';
+import Breadcrumb from '../../components/Breadcrumb.astro';
+import { schemaBreadcrumb } from '../../lib/schema.js';
+import { layThuatNgu, slugSeries, url, urlSeries, urlThuatNgu, boDau } from '../../lib/tien-ich.js';
+const ds = await layThuatNgu();
+const nhom = new Map<string, typeof ds>();
+for (const t of ds) { const c = boDau(t.ten).charAt(0).toUpperCase(); const k = /[A-Z]/.test(c) ? c : '#'; nhom.set(k, [...(nhom.get(k) || []), t]); }
+const site = Astro.site!;
+const moTa = `Giải thích ${ds.length} thuật ngữ tu tiên thường gặp (linh căn, đạo lữ, đoạt xá, bình cảnh…) kèm bộ truyện có dùng, sắp xếp A–Z.`;
+---
+<BoCuc tieuDe="Thuật ngữ tu tiên A–Z" moTa={moTa} jsonLd={[schemaBreadcrumb([{ ten: 'Trang chủ', url: new URL(url(''), site).href }, { ten: 'Thuật ngữ', url: new URL(urlThuatNgu(), site).href }])]}>
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: 'Thuật ngữ' }]} />
+  <article data-pagefind-body data-pagefind-meta="loai:Thuật ngữ">
+    <h1>Thuật ngữ tu tiên A–Z</h1>
+    <span class="sr-only" data-pagefind-weight="8">{boDau(ds.map((t) => t.ten).join(' ')).toLowerCase()}</span>
+    <span class="sr-only">{boDau(ds.map((t) => t.giai_thich).join(' ')).toLowerCase()}</span>
+    <p class="sapo">{moTa}</p>
+    <nav aria-label="Chữ cái" data-pagefind-ignore><ul class="muc-luc-ngang">{[...nhom.keys()].map((k) => <li><a href={`#chu-${k}`}>{k}</a></li>)}</ul></nav>
+    {[...nhom].map(([k, ds]) => (
+      <section id={`chu-${k}`} class="khoi">
+        <h2>{k}</h2>
+        <dl class="ds-thuat-ngu">{ds.map((t) => <><dt id={`tn-${slugSeries(t.series)}-${boDau(t.ten).toLowerCase().replace(/[^a-z0-9]+/g, '-')}`}>{t.ten} <span class="nhan nhan-vien">{t.series.data.ten}</span></dt><dd>{t.giai_thich}</dd></>)}</dl>
+      </section>
+    ))}
+    {!ds.length && <p class="trong">Chưa có thuật ngữ nào.</p>}
+  </article>
+</BoCuc>

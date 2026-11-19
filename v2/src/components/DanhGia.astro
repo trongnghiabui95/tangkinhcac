@@ -1,0 +1,15 @@
+---
+// Đánh giá: điểm tổng + thanh điểm từng mặt (cốt truyện, nhân vật, thế giới, hình ảnh). Mặt nào trống thì ẩn.
+interface Props { diem?: number; chiTiet?: Record<string, number | undefined> }
+const { diem, chiTiet = {} } = Astro.props;
+const TEN: Record<string, string> = { cot_truyen: 'Cốt truyện', nhan_vat: 'Nhân vật', the_gioi: 'Thế giới', hinh_anh: 'Hình ảnh' };
+const mat = Object.entries(TEN).filter(([k]) => chiTiet[k] != null).map(([k, ten]) => ({ ten, d: chiTiet[k]! }));
+---
+{(diem != null || mat.length > 0) && (
+  <div class="danh-gia">
+    {diem != null && <p class="danh-gia-tong"><span class="danh-gia-so">{diem.toFixed(1)}</span><span>/10<br /><small>Điểm tổng</small></span></p>}
+    {mat.length > 0 && <ul class="danh-gia-mat">{mat.map((m) => (
+      <li><span class="danh-gia-ten">{m.ten}</span><span class="thanh" aria-hidden="true"><span style={`width:${m.d * 10}%`}></span></span><span class="danh-gia-diem">{m.d.toFixed(1)}</span></li>
+    ))}</ul>}
+  </div>
+)}

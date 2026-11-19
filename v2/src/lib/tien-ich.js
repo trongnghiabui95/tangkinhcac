@@ -3,7 +3,7 @@
 // mọi thứ tính từ v2/content/ lúc build.
 import { getCollection } from 'astro:content';
 import anhJson from '../data/anh.json';
-import { DANH_MUC, CAC_DANH_MUC, tenNgan } from './chuan-mdx.mjs';
+import { DANH_MUC, CAC_DANH_MUC, tenNgan, LOAI_TRUYEN as LOAI_TRUYEN_MENU, CAC_LOAI_TRUYEN as CAC_LOAI_TRUYEN_MENU } from './chuan-mdx.mjs';
 
 export { DANH_MUC, CAC_DANH_MUC };
 const BASE = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
@@ -53,6 +53,10 @@ export async function layMenu() {
   const [series, bai] = await Promise.all([laySeries(), layBai()]);
   const danhMucCo = CAC_DANH_MUC.filter((c) => bai.some((b) => b.data.category === c));
   return {
+    // Issue #51: loại bộ truyện (Tu Tiên, Anime…), Đề cử, Thuật ngữ – chỉ hiện khi có dữ liệu
+    loai: CAC_LOAI_TRUYEN_MENU.filter((l) => series.some((s) => s.data.loai === l)).map((l) => ({ loai: l, ten: LOAI_TRUYEN_MENU[l].ten, href: url(`loai/${l}/`) })),
+    deCu: series.some((s) => s.data.cho_nguoi_moi || s.data.tuong_tu.length) ? url('de-cu/') : null,
+    thuatNgu: series.some((s) => s.data.thuat_ngu.length) ? url('thuat-ngu/') : null,
     series: series.map((s) => ({ ten: s.data.ten, href: urlSeries(slugSeries(s)) })),
     danhMuc: danhMucCo.map((c) => ({ c, ten: DANH_MUC[c].tenSoNhieu, href: urlDanhMuc(c) })),
   };
@@ -64,3 +68,44 @@ export function chiaTrang(ds, moiTrang = MOI_TRANG) {
 }
 /** Ảnh cho thẻ bài: ảnh riêng của bài, không có thì mượn ảnh bìa bộ truyện (để thẻ không bị khung trống) */
 export const layAnhThe = (e) => layAnh(e) || anhJson[`${e.data.series}/bia/bia`] || null;
+
+/* ---------- Tính năng chuyển từ web cũ (Issue #51) ---------- */
+import { LOAI_TRUYEN, CAC_LOAI_TRUYEN, NHAN_QUAN_HE } from './chuan-mdx.mjs';
+export { LOAI_TRUYEN, CAC_LOAI_TRUYEN, NHAN_QUAN_HE };
+/** chuỗi → slug: "Huyền Huyễn" → "huyen-huyen" */
+export const taoSlug = (s) => boDau(s).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
+export const urlLoai = (loai) => url(`loai/${loai}/`);
+export const urlTheLoai = (tl) => url(`the-loai/${taoSlug(tl)}/`);
+export const urlDeCu = () => url('de-cu/');
+export const urlThuatNgu = () => url('thuat-ngu/');
+/** Các loại bộ truyện đang có ít nhất 1 bộ */
+export async function cacLoaiCo() {
+  const series = await laySeries();
+  return CAC_LOAI_TRUYEN.filter((l) => series.some((s) => s.data.loai === l)).map((l) => ({ loai: l, ...LOAI_TRUYEN[l], ds: series.filter((s) => s.data.loai === l) }));
+}
+/** Các thể loại (từ the_loai của bộ truyện) kèm danh sách bộ, sắp theo số bộ giảm dần */
+export async function cacTheLoai() {
+  const m = new Map();
+  for (const s of await laySeries()) for (const tl of s.data.the_loai) {
+    const k = taoSlug(tl); const cu = m.get(k) || { slug: k, ten: tl, ds: [] }; cu.ds.push(s); m.set(k, cu);
+  }
+  return [...m.values()].sort((a, b) => b.ds.length - a.ds.length || a.ten.localeCompare(b.ten, 'vi'));
+}
+/** Mọi thuật ngữ của mọi bộ (kèm bộ truyện), sắp A–Z */
+export async function layThuatNgu() {
+  return (await laySeries()).flatMap((s) => s.data.thuat_ngu.map((t) => ({ ...t, series: s })))
+    .sort((a, b) => a.ten.localeCompare(b.ten, 'vi'));
+}
+/** Tìm bài cùng bộ theo slug hoặc theo tên (không phân biệt hoa thường, không dấu) */
+export function timBai(cungBo, khoa, category) {
+  const k = taoSlug(khoa);
+  return cungBo.find((e) => (!category || e.data.category === category) && (e.data.slug === khoa || taoSlug(tenBai(e)) === k)) || null;
+}
+/** Ảnh thư viện (đã xử lý) của 1 bộ; loc(nhan_vat) để lấy ảnh riêng của nhân vật */
+export function layThuVien(s, nhanVat) {
+  const slug = slugSeries(s);
+  return s.data.thu_vien.filter((a) => (nhanVat ? a.nhan_vat === nhanVat : true))
+    .map((a) => ({ ...a, xl: anhJson[`${slug}/thu-vien/${a.anh.split('/').pop().replace(/\.[^.]+$/, '')}`] })).filter((a) => a.xl);
+}
+export const layBanDo = (s) => anhJson[`${slugSeries(s)}/ban-do/ban-do`] || null;
+export const nhanQuanHe = (q) => NHAN_QUAN_HE[q] || q;

@@ -1,0 +1,17 @@
+---
+// Dòng thời gian (cuộc đời nhân vật, hành trình nhân vật chính): chấm tròn viền ngọc, nhãn địa điểm + cảnh giới.
+interface Props { ds: { tieuDe?: string; diaDiem?: string; canhGioi?: string; noiDung: string }[] }
+const { ds } = Astro.props;
+---
+<ol class="dong-thoi-gian">
+  {ds.map((m, i) => (
+    <li>
+      <span class="dtg-cham" aria-hidden="true">{i + 1}</span>
+      <div class="dtg-than">
+        {m.tieuDe && <h3 class="dtg-tieu-de">{m.tieuDe}</h3>}
+        {(m.diaDiem || m.canhGioi) && <p class="dtg-nhan">{m.diaDiem && <span class="nhan nhan-vien">📍 {m.diaDiem}</span>}{m.canhGioi && <span class="nhan nhan-tu-luyen">{m.canhGioi}</span>}</p>}
+        <p class="dtg-noi-dung">{m.noiDung}</p>
+      </div>
+    </li>
+  ))}
+</ol>

@@ -1,0 +1,31 @@
+---
+// Thư viện ảnh: lưới ảnh có chú thích + nguồn; bấm ảnh mở xem lớn (hộp thoại <dialog>, không thư viện ngoài).
+import { url } from '../lib/tien-ich.js';
+interface Props { ds: { chu_thich: string; nguon: string; nguon_url?: string; xl: any }[] }
+const { ds } = Astro.props;
+---
+<ul class="thu-vien-anh">
+  {ds.map((a) => (
+    <li>
+      <figure>
+        <a href={url(a.xl.src)} class="tva-mo" data-chu-thich={`${a.chu_thich} – Ảnh: ${a.nguon}`}>
+          <img src={url(a.xl.srcset.at(-1).src)} srcset={a.xl.srcset.map((s: any) => `${url(s.src)} ${s.w}w`).join(', ')} sizes="(max-width: 640px) 50vw, 300px"
+               width={a.xl.width} height={a.xl.height} alt={a.chu_thich} loading="lazy" decoding="async" />
+        </a>
+        <figcaption>{a.chu_thich}<span class="nguon-anh" title={`Ảnh: ${a.nguon}`}>Ảnh: {a.nguon_url ? <a href={a.nguon_url} rel="nofollow noopener" target="_blank">{a.nguon}</a> : a.nguon}</span></figcaption>
+      </figure>
+    </li>
+  ))}
+</ul>
+<dialog class="tva-hop" aria-label="Xem ảnh lớn"><form method="dialog"><button class="tva-dong" aria-label="Đóng">✕</button></form><img alt="" /><p></p></dialog>
+<script>
+  document.querySelectorAll<HTMLAnchorElement>('.tva-mo').forEach((a) => a.addEventListener('click', (e) => {
+    const hop = a.closest('section, article, main')?.querySelector<HTMLDialogElement>('.tva-hop') || document.querySelector<HTMLDialogElement>('.tva-hop');
+    if (!hop?.showModal) return;   // trình duyệt cũ: mở ảnh như link thường
+    e.preventDefault();
+    const img = hop.querySelector('img')!; img.src = a.href; img.alt = a.querySelector('img')?.alt || '';
+    hop.querySelector('p')!.textContent = a.dataset.chuThich || '';
+    hop.showModal();
+  }));
+  document.querySelectorAll<HTMLDialogElement>('.tva-hop').forEach((h) => h.addEventListener('click', (e) => { if (e.target === h) h.close(); }));
+</script>

@@ -1,0 +1,12 @@
+---
+// Chip nhân vật: ảnh tròn 44px + tên (+ dòng phụ). Không có bài thì chỉ hiện tên.
+import { layAnh, tenBai, urlBai, url } from '../lib/tien-ich.js';
+interface Props { bai?: any; ten?: string; phu?: string }
+const { bai, ten, phu } = Astro.props;
+const anh = bai ? layAnh(bai) : null;
+const Tag = bai ? 'a' : 'span';
+---
+<Tag class="chip-nv" href={bai ? urlBai(bai) : undefined}>
+  {anh ? <img src={url(anh.srcset.at(-1).src)} width="44" height="44" alt="" loading="lazy" /> : <span class="chip-nv-chu" aria-hidden="true">{(bai ? tenBai(bai) : ten || '?').charAt(0)}</span>}
+  <span class="chip-nv-chu-than"><span class="chip-nv-ten">{bai ? tenBai(bai) : ten}</span>{phu && <span class="chip-nv-phu">{phu}</span>}</span>
+</Tag>

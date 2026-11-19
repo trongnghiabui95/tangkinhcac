@@ -1,0 +1,21 @@
+---
+// /loai/<loai>/ – danh sách bộ truyện theo loại (Truyện Tu Tiên, Anime). Loại nào chưa có bộ thì không sinh trang.
+import BoCuc from '../../../layouts/BoCuc.astro';
+import Breadcrumb from '../../../components/Breadcrumb.astro';
+import TheBoTruyen from '../../../components/TheBoTruyen.astro';
+import { schemaBreadcrumb } from '../../../lib/schema.js';
+import { cacLoaiCo, layBai, slugSeries, url, urlLoai } from '../../../lib/tien-ich.js';
+export async function getStaticPaths() {
+  return (await cacLoaiCo()).map((l) => ({ params: { loai: l.loai }, props: { l } }));
+}
+const { l } = Astro.props;
+const bai = await layBai();
+const ds = [...l.ds].sort((a: any, b: any) => b.data.ngay_cap_nhat.getTime() - a.data.ngay_cap_nhat.getTime());
+const site = Astro.site!;
+---
+<BoCuc tieuDe={`${l.ten} – review, nhân vật, cảnh giới`} moTa={l.moTa} jsonLd={[schemaBreadcrumb([{ ten: 'Trang chủ', url: new URL(url(''), site).href }, { ten: l.ten, url: new URL(urlLoai(l.loai), site).href }])]}>
+  <Breadcrumb cap={[{ ten: 'Trang chủ', href: url('') }, { ten: l.ten }]} />
+  <h1>{l.ten}</h1>
+  <p class="sapo">{l.moTa} Hiện có {ds.length} bộ.</p>
+  <ul class="luoi-the">{ds.map((s: any, i: number) => <TheBoTruyen s={s} soBai={bai.filter((b) => b.data.series === slugSeries(s)).length} uuTien={i < 2} />)}</ul>
+</BoCuc>
