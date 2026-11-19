@@ -91,6 +91,16 @@ nhap: false                        # true = chưa xuất bản
 
 **Kiểm tra khi build** (`scripts/kiem-tra-noi-dung.mjs`, thông báo tiếng Việt ghi file + trường + lý do): title 50–65; description 140–160; faqs 3–6; slug không dấu, trùng tên file, không trùng đường dẫn hệ thống (`trang-2`…); series/category trùng thư mục; bộ truyện có `index.mdx`; file ảnh có thật và cạnh ngắn ≥ 600px; có ảnh thì phải ghi nguồn; thân bài không có thẻ HTML/component.
 
+**Xử lý ảnh khi build** (`scripts/process-images.mjs`, Issue #30):
+- Đọc ảnh từ `image` (+ `image_crop`, `image_source`), cắt theo tỉ lệ danh mục (nhân vật 3:4, pháp bảo/thế lực vuông, cảnh giới/cốt truyện 16:9, bìa 2:3), xuất WebP nhiều cỡ (600px + 300px) và ảnh chia sẻ 1200×630. **Xoá toàn bộ EXIF/XMP/IPTC**.
+- **Mỗi file WebP phải < 80KB**: thử chất lượng 80 → 72 → 64 → 56 → 48 → 40, lấy mức cao nhất đạt. Xuống 40 vẫn > 80KB thì dừng build, báo rõ tên file và cỡ, ví dụ:
+  `✗ <series>/nhan-vat/<slug>: <slug>-<series>.webp vẫn nặng 191.9KB ở chất lượng thấp nhất 40 (cần < 80KB)…` → chọn ảnh gốc ít nhiễu hơn hoặc cắt sát hơn.
+- Ảnh gốc lỗi thì báo rõ, không treo/crash: không có file (`không có file ảnh gốc …`), không phải ảnh (`… không phải ảnh hợp lệ`), quá nhỏ (`ảnh … quá nhỏ 400×533px: cạnh ngắn 400px, cần ≥ 600px`).
+- Chất lượng thật dùng và cỡ KB ghi vào `src/data/anh.json` (`chat_luong`, `kb`, `goc`, từng cỡ trong `srcset`). Đổi ngưỡng 80KB/các mức chất lượng thì build sau tự làm lại ảnh (nằm trong dấu vết bộ nhớ đệm).
+- Chú thích dưới ảnh: `Ảnh: <image_source.ten>` có link tới `image_source.url`.
+- **Không** có bước xoá logo/watermark (xem mục 7).
+- Kiểm thử: `npm run test:anh` (tự tạo ảnh ~2MB có EXIF, ảnh 400px, file hỏng trong thư mục tạm).
+
 **Xem cả bài nháp khi làm việc**: `XEM_NHAP=1 npm run build && npm run preview` (bản này có dải đỏ cảnh báo và `noindex`, **không đăng**).
 
 ## 4. Lệnh và biến môi trường
@@ -99,6 +109,7 @@ cd v2
 npm ci
 npm run build          # kiểm tra nội dung → ảnh → HTML → chỉ mục tìm kiếm, kết quả ở dist/
 npm run test:noi-dung  # 3 file sai phải bị chặn
+npm run test:anh       # ảnh: < 80KB, không EXIF, chặn ảnh nhỏ/hỏng/thiếu
 bash tests/thu-them-bai.sh   # thêm 1 bài hợp lệ → phải có trang mới
 npm run preview        # xem thử ở http://localhost:4321
 ```
@@ -121,7 +132,7 @@ npm run preview        # xem thử ở http://localhost:4321
 - Không quảng cáo ở trang tìm kiếm và 404 (đều `noindex`).
 
 ## 6. Số đo thật
-**Ảnh** (6 ảnh mẫu): WebP 600×800, 6–43 KB; bản 300px cho thẻ nhỏ; ảnh chia sẻ 1200×630. Đã kiểm: không còn EXIF/XMP/ICC. Build lại chỉ xử lý ảnh đổi (bộ nhớ đệm).
+**Ảnh** (6 ảnh mẫu): WebP cỡ chính 11–42 KB, đều ở chất lượng 80 (giới hạn < 80KB/file); bản 300px cho thẻ nhỏ; ảnh chia sẻ 1200×630. Đã kiểm: không còn EXIF/XMP/ICC. Build lại chỉ xử lý ảnh đổi (bộ nhớ đệm).
 
 **Tìm kiếm** (thử với 5.062 bài giả lập):
 | Chế độ | Mỗi lần tìm tải | Kích thước chỉ mục trên server |
