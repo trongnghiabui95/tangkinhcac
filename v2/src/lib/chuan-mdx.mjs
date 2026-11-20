@@ -24,7 +24,7 @@ export const GIOI_HAN = {
   description: [140, 160],  // ký tự
   faqs: [3, 6],             // số câu
   soTu: [800, 1200],        // số từ thân bài (build chỉ cảnh báo; workflow PR chặn file mới/sửa)
-  canhAnhToiThieu: 600,     // px, cạnh ngắn ảnh gốc
+  canhAnhToiThieu: 480,     // px, cạnh ngắn ảnh gốc (thẻ nhân vật hiện tối đa ~290px; hạ từ 600 ở Issue #69 vì nhiều nhân vật phụ chỉ có ảnh ~500px)
   lienKetTuDong: 10,        // số liên kết nội bộ tự gắn tối đa mỗi bài (remark-lien-ket-noi-bo)
 };
 /** Khoá infobox có giá trị là TÊN KHÁC của chính bài (dùng thêm cho liên kết nội bộ tự động) */

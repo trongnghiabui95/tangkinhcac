@@ -89,13 +89,13 @@ nhap: false                        # true = chưa xuất bản
 - Không viết mục "Câu hỏi thường gặp" trong thân bài; FAQ lấy từ `faqs`.
 - Độ dài 800–1.200 từ. Build chỉ **cảnh báo**, workflow PR (Issue #28) sẽ chặn với file mới/sửa.
 
-**Kiểm tra khi build** (`scripts/kiem-tra-noi-dung.mjs`, thông báo tiếng Việt ghi file + trường + lý do): title 50–65; description 140–160; faqs 3–6; slug không dấu, trùng tên file, không trùng đường dẫn hệ thống (`trang-2`…); series/category trùng thư mục; bộ truyện có `index.mdx`; file ảnh có thật và cạnh ngắn ≥ 600px; có ảnh thì phải ghi nguồn; thân bài không có thẻ HTML/component.
+**Kiểm tra khi build** (`scripts/kiem-tra-noi-dung.mjs`, thông báo tiếng Việt ghi file + trường + lý do): title 50–65; description 140–160; faqs 3–6; slug không dấu, trùng tên file, không trùng đường dẫn hệ thống (`trang-2`…); series/category trùng thư mục; bộ truyện có `index.mdx`; file ảnh có thật và cạnh ngắn ≥ 480px (`GIOI_HAN.canhAnhToiThieu`); có ảnh thì phải ghi nguồn; thân bài không có thẻ HTML/component.
 
 **Xử lý ảnh khi build** (`scripts/process-images.mjs`, Issue #30):
 - Đọc ảnh từ `image` (+ `image_crop`, `image_source`), cắt theo tỉ lệ danh mục (nhân vật 3:4, pháp bảo/thế lực vuông, cảnh giới/cốt truyện 16:9, bìa 2:3), xuất WebP nhiều cỡ (600px + 300px) và ảnh chia sẻ 1200×630. **Xoá toàn bộ EXIF/XMP/IPTC**.
 - **Mỗi file WebP phải < 80KB**: thử chất lượng 80 → 72 → 64 → 56 → 48 → 40, lấy mức cao nhất đạt. Xuống 40 vẫn > 80KB thì dừng build, báo rõ tên file và cỡ, ví dụ:
   `✗ <series>/nhan-vat/<slug>: <slug>-<series>.webp vẫn nặng 191.9KB ở chất lượng thấp nhất 40 (cần < 80KB)…` → chọn ảnh gốc ít nhiễu hơn hoặc cắt sát hơn.
-- Ảnh gốc lỗi thì báo rõ, không treo/crash: không có file (`không có file ảnh gốc …`), không phải ảnh (`… không phải ảnh hợp lệ`), quá nhỏ (`ảnh … quá nhỏ 400×533px: cạnh ngắn 400px, cần ≥ 600px`).
+- Ảnh gốc lỗi thì báo rõ, không treo/crash: không có file (`không có file ảnh gốc …`), không phải ảnh (`… không phải ảnh hợp lệ`), quá nhỏ (`ảnh … quá nhỏ 400×533px: cạnh ngắn 400px, cần ≥ 480px`).
 - Chất lượng thật dùng và cỡ KB ghi vào `src/data/anh.json` (`chat_luong`, `kb`, `goc`, từng cỡ trong `srcset`). Đổi ngưỡng 80KB/các mức chất lượng thì build sau tự làm lại ảnh (nằm trong dấu vết bộ nhớ đệm).
 - Chú thích dưới ảnh: `Ảnh: <image_source.ten>` có link tới `image_source.url`.
 - **Không** có bước xoá logo/watermark (xem mục 7).
