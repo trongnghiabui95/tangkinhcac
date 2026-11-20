@@ -28,6 +28,9 @@ export const GIOI_HAN = {
   soTu: [800, 1200],        // số từ thân bài (build chỉ cảnh báo; workflow PR chặn file mới/sửa)
   canhAnhToiThieu: 480,     // px, cạnh ngắn ảnh gốc (thẻ nhân vật hiện tối đa ~290px; hạ từ 600 ở Issue #69 vì nhiều nhân vật phụ chỉ có ảnh ~500px)
   lienKetTuDong: 10,        // số liên kết nội bộ tự gắn tối đa mỗi bài (remark-lien-ket-noi-bo)
+  banCoBiet: [30, 220],     // ký tự, mỗi ý ban_co_biet[].noi_dung ở index.mdx (Issue #11)
+  banCoBietHien: 3,         // số thẻ "Bạn có biết" hiện cùng lúc; có nhiều hơn thì mỗi lượt xem chọn ngẫu nhiên
+  xepHangToiThieu: 2,       // khối "Xếp hạng sức mạnh" chỉ hiện khi xếp được ít nhất ngần này nhân vật
 };
 /** Khoá infobox có giá trị là TÊN KHÁC của chính bài (dùng thêm cho liên kết nội bộ tự động) */
 export const KHOA_INFOBOX_TEN_KHAC = /^(biệt hiệu|biệt danh|tên khác|tên gọi khác|danh hiệu|ngoại hiệu|đạo hiệu|pháp hiệu)$/iu;

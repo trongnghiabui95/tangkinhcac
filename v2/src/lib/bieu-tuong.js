@@ -31,6 +31,8 @@ export const BIEU_TUONG = {
   'lien-ket': '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
   'trai': '<path d="m15 18-6-6 6-6"/>',
   'mat-trang': '<path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/>',
+  'y-tuong': '<path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/>',
+  'xep-hang': '<path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>',
 };
 /** Màu nhãn theo danh mục / vai trò (tên lớp CSS .nhan-<...>, xem giao-dien.css) */
 export const MAU_NHAN_DANH_MUC = { 'nhan-vat': 'nhan-vat', 'canh-gioi': 'tu-luyen', 'cot-truyen': 'tu-tien', 'phap-bao': 'vat-pham', 'the-luc': 'the-luc' };

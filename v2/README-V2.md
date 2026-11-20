@@ -119,9 +119,11 @@ Không bắt buộc; bỏ trống thì mục tương ứng tự ẩn. Ví dụ �
 | `ost: [{ youtube, ten }]` | Mục "OST" |
 | `thuat_ngu: [{ ten, giai_thich }]` | Mục "Thuật ngữ" + trang `/thuat-ngu/` (tìm được bằng ô tìm kiếm) |
 | `tuong_tu: [{ series, ly_do }]`, `cho_nguoi_moi` | "Tác phẩm tương tự" + trang `/de-cu/` |
+| `ban_co_biet: [{ noi_dung, nguon?, nguon_url? }]` | Mục "Bạn có biết" (Issue #11): hiện 3 thẻ; có hơn 3 ý thì mỗi lượt xem chọn ngẫu nhiên 3 ý (JS nhỏ, tắt JS vẫn thấy 3 ý đầu). `noi_dung` dài 30–220 ký tự (`GIOI_HAN.banCoBiet`), sai là dừng build |
 
 **Bài nhân vật**: `noi_bat: true` (trang chủ), `bac` (tên bậc cảnh giới cao nhất – hiện ở bậc thang cảnh giới), `the_luc: ["Tên/slug"]`, `cuoc_doi: [{ giai_doan, dia_diem, canh_gioi, su_kien }]`, `quan_he: [{ nhan_vat: slug, quan_he: dao-lu|su-phu|de-tu|ke-thu|ban-be|gia-dinh|dong-mon|chữ tự do, ghi_chu }]`.
 **Bài cảnh giới**: `cac_bac: [{ ten, the_gioi, mo_ta }]` theo thứ tự → bậc thang kèm nhân vật ở từng bậc.
+**Xếp hạng sức mạnh** (trang bộ, Issue #11 – không cần trường mới): lấy `bac` của từng bài nhân vật, đối chiếu thứ tự `cac_bac` trong bài cảnh giới của chính bộ đó (bài đầu tiên theo `thu_tu` có `cac_bac`), xếp từ cao xuống thấp; cùng bậc thì cùng hạng. Tên bậc so khớp **không phân biệt hoa thường/dấu** nhưng phải là đúng một tên trong `cac_bac` – ghi tên khác (vd. "Bước thứ ba" khi `cac_bac` không có bậc đó) thì nhân vật không được xếp. Khối chỉ hiện khi xếp được ≥ 2 nhân vật (`GIOI_HAN.xepHangToiThieu`).
 **Bài thế lực**: `thu_linh` (slug nhân vật), `tru_so`; thành viên tự lấy từ `the_luc` của bài nhân vật.
 
 ## 4. Lệnh và biến môi trường
