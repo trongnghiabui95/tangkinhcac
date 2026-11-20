@@ -3,12 +3,19 @@
 # Chép bài thử vào content/, build, kiểm tra, rồi xoá bài thử.
 set -euo pipefail
 cd "$(dirname "$0")/.."
-SRC=tests/fixtures/hop-le/pham-nhan-tu-tien/the-luc/hoang-phong-coc.mdx
-DST=content/pham-nhan-tu-tien/the-luc/hoang-phong-coc.mdx
+# Slug riêng cho bài thử (không bao giờ đặt tên bài thật như vậy) để không đè/xoá nhầm bài thật.
+SLUG=bai-thu-tu-dong-xoa
+SRC=tests/fixtures/hop-le/pham-nhan-tu-tien/the-luc/${SLUG}.mdx
+DST=content/pham-nhan-tu-tien/the-luc/${SLUG}.mdx
+# Khoá an toàn: file đích đã có sẵn → dừng, KHÔNG ghi đè, KHÔNG xoá.
+if [ -e "$DST" ]; then
+  echo "LỖI: $DST đã có sẵn. Dừng để không ghi đè/xoá nhầm file này. Hãy đổi tên hoặc xoá nó bằng tay rồi chạy lại."
+  exit 1
+fi
 mkdir -p "$(dirname "$DST")"; cp "$SRC" "$DST"
 trap 'rm -f "$DST"; rmdir "$(dirname "$DST")" 2>/dev/null || true' EXIT
 npm run build >/dev/null 2>&1 || { echo "LỖI: build thất bại"; npm run build; exit 1; }
-URL='/pham-nhan-tu-tien/the-luc/hoang-phong-coc/'
+URL="/pham-nhan-tu-tien/the-luc/${SLUG}/"
 loi=0
 kt() { if grep -q "$2" "$1"; then echo "OK   $3"; else echo "LỖI $3"; loi=1; fi; }
 test -f "dist${URL}index.html" && echo "OK   có trang mới ${URL}" || { echo "LỖI không có trang ${URL}"; loi=1; }
