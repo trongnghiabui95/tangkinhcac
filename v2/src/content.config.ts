@@ -37,7 +37,7 @@ export const collections = {
       ngay_cap_nhat: z.coerce.date(),
       nhap: z.boolean().default(false),
       // ---- Chuyển từ web cũ (Issue #51) – TUỲ CHỌN, bộ truyện cũ không có vẫn chạy ----
-      loai: z.enum(CAC_LOAI_TRUYEN as [string, ...string[]]).default('tu-tien'),   // tu-tien | anime
+      loai: z.enum(CAC_LOAI_TRUYEN as [string, ...string[]]).default('tu-tien'),   // tu-tien | anime | donghua (cùng universe khác loai → nút qua lại, Issue #4)
       so_chuong: z.number().int().optional(),
       so_tap: z.number().int().optional(),
       so_mua: z.number().int().optional(),

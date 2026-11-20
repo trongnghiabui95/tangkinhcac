@@ -48,6 +48,11 @@ export async function cacVuTru() {
   for (const v of m.values()) v.ten = v.ten || v.series.map((s) => s.data.ten).join(' · ');
   return [...m.values()].sort((a, b) => a.ten.localeCompare(b.ten, 'vi'));
 }
+/** Issue #4: các bộ cùng `universe` nhưng KHÁC `loai` (bản truyện ↔ bản donghua/anime) – tự hai chiều, không cần khai báo ở cả hai file */
+export async function cacBanKhac(s) {
+  return (await laySeries()).filter((x) => x.data.universe === s.data.universe && x.data.loai !== s.data.loai && slugSeries(x) !== slugSeries(s))
+    .sort((a, b) => CAC_LOAI_TRUYEN_MENU.indexOf(a.data.loai) - CAC_LOAI_TRUYEN_MENU.indexOf(b.data.loai) || a.data.ten.localeCompare(b.data.ten, 'vi'));
+}
 /** Menu sinh từ nội dung: các bộ truyện + các danh mục đang có bài */
 export async function layMenu() {
   const [series, bai] = await Promise.all([laySeries(), layBai()]);

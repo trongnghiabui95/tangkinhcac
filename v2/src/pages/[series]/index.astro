@@ -14,12 +14,12 @@ import DanhGia from '../../components/DanhGia.astro';
 import DongThoiGian from '../../components/DongThoiGian.astro';
 import ThuVienAnh from '../../components/ThuVienAnh.astro';
 import YouTubeFacade from '../../components/YouTubeFacade.astro';
+import BieuTuong from '../../components/BieuTuong.astro';
 import TheBoTruyen from '../../components/TheBoTruyen.astro';
 import ChiaSe from '../../components/ChiaSe.astro';
 import ChipNhanVat from '../../components/ChipNhanVat.astro';
-import BieuTuong from '../../components/BieuTuong.astro';
 import { laySeries, slugSeries, layBai, layAnhSeries, layThuVien, layBanDo, url, urlSeriesDanhMuc, urlVuTru, urlTheLoai, urlLoai, boDau,
-  DANH_MUC, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru, taoSlug, tenBai, urlBai } from '../../lib/tien-ich.js';
+  DANH_MUC, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru, cacBanKhac, urlSeries, taoSlug, tenBai, urlBai } from '../../lib/tien-ich.js';
 import { GIOI_HAN } from '../../lib/chuan-mdx.mjs';
 import { schemaReviewTruyen, schemaBreadcrumb } from '../../lib/schema.js';
 export async function getStaticPaths() {
@@ -41,6 +41,8 @@ const nhomNhanVat = [
 ].filter((n) => n.ds.length);
 const nhom = CAC_DANH_MUC.filter((c) => c !== 'nhan-vat').map((c) => ({ c, ds: bai.filter((b) => b.data.category === c).sort(theoThuTu) })).filter((n) => n.ds.length);
 const vuTru = (await cacVuTru()).find((v) => v.slug === d.universe);
+// Issue #4: nút sang bản khác loại cùng vũ trụ (chữ nút lấy từ LOAI_TRUYEN[...].nut)
+const banKhac = (await cacBanKhac(s)).map((x) => ({ href: urlSeries(slugSeries(x)), chu: LOAI_TRUYEN[x.data.loai].nut, loai: x.data.loai, ten: x.data.ten }));
 const anh = layAnhSeries(s);
 const banDo = layBanDo(s);
 const thuVien = layThuVien(s);
@@ -99,6 +101,7 @@ const thongTin = [
     <span hidden data-pagefind-meta={`title:${tieuDe}`}></span>
     <BangRon s={s} laTieuDe nut={false} />
     {vuTru && vuTru.series.length > 1 && <p class="thuoc-bo">Thuộc vũ trụ <a href={urlVuTru(d.universe)}>{vuTru.ten}</a></p>}
+    {banKhac.length > 0 && <p class="ban-khac" data-pagefind-ignore>{banKhac.map((b) => <a class="nut-vien" href={b.href} title={b.ten}><BieuTuong ten={b.loai} />{b.chu}</a>)}</p>}
     <span class="sr-only" data-pagefind-weight="8">{boDau([d.ten, ...d.ten_khac].join(' ')).toLowerCase()}</span>
     {mucLuc.length >= 3 && <nav aria-label="Mục lục" data-pagefind-ignore><ul class="muc-luc-ngang">{mucLuc.map((m) => <li><a href={`#${m.id}`}>{m.ten}</a></li>)}</ul></nav>}
 

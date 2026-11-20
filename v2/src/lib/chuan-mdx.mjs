@@ -10,10 +10,12 @@ export const DANH_MUC = {
   'the-luc': { ten: 'Thế lực', tenSoNhieu: 'Thế lực' },
 };
 export const CAC_DANH_MUC = Object.keys(DANH_MUC);
-/** Loại bộ truyện (trường `loai` trong index.mdx). Menu chỉ hiện loại nào đang có bộ. */
+/** Loại bộ truyện (trường `loai` trong index.mdx). Menu chỉ hiện loại nào đang có bộ.
+ *  `nut`: chữ nút trên trang bộ truyện khác loại cùng `universe` dẫn tới bộ loại này (Issue #4), ví dụ trang truyện chữ → "Xem bản donghua". */
 export const LOAI_TRUYEN = {
-  'tu-tien': { ten: 'Truyện Tu Tiên', moTa: 'Review truyện Tu Tiên, Huyền Huyễn: cốt truyện, nhân vật, hệ thống cảnh giới, pháp bảo.' },
-  anime: { ten: 'Anime', moTa: 'Review Anime: cốt truyện, nhân vật, sức mạnh và các mùa phim.' },
+  'tu-tien': { ten: 'Truyện Tu Tiên', nut: 'Đọc bản truyện', moTa: 'Review truyện Tu Tiên, Huyền Huyễn: cốt truyện, nhân vật, hệ thống cảnh giới, pháp bảo.' },
+  anime: { ten: 'Anime', nut: 'Xem bản anime', moTa: 'Review Anime: cốt truyện, nhân vật, sức mạnh và các mùa phim.' },
+  donghua: { ten: 'Donghua', nut: 'Xem bản donghua', moTa: 'Review Donghua (hoạt hình Trung Quốc): các mùa phim, nhân vật, chất lượng hình ảnh và độ bám nguyên tác.' },
 };
 export const CAC_LOAI_TRUYEN = Object.keys(LOAI_TRUYEN);
 /** Nhãn quan hệ nhân vật (trường quan_he[].quan_he). Giá trị khác ghi sao hiện vậy. */
