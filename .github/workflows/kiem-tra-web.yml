@@ -1,0 +1,101 @@
+# Kiểm tra web THẬT còn lên không – mỗi sáng 6:30 giờ VN (trước báo cáo sáng 7:13), chạy tay được.
+#   Kiểm tra tên miền chính + bản Cloudflare Pages: trang chủ, sitemap, 3 bài ngẫu nhiên → mã 200 và có <title>.
+#   Lỗi → workflow ĐỎ + mở (hoặc bình luận vào) 1 Issue "🔴 Web không lên" (nhãn bug, P0). Hết lỗi → bình luận "đã lên lại".
+# Địa chỉ đọc từ biến repo (Settings → Secrets and variables → Actions → Variables): SITE_URL, PAGES_URL.
+# Chưa khai báo biến thì dùng mặc định bên dưới. Chạy tay có thể nhập địa chỉ khác để thử.
+# Script dùng: v2/scripts/kiem-tra-web.mjs (chỉ Node có sẵn, không cài thư viện).
+name: kiem-tra-web
+on:
+  schedule:
+    - cron: '30 23 * * *'   # 23:30 UTC = 6:30 sáng giờ Việt Nam
+  workflow_dispatch:
+    inputs:
+      site_url:
+        description: 'Địa chỉ tên miền chính (để trống = dùng biến SITE_URL)'
+        required: false
+      pages_url:
+        description: 'Địa chỉ Cloudflare Pages (để trống = dùng biến PAGES_URL)'
+        required: false
+      tao_issue:
+        description: 'Lỗi thì mở/bình luận Issue "🔴 Web không lên"'
+        type: boolean
+        default: true
+  pull_request:   # khi sửa chính workflow/script này: chạy thử (không mở Issue)
+    paths: ['.github/workflows/kiem-tra-web.yml', 'v2/scripts/kiem-tra-web.mjs']
+permissions:
+  contents: read
+  issues: write
+concurrency:
+  group: kiem-tra-web
+  cancel-in-progress: false
+jobs:
+  kiem-tra:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SITE_URL: ${{ inputs.site_url || vars.SITE_URL || 'https://tuchanbaodien.com' }}
+      PAGES_URL: ${{ inputs.pages_url || vars.PAGES_URL || 'https://tuchanbaodien.pages.dev' }}
+      KQ: ${{ github.workspace }}/kq-web
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: v2/scripts/kiem-tra-web.mjs
+          sparse-checkout-cone-mode: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Kiểm tra trang chủ, sitemap, 3 bài ngẫu nhiên
+        id: web
+        continue-on-error: true
+        run: |
+          mkdir -p "$KQ"
+          node v2/scripts/kiem-tra-web.mjs --chinh "$SITE_URL" --pages "$PAGES_URL" --json "$KQ/kq.json" --md "$KQ/tom-tat.md"
+
+      - name: Ghi tóm tắt
+        if: always()
+        run: cat "$KQ/tom-tat.md" >> "$GITHUB_STEP_SUMMARY" || echo "Không có kết quả – bước kiểm tra không chạy được." >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Mở / bình luận Issue "🔴 Web không lên"
+        if: always() && github.event_name != 'pull_request' && (github.event_name == 'schedule' || inputs.tao_issue)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          TIEU_DE: '🔴 Web không lên'
+          KET_QUA: ${{ steps.web.outcome }}
+          LINK_CHAY: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          # Tìm Issue đang mở có đúng tiêu đề (chỉ 1 Issue cho mọi lần lỗi – không tạo trùng)
+          so=$(gh api "repos/$REPO/issues?state=open&labels=bug&per_page=100" --paginate \
+                -q ".[] | select(.pull_request == null and .title == \"$TIEU_DE\") | .number" | head -1)
+          if [ "$KET_QUA" = success ]; then
+            [ -z "$so" ] && { echo "Web chạy, không có Issue đang mở."; exit 0; }
+            cuoi=$(gh api "repos/$REPO/issues/$so/comments?per_page=100" --paginate -q '.[].body' | { grep -o '<!-- kiem-tra-web:[a-z-]* -->' || true; } | tail -1)
+            if [ "$cuoi" = '<!-- kiem-tra-web:da-len -->' ]; then echo "Đã báo 'đã lên lại' rồi."; exit 0; fi
+            { echo '<!-- kiem-tra-web:da-len -->'; echo "✅ **Web đã lên lại** – [lần kiểm tra]($LINK_CHAY)."; echo
+              echo 'Kiểm tra lại giúp rồi đóng Issue này nếu ổn.'; echo; cat "$KQ/tom-tat.md"; } > "$KQ/than.md"
+            jq -Rs '{body: .}' "$KQ/than.md" > "$KQ/body.json"
+            gh api -X POST "repos/$REPO/issues/$so/comments" --input "$KQ/body.json" >/dev/null
+            echo "Đã bình luận 'đã lên lại' vào Issue #$so"
+            exit 0
+          fi
+          if [ -f "$KQ/tom-tat.md" ]; then ket_luan=$(jq -r .ketLuan "$KQ/kq.json"); else ket_luan='Bước kiểm tra không chạy được – xem log.'; fi
+          { echo '<!-- kiem-tra-web:loi -->'; echo "🔴 **$ket_luan**"; echo; echo "[Xem lần kiểm tra]($LINK_CHAY)"; echo
+            [ -f "$KQ/tom-tat.md" ] && cat "$KQ/tom-tat.md"; } > "$KQ/than.md"
+          if [ -n "$so" ]; then
+            jq -Rs '{body: .}' "$KQ/than.md" > "$KQ/body.json"
+            gh api -X POST "repos/$REPO/issues/$so/comments" --input "$KQ/body.json" >/dev/null
+            echo "Đã bình luận vào Issue #$so"
+          else
+            jq -Rs --arg t "$TIEU_DE" '{title: $t, body: ., labels: ["bug", "P0"]}' "$KQ/than.md" > "$KQ/body.json"
+            so=$(gh api -X POST "repos/$REPO/issues" --input "$KQ/body.json" -q .number)
+            echo "Đã mở Issue #$so"
+          fi
+
+      - name: Kết luận (đỏ nếu web lỗi)
+        if: always()
+        run: |
+          if [ "${{ steps.web.outcome }}" != success ]; then
+            echo "::error::Web không lên – xem bảng tóm tắt."; exit 1
+          fi
+          echo "Web chạy bình thường."

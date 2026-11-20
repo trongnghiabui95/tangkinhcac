@@ -23,7 +23,7 @@ v2/src/{pages,components,layouts,styles}     giao diện
 v2/scripts/                                  kiểm tra nội dung, xử lý ảnh, kiểm tra bản build, bảng tóm tắt PR, tải phông
 v2/tests/                                    kiểm thử
 v2/tools/                                    vẽ ảnh minh họa (ve_anh_mau.py → chup_anh.cjs)
-.github/workflows/                           v2-build.yml (kiểm tra PR + bot bảng tóm tắt), deploy.yml (chuyển hướng GitHub Pages)
+.github/workflows/                           v2-build.yml (kiểm tra PR + bot bảng tóm tắt), kiem-tra-web.yml (web còn chạy hằng ngày), deploy.yml (chuyển hướng GitHub Pages)
 ```
 
 ## Chuẩn file .mdx & Zero-Hardcode

@@ -177,6 +177,13 @@ Mỗi PR có sửa `v2/` chạy lần lượt:
 7. Từ nay merge vào `main` → Cloudflare tự build lại và cập nhật `tuchanbaodien.com`. Địa chỉ GitHub Pages cũ chỉ còn trang chuyển hướng (`.github/chuyen-huong/`).
 8. Khi có tên miền thật: **Custom domains** → thêm tên miền, rồi đổi `SITE_URL` sang tên miền đó và bấm **Retry deployment**.
 
+### Kiểm tra web còn chạy hằng ngày (workflow `kiem-tra-web`)
+- Mỗi sáng **6:30 giờ VN** (và khi bấm chạy tay ở tab **Actions → kiem-tra-web → Run workflow**), GitHub tự mở web thật: trang chủ, sitemap và **3 bài ngẫu nhiên** lấy từ sitemap – phải trả mã 200 và có `<title>`. Kiểm tra cả **tên miền chính** lẫn bản **Cloudflare Pages** (`*.pages.dev`).
+- Tên miền chính lỗi mà bản pages.dev vẫn chạy → kết luận **"Lỗi tên miền/DNS"**; cả hai lỗi → **"Web hỏng"** (xem lần deploy gần nhất).
+- Lỗi → workflow **đỏ** + mở 1 Issue **"🔴 Web không lên"** (nhãn `bug`, `P0`); nếu Issue đó đang mở thì chỉ bình luận thêm, không tạo trùng. Web lên lại → bot bình luận **"Web đã lên lại"** (đóng Issue bằng tay sau khi xem).
+- Địa chỉ đọc từ biến repo **Settings → Secrets and variables → Actions → Variables**: `SITE_URL` (mặc định `https://tuchanbaodien.com`), `PAGES_URL` (mặc định `https://tuchanbaodien.pages.dev`). Chạy tay có thể nhập địa chỉ khác để thử.
+- Chạy trên máy: `node scripts/kiem-tra-web.mjs --chinh <địa chỉ> --pages <địa chỉ>`. Kiểm thử không cần mạng: `npm run build && npm run test:web`.
+
 ## 5. Quy tắc quảng cáo đã cài
 - Giữa bài: sau mỗi 3 mục `##`, đặt trước tiêu đề mục kế tiếp. Không đặt sát ảnh, video, spoiler, component ảnh, nút chuyển chương, và không đặt trong mục Câu hỏi thường gặp. Vị trí vi phạm thì dời sang mục sau.
 - Cuối bài: 1 ô (`AdUnit`), cách lưới ảnh nhân vật ≥ 40px.
