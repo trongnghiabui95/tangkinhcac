@@ -14,6 +14,8 @@ import YouTubeFacade from '../../../components/YouTubeFacade.astro';
 import DongThoiGian from '../../../components/DongThoiGian.astro';
 import ThuVienAnh from '../../../components/ThuVienAnh.astro';
 import ChipNhanVat from '../../../components/ChipNhanVat.astro';
+import ChiaSe from '../../../components/ChiaSe.astro';
+import BaiTruocSau from '../../../components/BaiTruocSau.astro';
 import { layBai, laySeries, slugSeries, layAnh, layAnhSeries, tenBai, urlBai, urlSeries, urlSeriesDanhMuc, urlVuTru, url, boDau, DANH_MUC, NHAN_VAI_TRO, cacVuTru, timBai, layThuVien, nhanQuanHe, taoSlug } from '../../../lib/tien-ich.js';
 import { schemaArticle, schemaBreadcrumb, schemaFaq } from '../../../lib/schema.js';
 
@@ -142,9 +144,12 @@ const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) 
           <h2>Câu hỏi thường gặp</h2>
           {d.faqs.map((c) => <div class="faq-cau"><h3>{c.q}</h3><p>{c.a}</p></div>)}
         </section>
+        <ChiaSe tieuDe={d.title} url={tuyetDoi(urlBai(bai))} />
       </div>
     </div>
   </article>
+
+  <BaiTruocSau bai={bai} cungBo={cungBo} />
 
   <AdUnit viTri="cuoi-bai" maO={import.meta.env.PUBLIC_ADSENSE_SLOT_CUOI_BAI} />
 
