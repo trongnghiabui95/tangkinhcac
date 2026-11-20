@@ -6,3 +6,6 @@ export const EMAIL_LIEN_HE = 'lienhe@tuchanbaodien.com';   // Cloudflare Email R
 export const FANPAGE = '';            // link fanpage Facebook (để trống = không hiện)
 export const THUONG_HIEU = 'yendan';  // đơn vị chủ quản
 export const NGAY_CHINH_SACH = '19/11/2026';   // ngày cập nhật Chính sách bảo mật
+// Google AdSense (Issue #97) – mã nhà xuất bản là CÔNG KHAI (hiện trong mã nguồn mọi trang), không phải mật khẩu.
+// Biến môi trường PUBLIC_ADSENSE_CLIENT (nếu đặt trên Cloudflare) sẽ ghi đè giá trị này.
+export const ADSENSE_CLIENT = (typeof process !== 'undefined' && process.env.PUBLIC_ADSENSE_CLIENT) || 'ca-pub-3391032846309674';

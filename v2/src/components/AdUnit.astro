@@ -1,19 +1,21 @@
 ---
 /**
  * AdUnit – ô quảng cáo AdSense đặt thủ công (đầu/cuối bài). Ô giữa bài do rehype-chen-quang-cao tự chèn.
- * Chưa có PUBLIC_ADSENSE_CLIENT → không hiện gì (QC_XEM_THU=1 để thấy khung giữ chỗ khi làm việc).
+ * Chỉ hiện khi có CẢ mã nhà xuất bản lẫn mã ô (maO, tạo trong AdSense → Quảng cáo → Theo đơn vị quảng cáo).
+ * Chưa có mã ô → không hiện gì, quảng cáo do "Quảng cáo tự động" của AdSense tự đặt (QC_XEM_THU=1 để thấy khung giữ chỗ).
  */
 // Lưu ý: KHÔNG đặt tên prop là `slot` – Astro coi `slot=` là tên khe cắm nên cả ô quảng cáo bị bỏ (lỗi cũ, Issue #32)
 interface Props { maO?: string; viTri: string }
 const { maO = '', viTri } = Astro.props;
-const client = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+import { ADSENSE_CLIENT } from '../lib/thong-tin-web.mjs';
+const client = import.meta.env.PUBLIC_ADSENSE_CLIENT || ADSENSE_CLIENT;
 const xemThu = import.meta.env.QC_XEM_THU === '1' || process.env.QC_XEM_THU === '1';
 ---
-{(client || xemThu) && (
+{((client && maO) || xemThu) && (
   <aside class="quang-cao" aria-label="Quảng cáo" data-vi-tri={viTri} data-pagefind-ignore="all">
     <span class="nhan-quang-cao">Quảng cáo</span>
-    {client
-      ? <ins class="adsbygoogle" style="display:block" data-ad-client={client} data-ad-slot={maO || undefined} data-ad-format="auto" data-full-width-responsive="true"></ins>
+    {client && maO
+      ? <ins class="adsbygoogle" style="display:block" data-ad-client={client} data-ad-slot={maO} data-ad-format="auto" data-full-width-responsive="true"></ins>
       : <div class="quang-cao-xem-thu">Vị trí quảng cáo “{viTri}” (chưa cấu hình AdSense)</div>}
   </aside>
 )}

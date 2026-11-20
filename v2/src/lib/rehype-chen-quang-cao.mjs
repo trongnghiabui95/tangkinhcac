@@ -18,7 +18,8 @@ const chu = (n) => n.type === 'text' ? n.value : (n.children || []).map(chu).joi
 
 export default function rehypeChenQuangCao({ moiSoH2 = 3, adsenseClient = '', slot = '', xemThu = process.env.QC_XEM_THU === '1' } = {}) {
   return function (tree) {
-    if (!adsenseClient && !xemThu) return;
+    // Ô giữa bài thủ công cần CẢ mã nhà xuất bản lẫn mã ô; chưa có mã ô thì để Quảng cáo tự động của AdSense lo (Issue #97)
+    if (!(adsenseClient && slot) && !xemThu) return;
     const con = tree.children;
     let soH2 = 0, soQuangCao = 0, dangCho = false;
     for (let i = 0; i < con.length; i++) {
@@ -41,7 +42,7 @@ export default function rehypeChenQuangCao({ moiSoH2 = 3, adsenseClient = '', sl
 }
 
 function oQuangCao(so, client, slot) {
-  const ins = client
+  const ins = client && slot
     ? { type: 'element', tagName: 'ins', properties: {
         className: ['adsbygoogle'], style: 'display:block', dataAdClient: client,
         ...(slot ? { dataAdSlot: slot } : {}), dataAdFormat: 'auto', dataFullWidthResponsive: 'true' }, children: [] }
