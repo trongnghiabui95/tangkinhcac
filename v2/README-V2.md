@@ -159,6 +159,13 @@ Mỗi PR có sửa `v2/` chạy lần lượt:
 4. **Bot ghi bảng tóm tắt vào PR** (`scripts/bao-cao-pr.mjs`): số từ, độ dài title/description, số FAQ, dung lượng ảnh, số link nội bộ tự gắn (≤ 10) và danh sách link của từng bài mới/sửa. Mỗi lần đẩy code, bot sửa lại đúng bình luận đó (không đăng chồng).
 5. Bước nào lỗi → dấu ❌ đỏ trên PR, chi tiết nằm trong bảng.
 
+### Tự đăng bài mới lên mạng xã hội (Zernio, Issue #105)
+Workflow `.github/workflows/dang-mang-xa-hoi.yml` + script `v2/scripts/dang-mang-xa-hoi.mjs`: khi `main` có bài `.mdx` **mới** (bỏ bài nháp, không đăng lại bài sửa), chờ trang lên web rồi đăng "tiêu đề + mô tả + link" lên các tài khoản đã kết nối trong [Zernio](https://zernio.com) (mặc định Facebook, Threads, LinkedIn, Bluesky; không đăng X vì X tính phí). Không đăng trùng (Idempotency-Key theo bài).
+- Secret `ZERNIO_API_KEY` (Settings → Secrets and variables → Actions → **Secrets**): khoá API Zernio.
+- Biến `ZERNIO_TU_DONG` = `1` (tab **Variables**): bật tự đăng. Không có/khác `1` = tắt (chỉ chạy tay).
+- Biến `ZERNIO_NEN_TANG` (tuỳ chọn): danh sách nền tảng, ví dụ `facebook,threads`.
+- Thử: Actions → **dang-mang-xa-hoi** → **Run workflow** → nhập đường dẫn 1 bài. Chưa có khoá thì chỉ in nội dung sẽ đăng.
+
 ### Đăng web: Cloudflare Pages (làm 1 lần)
 1. Vào <https://dash.cloudflare.com> → **Workers & Pages** → **Create** → tab **Pages** → **Connect to Git**.
 2. Chọn GitHub, cho phép Cloudflare đọc repo `tuchanbaodien`, chọn repo đó.

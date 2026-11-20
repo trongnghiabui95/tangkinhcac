@@ -1,0 +1,50 @@
+# Tự đăng bài mới lên mạng xã hội qua Zernio (Issue #105).
+#  - Khi main có bài .mdx MỚI (không đăng lại bài sửa, bỏ bài nháp): chờ trang lên web thật rồi đăng link lên các
+#    tài khoản đã kết nối trong Zernio (mặc định Facebook, Threads, LinkedIn, Bluesky – không đăng X vì X tính phí).
+#  - Chỉ tự chạy khi đã có secret ZERNIO_API_KEY VÀ biến ZERNIO_TU_DONG = 1 (bật/tắt ở Settings → Secrets and variables → Actions).
+#  - Chạy tay (Actions → dang-mang-xa-hoi → Run workflow) để thử với 1 bài; chưa có khoá thì chỉ in nội dung sẽ đăng.
+name: dang-mang-xa-hoi
+on:
+  push:
+    branches: [main]
+    paths: ['v2/content/**.mdx']
+  workflow_dispatch:
+    inputs:
+      bai:
+        description: 'Đường dẫn bài muốn đăng thử, ví dụ v2/content/pham-nhan-tu-tien/nhan-vat/han-lap.mdx'
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: dang-mang-xa-hoi
+  cancel-in-progress: false
+jobs:
+  dang:
+    if: github.event_name == 'workflow_dispatch' || vars.ZERNIO_TU_DONG == '1'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      ZERNIO_API_KEY: ${{ secrets.ZERNIO_API_KEY }}
+      ZERNIO_NEN_TANG: ${{ vars.ZERNIO_NEN_TANG }}
+      SITE_URL: https://tuchanbaodien.com
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Tìm bài mới
+        id: bai
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "${{ inputs.bai }}" > moi.txt
+          else
+            git diff --name-only --diff-filter=A "${{ github.event.before }}" "${{ github.sha }}" -- 'v2/content/*/*/*.mdx' > moi.txt || true
+          fi
+          echo "Bài mới:"; cat moi.txt
+          echo "so=$(grep -c . moi.txt || true)" >> "$GITHUB_OUTPUT"
+      - name: Đăng lên mạng xã hội qua Zernio
+        if: steps.bai.outputs.so != '0'
+        working-directory: v2
+        run: |
+          [ -z "$ZERNIO_API_KEY" ] && echo "::warning::Chưa có secret ZERNIO_API_KEY – chỉ chạy thử, không đăng."
+          node scripts/dang-mang-xa-hoi.mjs $(sed 's|^v2/||' ../moi.txt) | tee ket-qua.md
+          { echo "## Đăng mạng xã hội"; cat ket-qua.md; } >> "$GITHUB_STEP_SUMMARY"
