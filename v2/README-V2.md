@@ -184,6 +184,22 @@ Mỗi PR có sửa `v2/` chạy lần lượt:
 - Địa chỉ đọc từ biến repo **Settings → Secrets and variables → Actions → Variables**: `SITE_URL` (mặc định `https://tuchanbaodien.com`), `PAGES_URL` (mặc định `https://tuchanbaodien.pages.dev`). Chạy tay có thể nhập địa chỉ khác để thử.
 - Chạy trên máy: `node scripts/kiem-tra-web.mjs --chinh <địa chỉ> --pages <địa chỉ>`. Kiểm thử không cần mạng: `npm run build && npm run test:web`.
 
+### Đăng clip TikTok sau khi chủ dự án duyệt (Zernio, Issue #107)
+Workflow `.github/workflows/dang-tiktok.yml` + script `v2/scripts/dang-tiktok.mjs` (chỉ dùng Node có sẵn).
+- Marketing để clip + file caption trên nhánh **`marketing/clips`** và ghi vào thân Issue (nhãn `marketing`) khối:
+  ```
+  <!-- tiktok
+  clip: clips/2026-11-25-han-lap.mp4
+  caption_file: clips/2026-11-25-han-lap.txt
+  dang_luc: 2026-11-25T19:30:00+07:00
+  -->
+  ```
+  `dang_luc` phải có múi giờ (`+07:00`); bỏ trống hoặc đã qua giờ → đăng ngay.
+- Chủ dự án (`trongnghiabui95`) comment bắt đầu bằng **`Duyệt`** (hoa/thường đều được) → GitHub tải clip lên Zernio, tạo bài TikTok **công khai**, bật **nhãn nội dung do AI tạo**, hẹn giờ theo `dang_luc`. Comment khác hoặc người khác comment → không làm gì.
+- Thành công: bot comment giờ đăng + link (TikTok có thể mất vài phút mới có link), gắn nhãn `da-dang`, đóng Issue. Lỗi: bot comment lý do bằng tiếng Việt, gắn nhãn `bi-chan` (sửa xong comment `Duyệt` lại). Không đăng trùng (Idempotency-Key theo số Issue).
+- Secret `ZERNIO_API_KEY` (dùng chung với mục đăng mạng xã hội). Biến `ZERNIO_TIKTOK_ID` (tuỳ chọn) khi Zernio có hơn 1 tài khoản TikTok.
+- **Thử kết nối Zernio:** Actions → **dang-tiktok** → **Run workflow**: chỉ liệt kê tài khoản đã kết nối (tên, nền tảng, accountId), không đăng gì.
+
 ## 5. Quy tắc quảng cáo đã cài
 - Giữa bài: sau mỗi 3 mục `##`, đặt trước tiêu đề mục kế tiếp. Không đặt sát ảnh, video, spoiler, component ảnh, nút chuyển chương, và không đặt trong mục Câu hỏi thường gặp. Vị trí vi phạm thì dời sang mục sau.
 - Cuối bài: 1 ô (`AdUnit`), cách lưới ảnh nhân vật ≥ 40px.
