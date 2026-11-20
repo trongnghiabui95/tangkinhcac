@@ -14,6 +14,7 @@ import DongThoiGian from '../../components/DongThoiGian.astro';
 import ThuVienAnh from '../../components/ThuVienAnh.astro';
 import YouTubeFacade from '../../components/YouTubeFacade.astro';
 import TheBoTruyen from '../../components/TheBoTruyen.astro';
+import ChiaSe from '../../components/ChiaSe.astro';
 import { laySeries, slugSeries, layBai, layAnhSeries, layThuVien, layBanDo, url, urlSeriesDanhMuc, urlVuTru, urlTheLoai, urlLoai, boDau,
   DANH_MUC, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru } from '../../lib/tien-ich.js';
 import { schemaReviewTruyen, schemaBreadcrumb } from '../../lib/schema.js';
@@ -93,6 +94,7 @@ const thongTin = [
       <div class="noi-dung-bai">
         {(d.diem != null || d.diem_chi_tiet) && <section id="danh-gia" data-pagefind-ignore><h2>Đánh giá</h2><DanhGia diem={d.diem} chiTiet={d.diem_chi_tiet} /></section>}
         <div class="muc" data-pagefind-ignore="all"><Content /></div>
+        <ChiaSe tieuDe={tieuDe} url={tuyetDoi(url(`${slug}/`))} />
       </div>
     </div>
   </article>

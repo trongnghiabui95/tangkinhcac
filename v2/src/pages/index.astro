@@ -25,8 +25,17 @@ for (const s of [...series].sort((a, b) => a.data.ten.localeCompare(b.data.ten, 
   <h1 class="sr-only">Tu Chân Bảo Điển – Bách khoa truyện Tu Tiên, Huyền Huyễn</h1>
 
   {bangRon.length > 0 && (
-    <div class="dai-bang-ron" aria-label="Bộ truyện nổi bật">
-      {bangRon.map((s, i) => <BangRon s={s} uuTien={i === 0} />)}
+    <div class="khung-bang-ron" data-so={bangRon.length}>
+      <div class="dai-bang-ron" aria-label="Bộ truyện nổi bật" tabindex="-1">
+        {bangRon.map((s, i) => <BangRon s={s} uuTien={i === 0} />)}
+      </div>
+      {bangRon.length > 1 && <>
+        <button type="button" class="bang-ron-mui trai" aria-label="Bộ trước"><BieuTuong ten="trai" /></button>
+        <button type="button" class="bang-ron-mui phai" aria-label="Bộ sau"><BieuTuong ten="phai" /></button>
+        <div class="bang-ron-cham" role="group" aria-label="Chọn bộ truyện">
+          {bangRon.map((s, i) => <button type="button" aria-label={`Bộ ${i + 1}: ${s.data.ten}`} aria-current={i === 0 ? 'true' : undefined}><span></span></button>)}
+        </div>
+      </>}
     </div>
   )}
 
@@ -68,4 +77,27 @@ for (const s of [...series].sort((a, b) => a.data.ten.localeCompare(b.data.ten, 
       ))}</div>
     </section>
   )}
+<script>
+  // Băng rôn (Issue #103): mũi tên + chấm vị trí; tự chuyển 6 giây, dừng khi người xem chạm/rê chuột/bấm phím,
+  // tắt hẳn nếu máy đặt "giảm chuyển động". Tắt JavaScript vẫn vuốt ngang được như cũ.
+  const khung = document.querySelector<HTMLElement>('.khung-bang-ron');
+  const dai = khung?.querySelector<HTMLElement>('.dai-bang-ron');
+  if (khung && dai && Number(khung.dataset.so) > 1) {
+    const cham = [...khung.querySelectorAll<HTMLButtonElement>('.bang-ron-cham button')];
+    const so = cham.length;
+    const viTri = () => Math.round(dai.scrollLeft / dai.clientWidth);
+    const den = (i: number) => dai.scrollTo({ left: ((i + so) % so) * dai.clientWidth, behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
+    khung.querySelector('.bang-ron-mui.trai')!.addEventListener('click', () => { dung(); den(viTri() - 1); });
+    khung.querySelector('.bang-ron-mui.phai')!.addEventListener('click', () => { dung(); den(viTri() + 1); });
+    cham.forEach((c, i) => c.addEventListener('click', () => { dung(); den(i); }));
+    let hen = 0;
+    dai.addEventListener('scroll', () => { cancelAnimationFrame(hen); hen = requestAnimationFrame(() => cham.forEach((c, i) => c.toggleAttribute('aria-current', i === viTri()))); }, { passive: true });
+    let tuChay: number | undefined;
+    const dung = () => { clearInterval(tuChay); tuChay = undefined; };
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      tuChay = window.setInterval(() => { if (!document.hidden) den(viTri() + 1); }, 6000);
+      ['pointerdown', 'mouseenter', 'focusin', 'touchstart', 'wheel'].forEach((e) => khung.addEventListener(e, dung, { once: true, passive: true }));
+    }
+  }
+</script>
 </BoCuc>
