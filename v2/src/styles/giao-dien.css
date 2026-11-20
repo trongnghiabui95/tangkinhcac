@@ -252,6 +252,8 @@ h2 { font-size: 1.4rem; margin: 2em 0 .6em; color: var(--vang); }
 .muc { background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); padding: 4px 20px 16px; box-shadow: var(--bong-the); }
 .noi-dung-bai h2 { padding-bottom: 6px; border-bottom: 1px solid var(--vien); }
 .thuoc-bo { margin-top: 16px; }
+/* Issue #4: nút sang bản khác loại cùng vũ trụ (bản truyện ↔ bản donghua) */
+.ban-khac { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0 16px; }
 
 /* Nhãn trên ảnh nhân vật (trang bài): xếp chồng bên trái để không đè nhau trên điện thoại */
 .nhan-goc { left: 12px; }
