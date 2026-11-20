@@ -6,12 +6,13 @@ import remarkLienKetNoiBo from './src/lib/remark-lien-ket-noi-bo.mjs';
 import remarkDirective from 'remark-directive';
 import remarkSpoiler from './src/lib/remark-spoiler.mjs';
 import rehypeChenQuangCao from './src/lib/rehype-chen-quang-cao.mjs';
+import { ADSENSE_CLIENT } from './src/lib/thong-tin-web.mjs';
 
 // Địa chỉ web thật (dùng cho canonical, sitemap, Open Graph). Đổi khi gắn tên miền riêng.
 const SITE = process.env.SITE_URL || 'https://tuchanbaodien.com';
 const BASE = process.env.BASE_PATH || '/';
 // Mã AdSense (ca-pub-xxxxxxxx). Để trống = không chèn quảng cáo thật.
-const ADSENSE = process.env.PUBLIC_ADSENSE_CLIENT || '';
+const ADSENSE = ADSENSE_CLIENT;   // src/lib/thong-tin-web.mjs (Issue #97)
 
 export default defineConfig({
   site: SITE,

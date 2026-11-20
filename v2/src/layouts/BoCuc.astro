@@ -8,7 +8,7 @@ import '../styles/giao-dien.css';
 import DisclaimerBanner from '../components/DisclaimerBanner.astro';
 import BieuTuong from '../components/BieuTuong.astro';
 import { url, layMenu } from '../lib/tien-ich.js';
-import { TEN_WEB } from '../lib/thong-tin-web.mjs';
+import { TEN_WEB, ADSENSE_CLIENT } from '../lib/thong-tin-web.mjs';
 
 interface Props {
   tieuDe: string;            // không gồm tên web
@@ -29,7 +29,7 @@ const XEM_NHAP = (import.meta.env.XEM_NHAP ?? process.env.XEM_NHAP) === '1';
 const title = giuNguyenTieuDe || tieuDe === TEN_WEB ? tieuDe : `${tieuDe} – ${TEN_WEB}`;
 const canonical = new URL(Astro.url.pathname, Astro.site).href;
 const og = anhOg ? new URL(url(anhOg), Astro.site).href : undefined;
-const adsense = import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const adsense = import.meta.env.PUBLIC_ADSENSE_CLIENT || ADSENSE_CLIENT;
 const ld = jsonLd.filter(Boolean);
 // Menu ngang kiểu web cũ – sinh từ nội dung (danh mục đang có bài, bộ truyện)
 const duongDan = Astro.url.pathname;

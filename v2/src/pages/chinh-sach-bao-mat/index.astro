@@ -1,8 +1,8 @@
 ---
 import TrangThongTin from '../../components/TrangThongTin.astro';
-import { TEN_WEB, TEN_MIEN, EMAIL_LIEN_HE, NGAY_CHINH_SACH } from '../../lib/thong-tin-web.mjs';
+import { TEN_WEB, TEN_MIEN, EMAIL_LIEN_HE, NGAY_CHINH_SACH, ADSENSE_CLIENT } from '../../lib/thong-tin-web.mjs';
 import { url } from '../../lib/tien-ich.js';
-const coQuangCao = !!import.meta.env.PUBLIC_ADSENSE_CLIENT;
+const coQuangCao = !!ADSENSE_CLIENT;
 ---
 <TrangThongTin tieuDe="Chính sách bảo mật" duongDan="chinh-sach-bao-mat/" moTa={`Chính sách bảo mật của ${TEN_WEB}: dữ liệu nào được thu thập, cookie, thống kê lượt xem, quảng cáo Google và cách bạn kiểm soát thông tin của mình.`}>
   <p><em>Cập nhật lần cuối: {NGAY_CHINH_SACH}</em></p>
