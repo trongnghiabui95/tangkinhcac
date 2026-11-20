@@ -5,6 +5,7 @@
  *   --dist <json>       kết quả scripts/kiem-tra-dist.mjs --json (có thể thiếu nếu build hỏng)
  *   --thay-doi <txt>    danh sách file .mdx mới/sửa trong PR (mỗi dòng 1 file, tính từ v2/)
  *   --buoc "ten=ok|loi" (lặp lại) kết quả từng bước của workflow
+ *   --qa "<câu>"        trạng thái duyệt QA (scripts/qa-trang-thai.mjs) – workflow qa-duyet sửa lại dòng này khi đổi nhãn
  *   --lien-ket <json>   báo cáo liên kết nội bộ tự gắn (mặc định bao-cao/lien-ket-noi-bo.json – do plugin ghi lúc build)
  * In Markdown ra stdout.
  */
@@ -20,6 +21,7 @@ const noiDung = docJson(lay('--noi-dung')) || { loi: [], canhBao: [], tomTat: []
 const dist = docJson(lay('--dist'));
 const thayDoi = lay('--thay-doi') && fs.existsSync(lay('--thay-doi'))
   ? fs.readFileSync(lay('--thay-doi'), 'utf8').split('\n').map((s) => s.trim()).filter((s) => s.endsWith('.mdx')) : [];
+const qa = lay('--qa');
 const buoc = a.flatMap((x, i) => (x === '--buoc' ? [a[i + 1]] : [])).map((s) => s.split('='));
 const anh = docJson(path.join(GOC, 'src/data/anh.json')) || {};
 const lienKet = docJson(lay('--lien-ket') || path.join(GOC, 'bao-cao/lien-ket-noi-bo.json'));
@@ -63,6 +65,7 @@ const md = [
   `## ${ok ? '✅ Nội dung v2 đạt chuẩn' : '❌ Nội dung v2 chưa đạt – cần sửa trước khi merge'}`,
   '',
   buoc.length ? `**Các bước:** ${buoc.map(([ten, kq]) => `${kq === 'success' ? '✅' : kq === 'skipped' ? '⏭' : '❌'} ${ten}`).join(' · ')}` : '',
+  qa ? `\n<!-- qa -->${qa}<!-- /qa -->` : '',
   '',
   thayDoi.length ? `### Bài mới/sửa trong PR (${dong.length})` : '### Không có bài .mdx mới/sửa trong PR',
   ...(dong.length ? [

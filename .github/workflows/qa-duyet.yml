@@ -1,0 +1,59 @@
+# Bước "QA đã duyệt" (Issue #72): bài nội dung chỉ được merge khi QA đã duyệt.
+#   PR nội dung (nhãn `noi-dung` hoặc nhánh `noi-dung/*`):
+#     ❌ đỏ khi còn nhãn `tra-ve` (dù có `approved`) hoặc chưa có nhãn `approved`; ✅ xanh khi có `approved`.
+#   PR khác (dev/*…): luôn xanh, không bị chặn.
+# Chạy lại mỗi khi PR được gắn/gỡ nhãn. Cũng sửa dòng "QA: …" trong bảng tóm tắt của bot v2-build (nếu có).
+# Muốn CHẶN nút Merge: chủ dự án bật Branch protection → Require status checks → chọn "QA đã duyệt" (hướng dẫn trong PR #72).
+name: qa-duyet
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled, ready_for_review]
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+concurrency:
+  group: qa-duyet-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+jobs:
+  qa:
+    name: QA đã duyệt
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: v2/scripts/qa-trang-thai.mjs
+          sparse-checkout-cone-mode: false
+      - name: Đọc nhãn của PR
+        id: qa
+        run: |
+          kq=$(node v2/scripts/qa-trang-thai.mjs "$GITHUB_EVENT_PATH")
+          echo "$kq"
+          echo "trang_thai=$(echo "$kq" | jq -r .trangThai)" >> "$GITHUB_OUTPUT"
+          echo "$kq" | jq -r .dong > qa-dong.txt
+          { echo "## Kiểm tra QA"; cat qa-dong.txt; echo; } >> "$GITHUB_STEP_SUMMARY"
+      - name: Sửa dòng "QA" trong bảng tóm tắt của bot (nếu đã có)
+        if: steps.qa.outputs.trang_thai != 'khong-ap-dung' && github.event.pull_request.head.repo.full_name == github.repository
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+        run: |
+          id=$(gh api "repos/$REPO/issues/$PR/comments" --paginate -q '.[] | select(.body | startswith("<!-- bao-cao-v2 -->")) | .id' | head -1)
+          [ -z "$id" ] && { echo "Chưa có bảng tóm tắt (PR không sửa v2/) – bỏ qua."; exit 0; }
+          gh api "repos/$REPO/issues/comments/$id" -q .body > cu.md
+          node -e '
+            const fs = require("fs"); const cu = fs.readFileSync("cu.md", "utf8"); const dong = fs.readFileSync("qa-dong.txt", "utf8").trim();
+            const moi = /<!-- qa -->[\s\S]*?<!-- \/qa -->/.test(cu)
+              ? cu.replace(/<!-- qa -->[\s\S]*?<!-- \/qa -->/, `<!-- qa -->${dong}<!-- /qa -->`)
+              : cu.replace(/(\*\*Các bước:\*\*[^\n]*\n)/, `$1\n<!-- qa -->${dong}<!-- /qa -->\n`);
+            fs.writeFileSync("body.json", JSON.stringify({ body: moi }));'
+          gh api -X PATCH "repos/$REPO/issues/comments/$id" --input body.json > /dev/null && echo "Đã sửa dòng QA."
+      - name: Kết luận
+        run: |
+          case "${{ steps.qa.outputs.trang_thai }}" in
+            da-duyet|khong-ap-dung) echo "✅ Đạt."; exit 0 ;;
+            tra-ve) echo "::error::Bài đang bị QA trả về (nhãn tra-ve). Sửa theo góp ý, QA gỡ tra-ve và gắn approved."; exit 1 ;;
+            *) echo "::error::Bài nội dung chưa được QA duyệt (thiếu nhãn approved)."; exit 1 ;;
+          esac

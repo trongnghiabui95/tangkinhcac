@@ -71,7 +71,8 @@ jobs:
             --buoc "Kiểm tra nội dung=${{ steps.noi_dung.outcome }}" \
             --buoc "Kiểm thử bộ kiểm tra=${{ steps.test_noi_dung.outcome }}" \
             --buoc "Build=${{ steps.build.outcome }}" \
-            --buoc "Link & sitemap=${{ steps.dist.outcome }}" > "$BAO_CAO/bang.md"
+            --buoc "Link & sitemap=${{ steps.dist.outcome }}" \
+            --qa "$(node scripts/qa-trang-thai.mjs --dong)" > "$BAO_CAO/bang.md"
           cat "$BAO_CAO/bang.md" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Bot ghi bảng vào PR (sửa bình luận cũ nếu đã có)
