@@ -109,7 +109,8 @@ Không bắt buộc; bỏ trống thì mục tương ứng tự ẩn. Ví dụ �
 **Trang bộ truyện (`index.mdx`)**
 | Trường | Hiện ở đâu |
 |---|---|
-| `loai: tu-tien` / `anime` | Menu "Truyện Tu Tiên" / "Anime", trang `/loai/<loai>/` |
+| `loai: tu-tien` / `anime` / `donghua` | Menu "Truyện Tu Tiên" / "Anime" / "Donghua", trang `/loai/<loai>/` (loại nào chưa có bộ thì menu và trang tự ẩn). Danh sách loại khai báo ở `src/lib/chuan-mdx.mjs` (`LOAI_TRUYEN`) |
+| `universe` dùng chung + khác `loai` (Issue #4) | Nút qua lại ở đầu trang bộ truyện, ví dụ bộ truyện chữ `loai: tu-tien` và bộ phim `loai: donghua` cùng `universe: pham-nhan-tu-tien` → trang truyện có nút "Xem bản donghua", trang phim có nút "Đọc bản truyện". Chỉ cần khai báo `universe` giống nhau ở **hai** `index.mdx`, không phải ghi link. Chữ nút lấy từ `LOAI_TRUYEN[...].nut`. Thư mục bộ phim đặt tên khác bộ truyện, ví dụ `content/pham-nhan-tu-tien-donghua/`. Kiểm thử: `bash tests/thu-donghua.sh` |
 | `so_chuong`, `so_tap`, `so_mua`, `nen_tang`, `nam`, `studio` | Khung thông tin |
 | `diem_chi_tiet: { cot_truyen, nhan_vat, the_gioi, hinh_anh }` | Mục "Đánh giá" (thanh điểm) |
 | `ban_do: { anh, nguon }` + `dia_diem: [{ ten, cap, thuoc, mo_ta }]` | Mục "Bản đồ thế giới" (ảnh trong `anh-goc/<series>/ban-do/`) |
