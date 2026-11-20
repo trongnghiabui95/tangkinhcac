@@ -209,3 +209,4 @@ Cộng thêm **~140–170 KB phần cố định** (bộ máy Pagefind, tải 1 
 - **Next.js:** không làm, lý do ở mục 1.
 - **ProfilePage:** `schemaNhanVat({ kieu: 'ProfilePage' })` có sẵn, nhưng Google dành loại này cho hồ sơ người thật, nên mặc định dùng Article.
 - **FAQPage:** dữ liệu hợp lệ, nhưng từ 2023 Google chỉ hiện kết quả FAQ dạng đặc biệt cho trang chính phủ/y tế.
+
