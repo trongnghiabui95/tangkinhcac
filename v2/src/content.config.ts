@@ -55,6 +55,9 @@ export const collections = {
       tuong_tu: z.array(z.object({ series: slug('tuong_tu.series'), ly_do: z.string() })).default([]),   // "Thích bộ này thì đọc…"
       cho_nguoi_moi: z.string().optional(),          // lý do đề cử cho người mới đọc (trang Đề cử)
       ost: z.array(z.object({ youtube: z.string(), ten: z.string() })).default([]),
+      // ---- Issue #11 – TUỲ CHỌN ----
+      ban_co_biet: z.array(z.object({ noi_dung: doDai('ban_co_biet.noi_dung', GIOI_HAN.banCoBiet),
+        nguon: z.string().optional(), nguon_url: z.string().url().optional() })).default([]),   // thẻ "Bạn có biết" ở trang bộ
     }),
   }),
 

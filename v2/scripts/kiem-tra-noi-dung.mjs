@@ -31,6 +31,19 @@ const tuongDoi = (f) => path.relative(process.cwd(), f);
 const baoLoi = (f, truong, lyDo) => loi.push(`✗ ${tuongDoi(f)} · ${truong}: ${lyDo}`);
 const baoCanhBao = (f, truong, lyDo) => canhBao.push(`⚠ ${tuongDoi(f)} · ${truong}: ${lyDo}`);
 
+/** Trang bộ truyện: các trường tuỳ chọn có giới hạn (ban_co_biet – Issue #11) */
+function kiemTraIndex(f) {
+  const d = docMdx(f)?.data;
+  if (!d || d.ban_co_biet == null) return;
+  if (!Array.isArray(d.ban_co_biet)) return baoLoi(f, 'ban_co_biet', 'phải là danh sách dạng [{ noi_dung, nguon? }]');
+  const [min, max] = GIOI_HAN.banCoBiet;
+  d.ban_co_biet.forEach((y, i) => {
+    const nd = typeof y?.noi_dung === 'string' ? y.noi_dung.trim() : '';
+    if (!nd) baoLoi(f, `ban_co_biet[${i + 1}]`, 'thiếu noi_dung');
+    else if (nd.length < min || nd.length > max) baoLoi(f, `ban_co_biet[${i + 1}]`, `noi_dung dài ${nd.length} ký tự, cần ${min}–${max}`);
+  });
+}
+
 function docMdx(f) {
   try { return matter(fs.readFileSync(f, 'utf8')); }
   catch (e) { baoLoi(f, 'frontmatter', `không đọc được YAML (${e.reason || e.message})`); return null; }
@@ -55,6 +68,7 @@ async function main() {
     if (DANH_RIENG.has(series)) baoLoi(thuMucSeries, 'thư mục', `"${series}" trùng đường dẫn hệ thống của web, hãy đặt tên khác`);
     if (!SLUG.test(series)) baoLoi(thuMucSeries, 'thư mục', `tên thư mục bộ truyện "${series}" phải viết thường, không dấu, nối bằng gạch ngang`);
     if (!fs.existsSync(path.join(thuMucSeries, 'index.mdx'))) baoLoi(thuMucSeries, 'index.mdx', `bộ truyện "${series}" chưa có trang bộ truyện index.mdx`);
+    else kiemTraIndex(path.join(thuMucSeries, 'index.mdx'));
     slugTheoSeries[series] = new Set();
     for (const d of fs.readdirSync(thuMucSeries, { withFileTypes: true })) {
       if (!d.isDirectory()) continue;

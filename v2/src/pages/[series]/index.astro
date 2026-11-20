@@ -2,6 +2,7 @@
 // Trang bộ truyện: /<series>/ – đủ các mục của trang review web cũ (Issue #51), mục nào không có dữ liệu thì tự ẩn:
 // băng rôn · đánh giá · nội dung index.mdx · nhân vật chính/phụ/phản diện · các danh mục khác · bản đồ & địa điểm
 // · hành trình nhân vật chính · thư viện ảnh · OST · thuật ngữ · tác phẩm tương tự
+// Issue #11: thẻ "Bạn có biết" (ban_co_biet) · "Xếp hạng sức mạnh" (bac của nhân vật × cac_bac của bài cảnh giới cùng bộ)
 import { render } from 'astro:content';
 import BoCuc from '../../layouts/BoCuc.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
@@ -15,8 +16,11 @@ import ThuVienAnh from '../../components/ThuVienAnh.astro';
 import YouTubeFacade from '../../components/YouTubeFacade.astro';
 import TheBoTruyen from '../../components/TheBoTruyen.astro';
 import ChiaSe from '../../components/ChiaSe.astro';
+import ChipNhanVat from '../../components/ChipNhanVat.astro';
+import BieuTuong from '../../components/BieuTuong.astro';
 import { laySeries, slugSeries, layBai, layAnhSeries, layThuVien, layBanDo, url, urlSeriesDanhMuc, urlVuTru, urlTheLoai, urlLoai, boDau,
-  DANH_MUC, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru } from '../../lib/tien-ich.js';
+  DANH_MUC, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru, taoSlug, tenBai, urlBai } from '../../lib/tien-ich.js';
+import { GIOI_HAN } from '../../lib/chuan-mdx.mjs';
 import { schemaReviewTruyen, schemaBreadcrumb } from '../../lib/schema.js';
 export async function getStaticPaths() {
   return (await laySeries()).map((s) => ({ params: { series: slugSeries(s) }, props: { s } }));
@@ -43,11 +47,27 @@ const thuVien = layThuVien(s);
 const tuongTu = d.tuong_tu.map((t) => ({ ...t, s: tatCaSeries.find((x) => slugSeries(x) === t.series) })).filter((t) => t.s);
 const coBanDo = banDo || d.dia_diem.length > 0;
 
+// "Bạn có biết": in sẵn mọi ý, ẩn bớt chỉ giữ GIOI_HAN.banCoBietHien ý đầu (không JS vẫn đọc được);
+// có nhiều hơn thì script nhỏ ở cuối trang chọn ngẫu nhiên mỗi lượt xem.
+const banCoBiet = d.ban_co_biet;
+// "Xếp hạng sức mạnh": thứ tự bậc lấy từ cac_bac của bài cảnh giới cùng bộ (bài đầu tiên theo thu_tu có cac_bac),
+// nhân vật có `bac` khớp tên bậc (so không dấu) mới được xếp; cùng bậc thì cùng hạng.
+const baiCanhGioi = bai.filter((b) => b.data.category === 'canh-gioi' && b.data.cac_bac.length).sort(theoThuTu)[0];
+const viTriBac = new Map((baiCanhGioi?.data.cac_bac ?? []).map((b, i) => [taoSlug(b.ten), i]));
+const xepHang = nhanVat
+  .map((e) => ({ e, i: e.data.bac ? viTriBac.get(taoSlug(e.data.bac)) : undefined }))
+  .filter((x) => x.i !== undefined)
+  .sort((a, b) => b.i! - a.i! || (a.e.data.vai_tro === 'chinh' ? -1 : 0) - (b.e.data.vai_tro === 'chinh' ? -1 : 0) || tenBai(a.e).localeCompare(tenBai(b.e), 'vi'))
+  .map((x, k, ds) => ({ ...x, hang: ds.findIndex((y) => y.i === x.i) + 1, tenBac: baiCanhGioi!.data.cac_bac[x.i!].ten }));
+const coXepHang = xepHang.length >= GIOI_HAN.xepHangToiThieu;
+
 // Mục lục: chỉ những mục có dữ liệu
 const mucLuc = [
   (d.diem != null || d.diem_chi_tiet) && { id: 'danh-gia', ten: 'Đánh giá' },
   ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, ten: h.text })),
+  banCoBiet.length > 0 && { id: 'ban-co-biet', ten: 'Bạn có biết' },
   ...nhomNhanVat.map((n) => ({ id: n.id, ten: n.ten })),
+  coXepHang && { id: 'xep-hang-suc-manh', ten: 'Xếp hạng sức mạnh' },
   ...nhom.map((n) => ({ id: n.c, ten: DANH_MUC[n.c].tenSoNhieu })),
   coBanDo && { id: 'ban-do', ten: 'Bản đồ thế giới' },
   d.hanh_trinh.length > 0 && { id: 'hanh-trinh', ten: 'Hành trình nhân vật chính' },
@@ -100,6 +120,19 @@ const thongTin = [
   </article>
   <AdUnit viTri="sau-review" />
 
+  {banCoBiet.length > 0 && (
+    <section class="khoi" id="ban-co-biet" data-pagefind-ignore="all">
+      <TieuDeKhoi tieuDe="Bạn có biết" bieuTuong="y-tuong" />
+      <ul class="ban-co-biet" data-hien={GIOI_HAN.banCoBietHien}>{banCoBiet.map((y, i) => (
+        <li hidden={i >= GIOI_HAN.banCoBietHien}>
+          <p>{y.noi_dung}</p>
+          {y.nguon && <p class="nguon-anh" title={`Nguồn: ${y.nguon}`}>Nguồn: {y.nguon_url ? <a href={y.nguon_url} rel="nofollow noopener" target="_blank">{y.nguon}</a> : y.nguon}</p>}
+        </li>
+      ))}</ul>
+      {banCoBiet.length > GIOI_HAN.banCoBietHien && <script is:inline>{`(()=>{const u=document.querySelector('.ban-co-biet');if(!u)return;const n=+u.dataset.hien||3,ds=[...u.children];for(let i=ds.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ds[i],ds[j]]=[ds[j],ds[i]];}ds.forEach((li,i)=>{li.hidden=i>=n;});})();`}</script>}
+    </section>
+  )}
+
   {nhomNhanVat.map((n) => (
     <section class="khoi" id={n.id} data-pagefind-ignore="all">
       <TieuDeKhoi tieuDe={n.ten} bieuTuong="nhan-vat" />
@@ -107,6 +140,16 @@ const thongTin = [
     </section>
   ))}
   {nhanVat.length > 10 && <p><a class="nut-vien" href={urlSeriesDanhMuc(slug, 'nhan-vat')}>Xem tất cả {nhanVat.length} nhân vật</a></p>}
+
+  {coXepHang && (
+    <section class="khoi" id="xep-hang-suc-manh" data-pagefind-ignore="all">
+      <TieuDeKhoi tieuDe="Xếp hạng sức mạnh" bieuTuong="xep-hang" href={urlBai(baiCanhGioi)} chuNut="Các bậc" />
+      <p class="xep-hang-ghi-chu">Xếp theo cảnh giới cao nhất mỗi nhân vật đạt được trong truyện (có thể chứa spoiler); cùng cảnh giới thì cùng hạng.</p>
+      <ol class="xep-hang">{xepHang.map((x) => (
+        <li><span class="xep-hang-so" aria-label={`Hạng ${x.hang}`}>{x.hang}</span><ChipNhanVat bai={x.e} phu={x.tenBac} /></li>
+      ))}</ol>
+    </section>
+  )}
 
   {nhom.map((n) => (
     <section class="khoi" id={n.c} data-pagefind-ignore="all">

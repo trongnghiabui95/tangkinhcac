@@ -402,6 +402,17 @@ html { scroll-padding-top: 80px; }
 .de-cu-cap .cap { margin: 0 0 4px; font-weight: 600; }
 .de-cu-cap .cap a { color: var(--vang); }
 .de-cu-cap p { margin: 0; color: var(--chu-phu); }
+/* Bạn có biết + Xếp hạng sức mạnh ở trang bộ (Issue #11) */
+.ban-co-biet { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }
+.ban-co-biet > li { background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); box-shadow: var(--bong-the); padding: 16px 20px; }
+.ban-co-biet > li[hidden] { display: none; }
+.ban-co-biet p { margin: 0; }
+.ban-co-biet .nguon-anh { margin-top: 8px; }
+.xep-hang-ghi-chu { margin: 0 0 12px; font-size: 14px; color: var(--chu-phu); max-width: 70ch; }
+.xep-hang { list-style: none; padding: 0; margin: 0; display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 260px), 1fr)); }
+.xep-hang > li { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.xep-hang-so { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; flex-shrink: 0; background: var(--vang); color: var(--tren-vang); font: 700 1rem var(--font-tieu-de); }
+.xep-hang .chip-nv { flex: 1; min-width: 0; }
 .ds-thuat-ngu { margin: 0; }
 .ds-thuat-ngu dt { font: 700 1.05rem var(--font-tieu-de); color: var(--vang); margin-top: 14px; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .ds-thuat-ngu dd { margin: 4px 0 0; max-width: 70ch; }
