@@ -2,10 +2,11 @@
 /**
  * qa-trang-thai.mjs – trạng thái duyệt QA của 1 PR (Issue #72). Không cần thư viện, chạy được với Node có sẵn trên máy GitHub.
  *   node scripts/qa-trang-thai.mjs [--dong] [file sự kiện GitHub]   (mặc định $GITHUB_EVENT_PATH; --dong: chỉ in câu tiếng Việt, PR không phải nội dung thì in rỗng)
- * In JSON: { apDung, trangThai, dong }
+ * In JSON: { apDung, trangThai, dong, canQaLai }
  *   apDung     PR nội dung? (có nhãn `noi-dung` hoặc nhánh `noi-dung/*`). PR dev/* → false, không bị chặn.
  *   trangThai  khong-ap-dung | da-duyet | chua-duyet | tra-ve
  *   dong       câu tiếng Việt để ghi vào bảng tóm tắt
+ *   canQaLai   Issue #136: PR nội dung ĐÃ MERGE mà chưa ở trạng thái da-duyet → workflow qa-sau-merge gắn nhãn `can-qa-lai`
  * Quy tắc: còn nhãn `tra-ve` → bị trả về (đỏ, dù có `approved`); có `approved` → đã duyệt (xanh); còn lại → chưa duyệt (đỏ).
  */
 import fs from 'node:fs';
@@ -22,4 +23,5 @@ if (apDung) {
   else if (nhan.includes(NHAN_DUYET)) { trangThai = 'da-duyet'; dong = '✅ **QA: đã duyệt** (nhãn `approved`)'; }
   else { trangThai = 'chua-duyet'; dong = '⏳ **QA: chưa duyệt** – chờ QA gắn nhãn `approved` rồi mới merge'; }
 }
-process.stdout.write(chiDong ? (apDung ? dong : '') : JSON.stringify({ apDung, trangThai, dong }) + '\n');
+const canQaLai = pr.merged === true && apDung && trangThai !== 'da-duyet';
+process.stdout.write(chiDong ? (apDung ? dong : '') : JSON.stringify({ apDung, trangThai, dong, canQaLai }) + '\n');

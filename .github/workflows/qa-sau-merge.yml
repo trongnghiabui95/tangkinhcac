@@ -1,0 +1,51 @@
+# Đánh dấu bài lên web khi chưa qua QA (Issue #136).
+#   Khi 1 PR nội dung (nhãn `noi-dung` hoặc nhánh `noi-dung/*`) được MERGE mà không có nhãn `approved`
+#   (hoặc còn nhãn `tra-ve`): tự gắn nhãn `can-qa-lai` (tạo nhãn nếu chưa có) và bình luận cho QA.
+#   PR có `approved` (và không có `tra-ve`), PR dev/*, PR đóng không merge: không làm gì.
+# Không đổi cách merge, không đụng cài đặt bảo vệ nhánh. Quy tắc đọc nhãn dùng chung v2/scripts/qa-trang-thai.mjs (Issue #72).
+# QA: mỗi lượt đọc PR đã merge có nhãn `can-qa-lai`, soát lại bài trên web; đạt thì gỡ nhãn, chưa đạt thì yêu cầu BA mở PR sửa.
+name: qa-sau-merge
+on:
+  pull_request:
+    types: [closed]
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+jobs:
+  danh-dau:
+    name: Đánh dấu bài cần QA lại
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: v2/scripts/qa-trang-thai.mjs
+          sparse-checkout-cone-mode: false
+      - name: Đọc nhãn của PR
+        id: qa
+        run: |
+          kq=$(node v2/scripts/qa-trang-thai.mjs "$GITHUB_EVENT_PATH")
+          echo "$kq"
+          echo "can_qa_lai=$(echo "$kq" | jq -r .canQaLai)" >> "$GITHUB_OUTPUT"
+          echo "trang_thai=$(echo "$kq" | jq -r .trangThai)" >> "$GITHUB_OUTPUT"
+      - name: Gắn nhãn can-qa-lai + bình luận
+        if: steps.qa.outputs.can_qa_lai == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR: ${{ github.event.pull_request.number }}
+          REPO: ${{ github.repository }}
+          TRANG_THAI: ${{ steps.qa.outputs.trang_thai }}
+        run: |
+          gh api "repos/$REPO/labels/can-qa-lai" >/dev/null 2>&1 || \
+            gh api -X POST "repos/$REPO/labels" -f name=can-qa-lai -f color=d93f0b \
+              -f description="Bài đã lên web khi chưa qua QA duyệt – QA soát lại" >/dev/null
+          gh api -X POST "repos/$REPO/issues/$PR/labels" -f 'labels[]=can-qa-lai' >/dev/null
+          if [ "$TRANG_THAI" = "tra-ve" ]; then ly_do="PR còn nhãn \`tra-ve\` (QA đang trả về) lúc merge."; else ly_do="PR chưa có nhãn \`approved\` lúc merge."; fi
+          printf '⚠️ **Bài đã lên web khi chưa qua QA duyệt – QA soát lại ở lượt kế tiếp.**\n\n%s\n\nQA: soát lại bài trên web. Đạt → gỡ nhãn `can-qa-lai`. Chưa đạt → yêu cầu BA mở PR sửa (ghi số PR này), gỡ nhãn khi PR sửa đã merge.\n\n_Tự động bởi workflow `qa-sau-merge` (Issue #136)._\n' "$ly_do" > body.md
+          gh api -X POST "repos/$REPO/issues/$PR/comments" -F body=@body.md >/dev/null
+          echo "Đã gắn can-qa-lai cho PR #$PR ($TRANG_THAI)." | tee -a "$GITHUB_STEP_SUMMARY"
+      - name: Không cần đánh dấu
+        if: steps.qa.outputs.can_qa_lai != 'true'
+        run: echo "✅ PR đã được QA duyệt hoặc không phải bài nội dung – không gắn nhãn." | tee -a "$GITHUB_STEP_SUMMARY"
