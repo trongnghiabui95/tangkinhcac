@@ -58,6 +58,15 @@ export const collections = {
       // ---- Issue #11 – TUỲ CHỌN ----
       ban_co_biet: z.array(z.object({ noi_dung: doDai('ban_co_biet.noi_dung', GIOI_HAN.banCoBiet),
         nguon: z.string().optional(), nguon_url: z.string().url().optional() })).default([]),   // thẻ "Bạn có biết" ở trang bộ
+      // ---- Issue #137 (anime) – TUỲ CHỌN ----
+      diem_mal: z.number().min(0).max(10).optional(),                 // điểm MyAnimeList
+      xem_o: z.array(z.object({ ten: z.string(), url: z.string().url('xem_o.url phải là link đầy đủ (https://…)') })).default([]),   // nền tảng xem CHÍNH THỨC
+      cac_arc: z.array(z.object({ ten: z.string(), slug: slug('cac_arc.slug').optional(),   // slug bài cot-truyen cùng bộ (có thì bấm được)
+        tap_tu: z.number().int().min(0), tap_den: z.number().int().min(0).optional(),
+        chuong: z.union([z.string(), z.number()]).optional(), nam: z.union([z.string(), z.number()]).optional(),
+        dang_chieu: z.boolean().default(false) })).default([]),
+      thu_tu_xem: z.string().optional(),             // "Thứ tự xem cho người mới"
+      tap_filler: z.string().optional(),             // tập nên bỏ qua (có nguồn)
     }),
   }),
 
@@ -96,11 +105,18 @@ export const collections = {
       noi_bat: z.boolean().default(false),           // nhân vật nổi bật ở trang chủ
       bac: z.string().optional(),                    // nhân vật: tên bậc cảnh giới cao nhất (khớp cac_bac của bài canh-gioi)
       the_luc: z.array(z.string()).default([]),      // nhân vật: slug bài the-luc cùng bộ
-      cuoc_doi: z.array(z.object({ giai_doan: z.string(), dia_diem: z.string().optional(), su_kien: z.string(), canh_gioi: z.string().optional() })).default([]),
+      cuoc_doi: z.array(z.object({ giai_doan: z.string(), dia_diem: z.string().optional(), su_kien: z.string(), canh_gioi: z.string().optional(),
+        arc: z.string().optional() })).default([]),   // arc: anime hiện nhãn arc thay cho cảnh giới (Issue #137)
       quan_he: z.array(z.object({ nhan_vat: z.string(), quan_he: z.string(), ghi_chu: z.string().optional() })).default([]),  // nhan_vat = slug bài nhân vật cùng bộ, hoặc tên
       cac_bac: z.array(z.object({ ten: z.string(), mo_ta: z.string(), the_gioi: z.string().optional() })).default([]),       // bài canh-gioi: các bậc theo thứ tự
       thu_linh: z.string().optional(),               // bài the-luc: slug bài nhân vật
       tru_so: z.string().optional(),                 // bài the-luc: tên địa điểm
+      // ---- Issue #137 (anime) – TUỲ CHỌN ----
+      xuat_hien_dau: z.string().optional(),          // nhân vật: "Tập 1 / Chương 1"
+      seiyuu: z.string().optional(),                 // nhân vật: diễn viên lồng tiếng
+      nang_luc: z.array(z.string()).default([]),     // nhân vật: slug bài phap-bao cùng bộ (năng lực / trái ác quỷ…)
+      arc: z.object({ tap_tu: z.number().int().min(0), tap_den: z.number().int().min(0).optional(),
+        chuong: z.union([z.string(), z.number()]).optional() }).optional(),   // bài cot-truyen: arc chiếu từ tập nào tới tập nào
     }).refine((d) => !d.image || d.image_source, { message: 'Có image thì phải có image_source (ten + url)', path: ['image_source'] }),
   }),
 };

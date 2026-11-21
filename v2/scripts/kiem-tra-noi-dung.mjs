@@ -31,17 +31,44 @@ const tuongDoi = (f) => path.relative(process.cwd(), f);
 const baoLoi = (f, truong, lyDo) => loi.push(`✗ ${tuongDoi(f)} · ${truong}: ${lyDo}`);
 const baoCanhBao = (f, truong, lyDo) => canhBao.push(`⚠ ${tuongDoi(f)} · ${truong}: ${lyDo}`);
 
-/** Trang bộ truyện: các trường tuỳ chọn có giới hạn (ban_co_biet – Issue #11) */
-function kiemTraIndex(f) {
+/** Trang bộ truyện: các trường tuỳ chọn có giới hạn (ban_co_biet – Issue #11; anime – Issue #137).
+ *  cacBai: Set "<category>/<slug>" các bài của bộ, để kiểm tra cac_arc[].slug trỏ đúng bài. */
+function kiemTraIndex(f, cacBai = new Set()) {
   const d = docMdx(f)?.data;
-  if (!d || d.ban_co_biet == null) return;
-  if (!Array.isArray(d.ban_co_biet)) return baoLoi(f, 'ban_co_biet', 'phải là danh sách dạng [{ noi_dung, nguon? }]');
-  const [min, max] = GIOI_HAN.banCoBiet;
-  d.ban_co_biet.forEach((y, i) => {
-    const nd = typeof y?.noi_dung === 'string' ? y.noi_dung.trim() : '';
-    if (!nd) baoLoi(f, `ban_co_biet[${i + 1}]`, 'thiếu noi_dung');
-    else if (nd.length < min || nd.length > max) baoLoi(f, `ban_co_biet[${i + 1}]`, `noi_dung dài ${nd.length} ký tự, cần ${min}–${max}`);
-  });
+  if (!d) return;
+  if (d.ban_co_biet != null) {
+    if (!Array.isArray(d.ban_co_biet)) baoLoi(f, 'ban_co_biet', 'phải là danh sách dạng [{ noi_dung, nguon? }]');
+    else {
+      const [min, max] = GIOI_HAN.banCoBiet;
+      d.ban_co_biet.forEach((y, i) => {
+        const nd = typeof y?.noi_dung === 'string' ? y.noi_dung.trim() : '';
+        if (!nd) baoLoi(f, `ban_co_biet[${i + 1}]`, 'thiếu noi_dung');
+        else if (nd.length < min || nd.length > max) baoLoi(f, `ban_co_biet[${i + 1}]`, `noi_dung dài ${nd.length} ký tự, cần ${min}–${max}`);
+      });
+    }
+  }
+  // ---- Issue #137: trường anime (đều tuỳ chọn) ----
+  if (d.diem_mal != null && !(typeof d.diem_mal === 'number' && d.diem_mal >= 0 && d.diem_mal <= 10)) baoLoi(f, 'diem_mal', `"${d.diem_mal}" phải là số từ 0 đến 10, ví dụ 8.7`);
+  if (d.xem_o != null) {
+    if (!Array.isArray(d.xem_o)) baoLoi(f, 'xem_o', 'phải là danh sách dạng [{ ten, url }]');
+    else d.xem_o.forEach((x, i) => {
+      if (!x?.ten) baoLoi(f, `xem_o[${i + 1}]`, 'thiếu ten (tên nền tảng)');
+      if (!/^https:\/\//.test(x?.url || '')) baoLoi(f, `xem_o[${i + 1}]`, 'url phải là link đầy đủ bắt đầu bằng https://');
+    });
+  }
+  if (d.cac_arc != null) {
+    if (!Array.isArray(d.cac_arc)) baoLoi(f, 'cac_arc', 'phải là danh sách dạng [{ ten, tap_tu, tap_den?, chuong?, nam?, slug?, dang_chieu? }]');
+    else {
+      d.cac_arc.forEach((a, i) => {
+        const truong = `cac_arc[${i + 1}]`;
+        if (!a?.ten) baoLoi(f, truong, 'thiếu ten (tên arc)');
+        if (!Number.isInteger(a?.tap_tu)) baoLoi(f, truong, 'thiếu tap_tu (số tập bắt đầu, số nguyên)');
+        else if (a.tap_den != null && !(Number.isInteger(a.tap_den) && a.tap_den >= a.tap_tu)) baoLoi(f, truong, `tap_den (${a.tap_den}) phải là số nguyên ≥ tap_tu (${a.tap_tu})`);
+        if (a?.slug && !cacBai.has(`cot-truyen/${a.slug}`)) baoCanhBao(f, truong, `chưa có bài cot-truyen/${a.slug}.mdx – arc vẫn hiện nhưng chưa bấm được`);
+      });
+      if (d.cac_arc.filter((a) => a?.dang_chieu).length > 1) baoCanhBao(f, 'cac_arc', 'có nhiều hơn 1 arc dang_chieu: true');
+    }
+  }
 }
 
 function docMdx(f) {
@@ -68,13 +95,13 @@ async function main() {
     if (DANH_RIENG.has(series)) baoLoi(thuMucSeries, 'thư mục', `"${series}" trùng đường dẫn hệ thống của web, hãy đặt tên khác`);
     if (!SLUG.test(series)) baoLoi(thuMucSeries, 'thư mục', `tên thư mục bộ truyện "${series}" phải viết thường, không dấu, nối bằng gạch ngang`);
     if (!fs.existsSync(path.join(thuMucSeries, 'index.mdx'))) baoLoi(thuMucSeries, 'index.mdx', `bộ truyện "${series}" chưa có trang bộ truyện index.mdx`);
-    else kiemTraIndex(path.join(thuMucSeries, 'index.mdx'));
     slugTheoSeries[series] = new Set();
     for (const d of fs.readdirSync(thuMucSeries, { withFileTypes: true })) {
       if (!d.isDirectory()) continue;
       if (!CAC_DANH_MUC.includes(d.name)) { baoLoi(path.join(thuMucSeries, d.name), 'category', `thư mục "${d.name}" không phải danh mục hợp lệ (${CAC_DANH_MUC.join(', ')})`); continue; }
       for (const tep of fs.readdirSync(path.join(thuMucSeries, d.name))) if (tep.endsWith('.mdx')) slugTheoSeries[series].add(`${d.name}/${tep.slice(0, -4)}`);
     }
+    if (fs.existsSync(path.join(thuMucSeries, 'index.mdx'))) kiemTraIndex(path.join(thuMucSeries, 'index.mdx'), slugTheoSeries[series]);
   }
 
   for (const series of cacSeries) {
@@ -119,6 +146,11 @@ async function main() {
       // 5. Quan hệ (tuỳ chọn) trỏ đúng bài
       if (d.canh_gioi && !slugTheoSeries[series].has(`canh-gioi/${d.canh_gioi}`)) baoCanhBao(f, 'canh_gioi', `chưa có bài canh-gioi/${d.canh_gioi}.mdx trong ${series}`);
       for (const pb of d.phap_bao || []) if (!slugTheoSeries[series].has(`phap-bao/${pb}`)) baoCanhBao(f, 'phap_bao', `chưa có bài phap-bao/${pb}.mdx trong ${series}`);
+      for (const nl of d.nang_luc || []) if (!slugTheoSeries[series].has(`phap-bao/${nl}`)) baoCanhBao(f, 'nang_luc', `chưa có bài phap-bao/${nl}.mdx trong ${series}`);
+      if (d.arc != null) {
+        if (!Number.isInteger(d.arc?.tap_tu)) baoLoi(f, 'arc', 'thiếu arc.tap_tu (số tập bắt đầu, số nguyên)');
+        else if (d.arc.tap_den != null && !(Number.isInteger(d.arc.tap_den) && d.arc.tap_den >= d.arc.tap_tu)) baoLoi(f, 'arc', `arc.tap_den (${d.arc.tap_den}) phải là số nguyên ≥ arc.tap_tu (${d.arc.tap_tu})`);
+      }
       // 6. Số từ
       const soTu = demTu(doc.content);
       if (soTu < GIOI_HAN.soTu[0] || soTu > GIOI_HAN.soTu[1]) {

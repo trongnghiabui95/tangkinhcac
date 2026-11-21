@@ -9,7 +9,7 @@ export async function trangSeriesDanhMuc() {
     const ds = bai.filter((b) => b.data.series === slugSeries(s) && b.data.category === c)
       .sort((a, b) => (a.data.thu_tu ?? 999) - (b.data.thu_tu ?? 999) || a.data.title.localeCompare(b.data.title, 'vi'));
     if (!ds.length) continue;
-    for (const p of chiaTrang(ds)) out.push({ series: slugSeries(s), tenSeries: s.data.ten, category: c, ...p });
+    for (const p of chiaTrang(ds)) out.push({ series: slugSeries(s), tenSeries: s.data.ten, loai: s.data.loai, category: c, ...p });
   }
   return out;
 }

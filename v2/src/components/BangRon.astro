@@ -2,7 +2,7 @@
 // Băng rôn kiểu web cũ cho 1 bộ truyện: nền bìa làm mờ, bìa, nhãn thể loại, tên, tên gốc, mô tả, điểm, nút.
 // laTieuDe = true: tên truyện là <h1> (trang bộ truyện); ngược lại là <h2> (trang chủ).
 import BieuTuong from './BieuTuong.astro';
-import { layAnhSeries, slugSeries, urlSeries, url } from '../lib/tien-ich.js';
+import { layAnhSeries, slugSeries, urlSeries, url, LOAI_TRUYEN } from '../lib/tien-ich.js';
 // uuTien = false (băng rôn thứ 2 trở đi ở trang chủ): ảnh tải chậm (lazy), không tranh băng thông với băng rôn đầu
 interface Props { s: any; laTieuDe?: boolean; nut?: boolean; uuTien?: boolean }
 const { s, laTieuDe = false, nut = true, uuTien = true } = Astro.props;
@@ -11,6 +11,11 @@ function anhNho() { const a = layAnhSeries(s); return a ? a.srcset.at(-1).src : 
 const d = s.data;
 const anh = layAnhSeries(s);
 const H = laTieuDe ? 'h1' : 'h2';
+// Issue #137 (chỉ ở trang bộ, laTieuDe): loại theo arc (anime) hiện thông số studio · số tập · tình trạng;
+// điểm MyAnimeList (diem_mal) và nút "Xem chính thức" (xem_o) hiện khi có dữ liệu.
+const thongSo = laTieuDe && LOAI_TRUYEN[d.loai]?.theoArc
+  ? [d.studio, d.so_tap != null && `${d.so_tap.toLocaleString('vi-VN')} tập`, d.tinh_trang].filter(Boolean) as string[] : [];
+const xemO = laTieuDe ? (d.xem_o ?? []) : [];
 ---
 <section class="bang-ron">
   {anh && (uuTien
@@ -23,11 +28,17 @@ const H = laTieuDe ? 'h1' : 'h2';
       <ul class="hang-nhan">{d.the_loai.map((g: string, i: number) => <li><span class:list={['nhan', i ? 'nhan-vien' : 'nhan-tu-tien']}>{g}</span></li>)}</ul>
       <H class="bang-ron-ten">{laTieuDe && <span class="bang-ron-kicker">Review </span>}{d.ten}</H>
       {d.ten_trung && <p class="bang-ron-goc">{d.ten_trung}{d.tac_gia && ` · ${d.tac_gia}`}</p>}
+      {thongSo.length > 0 && <ul class="hang-nhan bang-ron-thong-so">{thongSo.map((t) => <li><span class="nhan nhan-vien">{t}</span></li>)}</ul>}
       <p class="bang-ron-mo-ta">{d.mo_ta}</p>
       <div class="bang-ron-hanh-dong">
         {nut && <a class="nut" href={urlSeries(slugSeries(s))}><BieuTuong ten="doc" />Đọc review</a>}
         {d.diem != null && <span class="bang-ron-diem" aria-label={`Điểm ${d.diem} trên 10`}>★ {d.diem.toFixed(1)}</span>}
+        {laTieuDe && d.diem_mal != null && <span class="bang-ron-mal" aria-label={`Điểm MyAnimeList ${d.diem_mal} trên 10`}><small>MyAnimeList</small>{d.diem_mal.toFixed(2)}</span>}
       </div>
+      {xemO.length > 0 && (
+        <p class="bang-ron-xem"><span class="bang-ron-xem-nhan">Xem chính thức ở:</span>
+          {xemO.map((x: { ten: string; url: string }) => <a class="nut-vien" href={x.url} rel="noopener" target="_blank">{x.ten}</a>)}</p>
+      )}
     </div>
   </div>
 </section>

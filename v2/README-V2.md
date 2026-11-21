@@ -126,6 +126,65 @@ Không bắt buộc; bỏ trống thì mục tương ứng tự ẩn. Ví dụ �
 **Xếp hạng sức mạnh** (trang bộ, Issue #11 – không cần trường mới): lấy `bac` của từng bài nhân vật, đối chiếu thứ tự `cac_bac` trong bài cảnh giới của chính bộ đó (bài đầu tiên theo `thu_tu` có `cac_bac`), xếp từ cao xuống thấp; cùng bậc thì cùng hạng. Tên bậc so khớp **không phân biệt hoa thường/dấu** nhưng phải là đúng một tên trong `cac_bac` – ghi tên khác (vd. "Bước thứ ba" khi `cac_bac` không có bậc đó) thì nhân vật không được xếp. Khối chỉ hiện khi xếp được ≥ 2 nhân vật (`GIOI_HAN.xepHangToiThieu`).
 **Bài thế lực**: `thu_linh` (slug nhân vật), `tru_so`; thành viên tự lấy từ `the_luc` của bài nhân vật.
 
+### Bộ Anime (Issue #137) – mọi trường đều TUỲ CHỌN
+
+Bộ có `loai: anime` dùng **chung thư mục và chuẩn .mdx** với truyện tu tiên, chỉ khác cách hiện (khai báo ở `src/lib/chuan-mdx.mjs`: `DANH_MUC_THEO_LOAI`, `LOAI_TRUYEN.anime.theoArc`):
+
+| Thư mục | Tu tiên | Anime |
+|---|---|---|
+| `nhan-vat` | Nhân vật | Nhân vật |
+| `canh-gioi` | Cảnh giới | Hệ thống sức mạnh |
+| `phap-bao` | Pháp bảo | Năng lực / Vật phẩm |
+| `the-luc` | Thế lực | Băng nhóm / Tổ chức |
+| `cot-truyen` | Cốt truyện | Arc / Mùa phim |
+
+Tên mới hiện ở menu, breadcrumb (cả JSON-LD), mục lục, tiêu đề khối, trang danh sách, nhãn thẻ bài. Trang bộ anime theo thứ tự: băng rôn (studio, số tập, tình trạng, điểm MyAnimeList, nút xem chính thức) → review → **Dòng thời gian Arc** → **Thứ tự xem cho người mới** → nhân vật → Hệ thống sức mạnh, Năng lực, Băng nhóm, Arc → Bạn có biết → … → Thuật ngữ → Tác phẩm tương tự. Khối "Xếp hạng sức mạnh" theo cảnh giới **không hiện** với anime; "Hành trình nhân vật chính" ẩn khi đã có `cac_arc`. Khối nào không có dữ liệu thì tự ẩn.
+
+| Trường (`index.mdx`) | Hiện ở đâu |
+|---|---|
+| `diem_mal: 8.73` | Băng rôn + bảng thông tin ("Điểm MyAnimeList"), số 0–10 |
+| `xem_o: [{ ten, url }]` | Nút "Xem chính thức ở:" trên băng rôn. **Chỉ nền tảng chính thức**, `url` bắt đầu bằng `https://` |
+| `cac_arc: [{ ten, tap_tu, tap_den?, chuong?, nam?, slug?, dang_chieu? }]` | Dòng thời gian Arc: mỗi arc 1 thẻ đánh số theo thứ tự. `slug` = tên file bài `cot-truyen/` cùng bộ → thẻ bấm được. Arc chưa kết thúc: bỏ `tap_den`, ghi `dang_chieu: true` (hiện "Tập 1086 – nay" + nhãn "Đang chiếu"). `tap_den` nhỏ hơn `tap_tu` là dừng build |
+| `thu_tu_xem: "…"` | Khối "Thứ tự xem cho người mới" (cách đoạn bằng 1 dòng trống) |
+| `tap_filler: "…"` | Dòng "Tập có thể bỏ qua (filler)" trong khối trên – chỉ ghi khi có nguồn |
+
+| Trường (bài) | Hiện ở đâu |
+|---|---|
+| `xuat_hien_dau: "Tập 1 / Chương 1"` | Bảng thông tin bài nhân vật: "Xuất hiện lần đầu" |
+| `seiyuu: "Mayumi Tanaka"` | Bảng thông tin: "Lồng tiếng (seiyuu)" |
+| `nang_luc: [slug bài phap-bao]` | Bảng thông tin: "Năng lực" (link tới bài) + khối thẻ "Năng lực / Vật phẩm của …" cuối bài. Slug chưa có bài thì ẩn (kiểm tra nội dung cảnh báo) |
+| `cuoc_doi[].arc` | Mục "Cuộc đời": nhãn arc thay cho nhãn cảnh giới |
+| `arc: { tap_tu, tap_den?, chuong? }` (bài `cot-truyen`) | Bảng thông tin: dòng "Tập", "Chương" |
+
+Ví dụ One Piece (rút gọn):
+
+```yaml
+# content/one-piece/index.mdx
+ten: One Piece
+universe: one-piece
+loai: anime
+tac_gia: Eiichiro Oda
+studio: Toei Animation
+so_tap: 1155
+tinh_trang: Đang ra
+diem_mal: 8.73
+xem_o:
+  - { ten: Crunchyroll, url: "https://www.crunchyroll.com/" }
+cac_arc:
+  - { ten: East Blue, slug: east-blue, tap_tu: 1, tap_den: 61, chuong: "1–100", nam: 1999 }
+  - { ten: Egghead, tap_tu: 1086, chuong: "1058–", nam: 2024, dang_chieu: true }
+thu_tu_xem: "Xem theo thứ tự phát sóng từ tập 1…"
+
+# content/one-piece/nhan-vat/monkey-d-luffy.mdx (thêm vào frontmatter chuẩn)
+xuat_hien_dau: "Tập 1 / Chương 1"
+seiyuu: Mayumi Tanaka
+nang_luc: [trai-gomu-gomu]
+cuoc_doi:
+  - { giai_doan: Ra khơi, arc: East Blue, su_kien: "…" }
+```
+
+Kiểm thử: `bash tests/thu-anime.sh` (chép bộ mẫu `tests/fixtures/anime/` vào `content/`, build, kiểm tra từng khối, rồi tự xoá – bộ mẫu **không** lên web).
+
 ## 4. Lệnh và biến môi trường
 ```bash
 cd v2

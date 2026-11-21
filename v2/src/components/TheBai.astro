@@ -2,14 +2,14 @@
 // Thẻ 1 bài viết kiểu web cũ: ảnh 3:4, nhãn màu theo danh mục/vai trò, tên serif 2 dòng, tên bộ truyện.
 // Bài chưa có ảnh riêng: nền là ảnh bìa bộ truyện làm mờ + biểu tượng danh mục + tên bài.
 // Nguồn ảnh ghi đầy đủ (có link) ở trang bài; trên thẻ chỉ ghi trong title để thẻ gọn như web cũ.
-import { layAnh, layAnhThe, tenBai, urlBai, url, DANH_MUC, NHAN_VAI_TRO } from '../lib/tien-ich.js';
+import { layAnh, layAnhThe, tenBai, urlBai, url, danhMucBai, NHAN_VAI_TRO } from '../lib/tien-ich.js';
 import { lopNhan } from '../lib/bieu-tuong.js';
 import BieuTuong from './BieuTuong.astro';
 interface Props { bai: any; uuTien?: boolean; hienBo?: string }
 const { bai, uuTien = false, hienBo } = Astro.props;
 const d = bai.data;
 const ten = tenBai(bai);
-const nhan = d.category === 'nhan-vat' && d.vai_tro ? NHAN_VAI_TRO[d.vai_tro] : DANH_MUC[d.category]?.ten;
+const nhan = d.category === 'nhan-vat' && d.vai_tro ? NHAN_VAI_TRO[d.vai_tro] : (await danhMucBai(bai)).ten;
 const anh = layAnhThe(bai);
 const muonBia = anh && !layAnh(bai);
 const srcset = anh?.srcset.map((s: any) => `${url(s.src)} ${s.w}w`).join(', ');

@@ -1,0 +1,31 @@
+---
+// Issue #137 – Dòng thời gian Arc (trang bộ anime): mỗi arc 1 thẻ đánh số theo thứ tự chiếu:
+// tên (bấm được khi có bài cot-truyen cùng slug), tập từ–đến, chương manga, năm; arc đang chiếu có nhãn + viền vàng.
+// Dữ liệu: cac_arc trong index.mdx. Không có dữ liệu thì trang bộ không gọi component này.
+import { urlBai } from '../lib/tien-ich.js';
+interface Arc { ten: string; slug?: string; tap_tu: number; tap_den?: number; chuong?: string | number; nam?: string | number; dang_chieu?: boolean }
+interface Props { ds: Arc[]; baiCotTruyen: any[] }
+const { ds, baiCotTruyen } = Astro.props;
+const tap = (a: Arc) => a.tap_den != null ? (a.tap_den === a.tap_tu ? `Tập ${a.tap_tu}` : `Tập ${a.tap_tu}–${a.tap_den}`) : (a.dang_chieu ? `Tập ${a.tap_tu} – nay` : `Từ tập ${a.tap_tu}`);
+---
+<ol class="dong-arc">
+  {ds.map((a, i) => {
+    const bai = a.slug ? baiCotTruyen.find((e) => e.data.slug === a.slug) : null;
+    return (
+      <li class:list={['arc-the', { 'arc-dang-chieu': a.dang_chieu, 'arc-co-bai': bai }]}>
+        <span class="arc-so" aria-hidden="true">{i + 1}</span>
+        <div class="arc-than">
+          <h3 class="arc-ten">{bai ? <a href={urlBai(bai)}>{a.ten}</a> : a.ten}</h3>
+          <p class="arc-tap">{tap(a)}</p>
+          {(a.chuong != null || a.nam != null || a.dang_chieu) && (
+            <p class="arc-phu">
+              {a.chuong != null && <span>Chương {a.chuong}</span>}
+              {a.nam != null && <span>{a.nam}</span>}
+              {a.dang_chieu && <span class="nhan nhan-tu-luyen">Đang chiếu</span>}
+            </p>
+          )}
+        </div>
+      </li>
+    );
+  })}
+</ol>

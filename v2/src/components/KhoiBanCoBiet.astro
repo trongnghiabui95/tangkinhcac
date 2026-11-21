@@ -1,0 +1,21 @@
+---
+// Khối "Bạn có biết" ở trang bộ truyện (Issue #11). Tách thành component ở Issue #137 để trang bộ anime đặt khối ở vị trí khác.
+// In sẵn mọi ý, ẩn bớt chỉ giữ GIOI_HAN.banCoBietHien ý đầu (không JS vẫn đọc được);
+// có nhiều hơn thì script nhỏ chọn ngẫu nhiên mỗi lượt xem.
+import TieuDeKhoi from './TieuDeKhoi.astro';
+import { GIOI_HAN } from '../lib/chuan-mdx.mjs';
+interface Props { ds: { noi_dung: string; nguon?: string; nguon_url?: string }[] }
+const { ds } = Astro.props;
+---
+{ds.length > 0 && (
+  <section class="khoi" id="ban-co-biet" data-pagefind-ignore="all">
+    <TieuDeKhoi tieuDe="Bạn có biết" bieuTuong="y-tuong" />
+    <ul class="ban-co-biet" data-hien={GIOI_HAN.banCoBietHien}>{ds.map((y, i) => (
+      <li hidden={i >= GIOI_HAN.banCoBietHien}>
+        <p>{y.noi_dung}</p>
+        {y.nguon && <p class="nguon-anh" title={`Nguồn: ${y.nguon}`}>Nguồn: {y.nguon_url ? <a href={y.nguon_url} rel="nofollow noopener" target="_blank">{y.nguon}</a> : y.nguon}</p>}
+      </li>
+    ))}</ul>
+    {ds.length > GIOI_HAN.banCoBietHien && <script is:inline>{`(()=>{const u=document.querySelector('.ban-co-biet');if(!u)return;const n=+u.dataset.hien||3,ds=[...u.children];for(let i=ds.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ds[i],ds[j]]=[ds[j],ds[i]];}ds.forEach((li,i)=>{li.hidden=i>=n;});})();`}</script>}
+  </section>
+)}
