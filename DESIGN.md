@@ -128,7 +128,7 @@ Hình mẫu: **một bộ bảo điển tu chân**: sách cổ quý, ánh đèn 
 - **Màu:** vàng kim là màu nhấn chính (link, nút, tiêu đề mục, điểm), ngọc bích cho liên kết trong đoạn văn và mốc thời gian, chu sa cho con dấu. Nhãn chuyên mục có màu riêng, luôn kèm chữ.
 - **Ảnh là nhân vật chính:** bìa dọc 2:3, ảnh nhân vật 3:4. Ưu tiên ảnh chính thức có ghi nguồn (`nguon_anh`); không có thì tranh minh họa thủy mặc tự vẽ (`v2/tools/ve_anh_mau.py`), không dùng ảnh giả trộn lẫn ảnh thật.
 - **Họa tiết mây** trên nền trang là lựa chọn có chủ đích của chủ dự án (yêu cầu ban đầu): giữ thật mờ (≤ 7% độ đậm), không thêm họa tiết khác.
-- **Thương hiệu chủ quản yendan** chỉ xuất hiện ở chân trang ("Một sản phẩm của yendan"); thanh menu chỉ dùng logo Tu Chân Bảo Điển: **quyển bảo điển mở, phía trên là ngọn linh khí ngọc bích, trên nền tròn vàng kim** (`v2/public/favicon.svg`, `v2/public/logo.png`; không dùng chữ Hán). Con dấu thương hiệu trên tranh tự vẽ là chữ **TCBĐ**.
+- **Thương hiệu chủ quản yendan** chỉ xuất hiện ở chân trang ("Một sản phẩm của yendan"); thanh menu chỉ dùng logo Tu Chân Bảo Điển: **quyển bảo điển mở, phía trên là ngọn linh khí ngọc bích, trên nền tròn xanh đen viền vàng kim** (`v2/public/favicon.svg`, `v2/public/logo.png` 512×512 sinh từ favicon.svg; không dùng chữ Hán, không thêm chi tiết nhỏ để vẫn rõ ở cỡ 16px – Issue #171). Con dấu thương hiệu trên tranh tự vẽ là chữ **TCBĐ**.
 
 Trang review và trang nhân vật là trang **để đọc**: ưu tiên rõ ràng, liên kết chính xác; trang chủ được phép sinh động hơn ở băng rôn bộ truyện.
 
