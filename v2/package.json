@@ -13,7 +13,8 @@
     "build": "node scripts/kiem-tra-noi-dung.mjs && node scripts/process-images.mjs && astro build && pagefind --site dist",
     "preview": "astro preview",
     "test:seo": "node tests/kiem-tra-seo.mjs",
-    "test:web": "node tests/kiem-tra-web.mjs"
+    "test:web": "node tests/kiem-tra-web.mjs",
+    "test:qa": "node tests/kiem-tra-qa-sau-merge.mjs"
   },
   "engines": {
     "node": ">=22.23"
