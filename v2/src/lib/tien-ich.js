@@ -3,9 +3,14 @@
 // mọi thứ tính từ v2/content/ lúc build.
 import { getCollection } from 'astro:content';
 import anhJson from '../data/anh.json';
-import { DANH_MUC, CAC_DANH_MUC, tenNgan, LOAI_TRUYEN as LOAI_TRUYEN_MENU, CAC_LOAI_TRUYEN as CAC_LOAI_TRUYEN_MENU } from './chuan-mdx.mjs';
+import { DANH_MUC, CAC_DANH_MUC, danhMuc, chuDanhSach, tenNgan, LOAI_TRUYEN as LOAI_TRUYEN_MENU, CAC_LOAI_TRUYEN as CAC_LOAI_TRUYEN_MENU } from './chuan-mdx.mjs';
 
-export { DANH_MUC, CAC_DANH_MUC };
+export { DANH_MUC, CAC_DANH_MUC, danhMuc, chuDanhSach };
+/** Issue #137: tên danh mục của 1 bài theo loại bộ truyện chứa nó (anime: "Hệ thống sức mạnh"…) */
+export async function danhMucBai(e) {
+  const s = (await getCollection('series')).find((x) => x.id.split('/')[0] === e.data.series);
+  return danhMuc(e.data.category, s?.data.loai);
+}
 const BASE = import.meta.env.BASE_URL.endsWith('/') ? import.meta.env.BASE_URL : import.meta.env.BASE_URL + '/';
 const XEM_NHAP = (import.meta.env.XEM_NHAP ?? process.env.XEM_NHAP) === '1';   // chỉ dùng khi làm việc
 
@@ -65,7 +70,7 @@ export async function layMenu() {
       series: series.filter((s) => s.data.loai === l).map((s) => ({
         ten: s.data.ten, href: urlSeries(slugSeries(s)),
         danhMuc: CAC_DANH_MUC.filter((c) => bai.some((b) => b.data.series === slugSeries(s) && b.data.category === c))
-          .map((c) => ({ c, ten: DANH_MUC[c].tenSoNhieu, href: urlSeriesDanhMuc(slugSeries(s), c) })),
+          .map((c) => ({ c, ten: danhMuc(c, s.data.loai).tenSoNhieu, href: urlSeriesDanhMuc(slugSeries(s), c) })),
       })),
     })),
     deCu: series.some((s) => s.data.cho_nguoi_moi || s.data.tuong_tu.length) ? url('de-cu/') : null,

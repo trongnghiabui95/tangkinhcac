@@ -14,7 +14,7 @@
   --vang: #d4a944; --tren-vang: #1b1405; --ngoc: #3fb59b; --vien: rgba(212,169,68,.28);
   --font-tieu-de: 'Noto Serif', 'Noto Serif du phong', serif; --font-noi-dung: 'Be Vietnam Pro', 'Be Vietnam Pro du phong', sans-serif;
   --bo-the: 14px; --bo-nho: 8px; --rong: 1240px; --le: 16px; color-scheme: dark;
-  --chu-tren-anh: #fff6dc; --vang-tren-anh: #f5d27a; --phu-anh: rgba(0,0,0,.7); --nen-menu: rgba(17,26,36,.92);
+  --chu-tren-anh: #fff6dc; --vang-tren-anh: #f5d27a; --tren-vang-anh: #1b1405; --phu-anh: rgba(0,0,0,.7); --nen-menu: rgba(17,26,36,.92);
   --tren-ngoc: #0b121a; --hoa-tiet: rgba(212,169,68,.07); --quang-ngoc: rgba(63,181,155,.10); --quang-vang: rgba(212,169,68,.09);
   --bong-the: 0 6px 22px rgba(0,0,0,.35); --bong-noi: 0 10px 30px rgba(212,169,68,.22);
   --nhan-tu-tien: #93661a; --nhan-nhan-vat: #3a74b8; --nhan-the-luc: #7f52bb; --nhan-tu-luyen: #1f8566;
@@ -504,3 +504,36 @@ html { scroll-padding-top: 80px; }
 @media (hover: hover) { .bang-ron-mui:hover { background: rgba(0,0,0,.7); } }
 @media (max-width: 640px) { .bang-ron-mui { display: none; } }
 @media (prefers-reduced-motion: reduce) { .bang-ron-cham span { transition: none; } }
+
+/* ---------- Issue #137: trang bộ anime ---------- */
+/* Dòng thời gian Arc: lưới thẻ đánh số theo thứ tự chiếu; arc đang chiếu viền vàng */
+.dong-arc { list-style: none; padding: 0; margin: 0; display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(min(100%, 230px), 1fr)); }
+.arc-the { position: relative; display: grid; grid-template-columns: 36px minmax(0, 1fr); gap: 12px; align-items: start; padding: 14px 16px;
+  background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); box-shadow: var(--bong-the); }
+.arc-so { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; background: var(--be-mat-2); border: 2px solid var(--ngoc); color: var(--ngoc); font-weight: 700; font-size: 14px; }
+.arc-than { min-width: 0; }
+.arc-ten { margin: 4px 0 2px; font-size: 1.05rem; line-height: 1.3; color: var(--chu); }
+.arc-ten a { color: inherit; text-decoration-color: var(--vien); text-underline-offset: 3px; }
+.arc-ten a::after { content: ''; position: absolute; inset: 0; border-radius: var(--bo-the); }   /* cả thẻ bấm được (vùng bấm ≥ 44px) */
+.arc-tap { margin: 0; font-weight: 600; color: var(--vang); font-size: 15px; }
+.arc-phu { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; margin: 4px 0 0; font-size: 14px; color: var(--chu-phu); }
+.arc-dang-chieu { border-color: var(--vang); }
+.arc-dang-chieu .arc-so { background: var(--vang); border-color: var(--vang); color: var(--tren-vang); }
+.arc-co-bai { transition: border-color .2s, transform .2s; }
+.arc-co-bai:focus-within { outline: 3px solid var(--vang); outline-offset: 2px; }
+.arc-co-bai a:focus-visible { outline: none; }
+@media (hover: hover) { .arc-co-bai:hover { border-color: var(--vang); transform: translateY(-2px); } .arc-co-bai:hover .arc-ten { color: var(--vang); } }
+@media (prefers-reduced-motion: reduce) { .arc-co-bai { transition: none; } }
+/* Thứ tự xem cho người mới */
+.thu-tu-xem { background: var(--be-mat); border: 1px solid var(--vien); border-radius: var(--bo-the); box-shadow: var(--bong-the); padding: 16px 20px; }
+.thu-tu-xem p { margin: 0 0 8px; max-width: 70ch; }
+.thu-tu-xem p:last-child { margin-bottom: 0; }
+.thu-tu-xem h3 { margin: 12px 0 4px; font-size: 1.05rem; color: var(--vang); }
+/* Băng rôn anime: thông số (studio, số tập, tình trạng), điểm MyAnimeList, nút xem chính thức */
+.bang-ron-thong-so { margin: 10px 0 0; }
+.bang-ron-mal { display: inline-flex; align-items: baseline; gap: 6px; font-size: 1.35rem; font-weight: 700; color: var(--vang-tren-anh); }
+.bang-ron-mal small { font-size: 13px; font-weight: 600; color: var(--chu-tren-anh); }
+.bang-ron-xem { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 14px 0 0; }
+.bang-ron-xem-nhan { font-size: 14px; font-weight: 600; color: var(--chu-tren-anh); }
+.bang-ron .nut-vien { border-color: var(--vang-tren-anh); color: var(--vang-tren-anh); }
+@media (hover: hover) { .bang-ron .nut-vien:hover { background: var(--vang-tren-anh); color: var(--tren-vang-anh); } }

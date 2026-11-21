@@ -3,6 +3,8 @@
  * Trang bài viết: /<series>/<category>/<slug>/ – sinh từ v2/content/<series>/<category>/<slug>.mdx
  *  infobox (frontmatter `infobox` + ảnh) · mục lục từ `##` · khối FAQ từ `faqs` · nguồn ảnh có link
  *  · bài liên quan cùng bộ · JSON-LD Article + BreadcrumbList + FAQPage · quảng cáo cuối bài
+ *  Issue #137: tên danh mục theo loại bộ (anime: "Hệ thống sức mạnh"…), infobox thêm Xuất hiện lần đầu, Lồng tiếng,
+ *  Năng lực (nang_luc), Tập/Chương của arc (bài cot-truyen); Cuộc đời hiện nhãn arc thay cảnh giới.
  */
 import { render } from 'astro:content';
 import BoCuc from '../../../layouts/BoCuc.astro';
@@ -16,7 +18,7 @@ import ThuVienAnh from '../../../components/ThuVienAnh.astro';
 import ChipNhanVat from '../../../components/ChipNhanVat.astro';
 import ChiaSe from '../../../components/ChiaSe.astro';
 import BaiTruocSau from '../../../components/BaiTruocSau.astro';
-import { layBai, laySeries, slugSeries, layAnh, layAnhSeries, tenBai, urlBai, urlSeries, urlSeriesDanhMuc, urlVuTru, url, boDau, DANH_MUC, NHAN_VAI_TRO, cacVuTru, timBai, layThuVien, nhanQuanHe, taoSlug } from '../../../lib/tien-ich.js';
+import { layBai, laySeries, slugSeries, layAnh, layAnhSeries, tenBai, urlBai, urlSeries, urlSeriesDanhMuc, urlVuTru, url, boDau, danhMuc, NHAN_VAI_TRO, cacVuTru, timBai, layThuVien, nhanQuanHe, taoSlug } from '../../../lib/tien-ich.js';
 import { schemaArticle, schemaBreadcrumb, schemaFaq } from '../../../lib/schema.js';
 
 export async function getStaticPaths() {
@@ -31,7 +33,12 @@ const vuTru = (await cacVuTru()).find((v) => v.slug === d.universe);
 const cungBo = await layBai((e) => e.data.series === d.series && e.id !== bai.id);
 const theoTen = new Map(cungBo.flatMap((e) => [tenBai(e), ...e.data.aliases].map((t) => [t.toLowerCase(), e])));
 const canhGioi = d.canh_gioi ? cungBo.find((e) => e.data.category === 'canh-gioi' && e.data.slug === d.canh_gioi) : undefined;
-const phapBao = d.phap_bao.map((s) => cungBo.find((e) => e.data.category === 'phap-bao' && e.data.slug === s)).filter(Boolean);
+const timPhapBao = (s: string) => cungBo.find((e) => e.data.category === 'phap-bao' && e.data.slug === s);
+const nangLuc = d.nang_luc.map(timPhapBao).filter(Boolean);   // slug chưa có bài thì ẩn (kiem-tra-noi-dung cảnh báo)
+// Khối thẻ cuối bài: pháp bảo + năng lực (bỏ trùng)
+const phapBao = [...new Set([...d.phap_bao, ...d.nang_luc])].map(timPhapBao).filter(Boolean);
+const loai = series?.data.loai;
+const dm = (c: string) => danhMuc(c, loai);
 // ---- Tính năng chuyển từ web cũ (Issue #51) ----
 const nhanVatCungBo = cungBo.filter((e) => e.data.category === 'nhan-vat');
 // Gộp nhiều quan hệ với cùng 1 người (vd. vừa là sư phụ vừa là kẻ thù) thành 1 dòng
@@ -50,7 +57,7 @@ const mucThem = [
   bacThang.length > 0 && { slug: 'cac-bac', text: 'Các bậc cảnh giới' },
   d.cuoc_doi.length > 0 && { slug: 'cuoc-doi', text: 'Cuộc đời' },
   quanHe.length > 0 && { slug: 'quan-he', text: 'Mối quan hệ' },
-  theLuc.length > 0 && { slug: 'the-luc-thuoc', text: 'Thế lực' },
+  theLuc.length > 0 && { slug: 'the-luc-thuoc', text: dm('the-luc').ten },
   thanhVien.length > 0 && { slug: 'thanh-vien', text: 'Thành viên' },
   thuVien.length > 0 && { slug: 'thu-vien-anh', text: 'Thư viện ảnh' },
 ].filter(Boolean) as { slug: string; text: string }[];
@@ -60,7 +67,7 @@ const anh = layAnh(bai);
 // Bài không có ảnh riêng: JSON-LD/Open Graph dùng ảnh bìa bộ truyện (Google cần image cho Article)
 const anhChiaSe = anh ?? (series ? layAnhSeries(series) : null);
 const ten = tenBai(bai);
-const tenDanhMuc = DANH_MUC[d.category].ten;
+const tenDanhMuc = dm(d.category).ten;
 const huyHieu = canhGioi ? tenBai(canhGioi) : Object.entries(d.infobox).find(([k]) => /cảnh giới/i.test(k))?.[1]?.toString();
 // Giá trị infobox trùng tên một bài cùng bộ → tự thành link
 const giaTriInfobox = (v: string | number) => String(v).split(/,\s*/).map((p) => {
@@ -68,13 +75,15 @@ const giaTriInfobox = (v: string | number) => String(v).split(/,\s*/).map((p) =>
   return e ? `<a href="${urlBai(e)}">${p}</a>` : p.replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]!));
 }).join(', ');
 const mucLuc = [...headings.filter((h) => h.depth === 2), ...mucThem];
+// Bài cot-truyen có trường arc: dòng "Tập" (và "Chương") trong infobox
+const tapArc = d.arc ? (d.arc.tap_den == null ? `Từ tập ${d.arc.tap_tu}` : d.arc.tap_den === d.arc.tap_tu ? `Tập ${d.arc.tap_tu}` : `Tập ${d.arc.tap_tu}–${d.arc.tap_den}`) : null;
 
 const site = Astro.site!;
 const tuyetDoi = (p: string) => new URL(p, site).href;
 const cap = [
   { ten: 'Trang chủ', href: url('') },
   { ten: tenSeries, href: urlSeries(d.series) },
-  { ten: DANH_MUC[d.category].tenSoNhieu, href: urlSeriesDanhMuc(d.series, d.category) },
+  { ten: dm(d.category).tenSoNhieu, href: urlSeriesDanhMuc(d.series, d.category) },
   { ten },
 ];
 const jsonLd = [
@@ -106,6 +115,11 @@ const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) 
             {Object.entries(d.infobox).map(([k, v]) => <tr><th scope="row">{k}</th><td set:html={giaTriInfobox(v)} /></tr>)}
             {d.thu_linh && <tr><th scope="row">Thủ lĩnh</th><td>{thuLinh ? <a href={urlBai(thuLinh)}>{tenBai(thuLinh)}</a> : d.thu_linh}</td></tr>}
             {d.tru_so && <tr><th scope="row">Trụ sở</th><td>{d.tru_so}</td></tr>}
+            {tapArc && <tr><th scope="row">Tập</th><td>{tapArc}</td></tr>}
+            {d.arc?.chuong != null && <tr><th scope="row">Chương</th><td>{d.arc.chuong}</td></tr>}
+            {d.xuat_hien_dau && <tr><th scope="row">Xuất hiện lần đầu</th><td>{d.xuat_hien_dau}</td></tr>}
+            {d.seiyuu && <tr><th scope="row">Lồng tiếng (seiyuu)</th><td>{d.seiyuu}</td></tr>}
+            {nangLuc.length > 0 && <tr><th scope="row">Năng lực</th><td>{nangLuc.map((n, i) => <>{i > 0 && ', '}<a href={urlBai(n)}>{tenBai(n)}</a></>)}</td></tr>}
             <tr><th scope="row">Bộ truyện</th><td><a href={urlSeries(d.series)}>{tenSeries}</a></td></tr>
             <tr><th scope="row">Cập nhật</th><td><time datetime={d.updated.toISOString()}>{d.updated.toLocaleDateString('vi-VN')}</time></td></tr>
           </tbody></table>
@@ -130,16 +144,16 @@ const TIM_TOAN_VAN = (import.meta.env.TIM_TOAN_VAN ?? process.env.TIM_TOAN_VAN) 
           </section>
         )}
         {d.cuoc_doi.length > 0 && <section id="cuoc-doi" class="khong-quang-cao"><h2>Cuộc đời</h2>
-          <DongThoiGian ds={d.cuoc_doi.map((c) => ({ tieuDe: c.giai_doan, diaDiem: c.dia_diem, canhGioi: c.canh_gioi, noiDung: c.su_kien }))} /></section>}
+          <DongThoiGian ds={d.cuoc_doi.map((c) => ({ tieuDe: c.giai_doan, diaDiem: c.dia_diem, canhGioi: c.arc || c.canh_gioi, noiDung: c.su_kien }))} /></section>}
         {quanHe.length > 0 && <section id="quan-he" class="khong-quang-cao"><h2>Mối quan hệ</h2>
           <ul class="ds-quan-he">{quanHe.map((q) => <li><ChipNhanVat bai={q.bai} ten={q.nhan_vat} phu={q.quan_he.join(' · ')} />{q.ghi_chu.length > 0 && <span class="ghi-chu">{q.ghi_chu.join(' ')}</span>}</li>)}</ul></section>}
-        {theLuc.length > 0 && <section id="the-luc-thuoc"><h2>Thế lực</h2>
+        {theLuc.length > 0 && <section id="the-luc-thuoc"><h2>{dm('the-luc').ten}</h2>
           <ul class="chip-the-loai">{theLuc.map((t) => <li>{t.bai ? <a href={urlBai(t.bai)}>{t.ten}</a> : <span class="nhan nhan-the-luc">{t.ten}</span>}</li>)}</ul></section>}
         {thanhVien.length > 0 && <section id="thanh-vien" class="khong-quang-cao"><h2>Thành viên</h2>
           <ul class="ds-chip">{thanhVien.map((e) => <li><ChipNhanVat bai={e} phu={e.data.vai_tro ? NHAN_VAI_TRO[e.data.vai_tro] : undefined} /></li>)}</ul></section>}
         {thuVien.length > 0 && <section id="thu-vien-anh" class="khong-quang-cao"><h2>Thư viện ảnh</h2><ThuVienAnh ds={thuVien} /></section>}
         {d.youtube && <><h2>Video giới thiệu</h2><YouTubeFacade id={d.youtube} tieuDe={`${ten} – video`} /></>}
-        {phapBao.length > 0 && <section class="khong-quang-cao"><h2>Pháp bảo của {ten}</h2><LuoiBai ds={phapBao} /></section>}
+        {phapBao.length > 0 && <section class="khong-quang-cao"><h2>{dm('phap-bao').tenSoNhieu} của {ten}</h2><LuoiBai ds={phapBao} /></section>}
         <section class="faq" id="cau-hoi-thuong-gap">
           <h2>Câu hỏi thường gặp</h2>
           {d.faqs.map((c) => <div class="faq-cau"><h3>{c.q}</h3><p>{c.a}</p></div>)}

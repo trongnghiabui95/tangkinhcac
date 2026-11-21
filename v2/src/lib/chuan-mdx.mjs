@@ -10,14 +10,29 @@ export const DANH_MUC = {
   'the-luc': { ten: 'Thế lực', tenSoNhieu: 'Thế lực' },
 };
 export const CAC_DANH_MUC = Object.keys(DANH_MUC);
+/** Issue #137: tên danh mục đổi theo loại bộ (thư mục giữ nguyên). Loại không khai báo ở đây → dùng tên trong DANH_MUC. */
+export const DANH_MUC_THEO_LOAI = {
+  anime: {
+    'canh-gioi': { ten: 'Hệ thống sức mạnh', tenSoNhieu: 'Hệ thống sức mạnh' },
+    'phap-bao': { ten: 'Năng lực / Vật phẩm', tenSoNhieu: 'Năng lực / Vật phẩm' },
+    'the-luc': { ten: 'Băng nhóm / Tổ chức', tenSoNhieu: 'Băng nhóm / Tổ chức' },
+    'cot-truyen': { ten: 'Arc / Mùa phim', tenSoNhieu: 'Arc / Mùa phim' },
+  },
+};
+/** Tên danh mục theo loại bộ: danhMuc('canh-gioi', 'anime').ten → "Hệ thống sức mạnh" */
+export const danhMuc = (category, loai) => ({ ...DANH_MUC[category], ...(DANH_MUC_THEO_LOAI[loai]?.[category] || {}) });
 /** Loại bộ truyện (trường `loai` trong index.mdx). Menu chỉ hiện loại nào đang có bộ.
  *  `nut`: chữ nút trên trang bộ truyện khác loại cùng `universe` dẫn tới bộ loại này (Issue #4), ví dụ trang truyện chữ → "Xem bản donghua". */
 export const LOAI_TRUYEN = {
   'tu-tien': { ten: 'Truyện Tu Tiên', nut: 'Đọc bản truyện', moTa: 'Review truyện Tu Tiên, Huyền Huyễn: cốt truyện, nhân vật, hệ thống cảnh giới, pháp bảo.' },
-  anime: { ten: 'Anime', nut: 'Xem bản anime', moTa: 'Review Anime: cốt truyện, nhân vật, sức mạnh và các mùa phim.' },
+  anime: { ten: 'Anime', nut: 'Xem bản anime', moTa: 'Review Anime: cốt truyện, nhân vật, sức mạnh và các mùa phim.',
+    // Issue #137: trang bộ theo Arc (Dòng thời gian Arc, thứ tự xem, ẩn Xếp hạng sức mạnh theo cảnh giới)
+    theoArc: true, chuDanhSach: 'tiểu sử, sức mạnh, năng lực và các mối quan hệ' },
   donghua: { ten: 'Donghua', nut: 'Xem bản donghua', moTa: 'Review Donghua (hoạt hình Trung Quốc): các mùa phim, nhân vật, chất lượng hình ảnh và độ bám nguyên tác.' },
 };
 export const CAC_LOAI_TRUYEN = Object.keys(LOAI_TRUYEN);
+/** Chữ mô tả trang danh sách bài của 1 bộ (loại không khai báo chuDanhSach → chữ mặc định của truyện tu tiên) */
+export const chuDanhSach = (loai) => LOAI_TRUYEN[loai]?.chuDanhSach || 'tiểu sử, cảnh giới, pháp bảo và các mối quan hệ';
 /** Nhãn quan hệ nhân vật (trường quan_he[].quan_he). Giá trị khác ghi sao hiện vậy. */
 export const NHAN_QUAN_HE = { 'dao-lu': 'Đạo lữ', 'su-phu': 'Sư phụ', 'de-tu': 'Đệ tử', 'ke-thu': 'Kẻ thù', 'ban-be': 'Bạn bè', 'gia-dinh': 'Gia đình', 'dong-mon': 'Đồng môn' };
 

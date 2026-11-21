@@ -2,7 +2,7 @@
 // "Truyện mới cập nhật": mỗi bộ truyện 1 khung (bìa, tên, ngày cập nhật, vài bài mới nhất), bộ mới nhất lên trước.
 // Nhãn "Mới" / "+N bài mới" tính trên máy người xem (so với ngày hôm nay) để không bị cũ khi lâu chưa build lại;
 // tắt JavaScript thì chỉ hiện ngày.
-import { layAnhSeries, slugSeries, urlSeries, urlBai, tenBai, url, DANH_MUC } from '../lib/tien-ich.js';
+import { layAnhSeries, slugSeries, urlSeries, urlBai, tenBai, url, danhMuc } from '../lib/tien-ich.js';
 interface Props { series: any[]; bai: any[]; soBo?: number; soBai?: number }
 const { series, bai, soBo = 6, soBai = 4 } = Astro.props;
 const ngay = (d: Date) => d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
@@ -28,7 +28,7 @@ const nhom = series.map((s) => {
             <ol class="cap-nhat-bai">
               {ds.slice(0, soBai).map((b) => (
                 <li data-ngay-dang={b.data.date.toISOString()} data-ngay-sua={b.data.updated.toISOString()}>
-                  <a href={urlBai(b)}><span class="cap-nhat-loai">{DANH_MUC[b.data.category].ten}</span><span class="cap-nhat-tieu-de">{tenBai(b)}</span></a>
+                  <a href={urlBai(b)}><span class="cap-nhat-loai">{danhMuc(b.data.category, s.data.loai).ten}</span><span class="cap-nhat-tieu-de">{tenBai(b)}</span></a>
                   <span class="cap-nhat-trang-thai"><span class="cham-moi" hidden></span><time datetime={new Date(moiNhat(b)).toISOString()}>{ngay(new Date(moiNhat(b))).slice(0, 5)}</time></span>
                 </li>
               ))}

@@ -3,6 +3,8 @@
 // băng rôn · đánh giá · nội dung index.mdx · nhân vật chính/phụ/phản diện · các danh mục khác · bản đồ & địa điểm
 // · hành trình nhân vật chính · thư viện ảnh · OST · thuật ngữ · tác phẩm tương tự
 // Issue #11: thẻ "Bạn có biết" (ban_co_biet) · "Xếp hạng sức mạnh" (bac của nhân vật × cac_bac của bài cảnh giới cùng bộ)
+// Issue #137: loại có LOAI_TRUYEN[loai].theoArc (anime): tên danh mục theo loại, Dòng thời gian Arc (cac_arc), Thứ tự xem
+// (thu_tu_xem, tap_filler), "Bạn có biết" xuống sau các danh mục, ẩn "Xếp hạng sức mạnh" theo cảnh giới và Hành trình khi đã có arc.
 import { render } from 'astro:content';
 import BoCuc from '../../layouts/BoCuc.astro';
 import Breadcrumb from '../../components/Breadcrumb.astro';
@@ -18,8 +20,10 @@ import BieuTuong from '../../components/BieuTuong.astro';
 import TheBoTruyen from '../../components/TheBoTruyen.astro';
 import ChiaSe from '../../components/ChiaSe.astro';
 import ChipNhanVat from '../../components/ChipNhanVat.astro';
+import KhoiBanCoBiet from '../../components/KhoiBanCoBiet.astro';
+import DongThoiGianArc from '../../components/DongThoiGianArc.astro';
 import { laySeries, slugSeries, layBai, layAnhSeries, layThuVien, layBanDo, url, urlSeriesDanhMuc, urlVuTru, urlTheLoai, urlLoai, boDau,
-  DANH_MUC, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru, cacBanKhac, urlSeries, taoSlug, tenBai, urlBai } from '../../lib/tien-ich.js';
+  danhMuc, CAC_DANH_MUC, LOAI_TRUYEN, NHAN_VAI_TRO, cacVuTru, cacBanKhac, urlSeries, taoSlug, tenBai, urlBai } from '../../lib/tien-ich.js';
 import { GIOI_HAN } from '../../lib/chuan-mdx.mjs';
 import { schemaReviewTruyen, schemaBreadcrumb } from '../../lib/schema.js';
 export async function getStaticPaths() {
@@ -48,9 +52,15 @@ const banDo = layBanDo(s);
 const thuVien = layThuVien(s);
 const tuongTu = d.tuong_tu.map((t) => ({ ...t, s: tatCaSeries.find((x) => slugSeries(x) === t.series) })).filter((t) => t.s);
 const coBanDo = banDo || d.dia_diem.length > 0;
+const theoArc = !!LOAI_TRUYEN[d.loai]?.theoArc;
+const tenDm = (c: string) => danhMuc(c, d.loai).tenSoNhieu;
+const coArc = d.cac_arc.length > 0;
+const soBaiArc = bai.filter((b) => b.data.category === 'cot-truyen').length;
+const coThuTuXem = !!(d.thu_tu_xem || d.tap_filler);
+const doan = (chu?: string) => (chu ?? '').split(/\n\s*\n/).map((x) => x.trim()).filter(Boolean);
+const hienHanhTrinh = d.hanh_trinh.length > 0 && !(theoArc && coArc);   // anime: Dòng thời gian Arc thay cho Hành trình
 
-// "Bạn có biết": in sẵn mọi ý, ẩn bớt chỉ giữ GIOI_HAN.banCoBietHien ý đầu (không JS vẫn đọc được);
-// có nhiều hơn thì script nhỏ ở cuối trang chọn ngẫu nhiên mỗi lượt xem.
+// "Bạn có biết": khối KhoiBanCoBiet (tu tiên: ngay sau review; anime: sau các danh mục)
 const banCoBiet = d.ban_co_biet;
 // "Xếp hạng sức mạnh": thứ tự bậc lấy từ cac_bac của bài cảnh giới cùng bộ (bài đầu tiên theo thu_tu có cac_bac),
 // nhân vật có `bac` khớp tên bậc (so không dấu) mới được xếp; cùng bậc thì cùng hạng.
@@ -61,18 +71,21 @@ const xepHang = nhanVat
   .filter((x) => x.i !== undefined)
   .sort((a, b) => b.i! - a.i! || (a.e.data.vai_tro === 'chinh' ? -1 : 0) - (b.e.data.vai_tro === 'chinh' ? -1 : 0) || tenBai(a.e).localeCompare(tenBai(b.e), 'vi'))
   .map((x, k, ds) => ({ ...x, hang: ds.findIndex((y) => y.i === x.i) + 1, tenBac: baiCanhGioi!.data.cac_bac[x.i!].ten }));
-const coXepHang = xepHang.length >= GIOI_HAN.xepHangToiThieu;
+const coXepHang = !theoArc && xepHang.length >= GIOI_HAN.xepHangToiThieu;   // anime không xếp theo cảnh giới
 
 // Mục lục: chỉ những mục có dữ liệu
 const mucLuc = [
   (d.diem != null || d.diem_chi_tiet) && { id: 'danh-gia', ten: 'Đánh giá' },
   ...headings.filter((h) => h.depth === 2).map((h) => ({ id: h.slug, ten: h.text })),
-  banCoBiet.length > 0 && { id: 'ban-co-biet', ten: 'Bạn có biết' },
+  !theoArc && banCoBiet.length > 0 && { id: 'ban-co-biet', ten: 'Bạn có biết' },
+  coArc && { id: 'cac-arc', ten: 'Dòng thời gian Arc' },
+  coThuTuXem && { id: 'thu-tu-xem', ten: 'Thứ tự xem' },
   ...nhomNhanVat.map((n) => ({ id: n.id, ten: n.ten })),
   coXepHang && { id: 'xep-hang-suc-manh', ten: 'Xếp hạng sức mạnh' },
-  ...nhom.map((n) => ({ id: n.c, ten: DANH_MUC[n.c].tenSoNhieu })),
+  ...nhom.map((n) => ({ id: n.c, ten: tenDm(n.c) })),
+  theoArc && banCoBiet.length > 0 && { id: 'ban-co-biet', ten: 'Bạn có biết' },
   coBanDo && { id: 'ban-do', ten: 'Bản đồ thế giới' },
-  d.hanh_trinh.length > 0 && { id: 'hanh-trinh', ten: 'Hành trình nhân vật chính' },
+  hienHanhTrinh && { id: 'hanh-trinh', ten: 'Hành trình nhân vật chính' },
   thuVien.length > 0 && { id: 'thu-vien-anh', ten: 'Thư viện ảnh' },
   d.ost.length > 0 && { id: 'ost', ten: 'OST' },
   d.thuat_ngu.length > 0 && { id: 'thuat-ngu', ten: 'Thuật ngữ' },
@@ -92,7 +105,7 @@ const thongTin = [
   dong('Tên gốc', d.ten_trung), d.ten_khac.length ? dong('Tên khác', d.ten_khac.join(', ')) : null, dong('Tác giả', d.tac_gia),
   dong('Loại', LOAI_TRUYEN[d.loai]?.ten), dong('Tình trạng', d.tinh_trang), dong('Số chương', d.so_chuong?.toLocaleString('vi-VN')),
   dong('Số tập', d.so_tap), dong('Số mùa', d.so_mua), dong('Nền tảng', d.nen_tang), dong('Năm', d.nam), dong('Studio', d.studio),
-  d.diem != null ? dong('Điểm', `★ ${d.diem}/10`) : null, dong('Số bài', bai.length),
+  d.diem != null ? dong('Điểm', `★ ${d.diem}/10`) : null, d.diem_mal != null ? dong('Điểm MyAnimeList', `${d.diem_mal}/10`) : null, dong('Số bài', bai.length),
 ].filter(Boolean) as { ten: string; v: string }[];
 ---
 <BoCuc tieuDe={tieuDe} moTa={d.mo_ta} anhOg={anh?.og} jsonLd={jsonLd} kieuOg="article" giuNguyenTieuDe>
@@ -123,16 +136,22 @@ const thongTin = [
   </article>
   <AdUnit viTri="sau-review" />
 
-  {banCoBiet.length > 0 && (
-    <section class="khoi" id="ban-co-biet" data-pagefind-ignore="all">
-      <TieuDeKhoi tieuDe="Bạn có biết" bieuTuong="y-tuong" />
-      <ul class="ban-co-biet" data-hien={GIOI_HAN.banCoBietHien}>{banCoBiet.map((y, i) => (
-        <li hidden={i >= GIOI_HAN.banCoBietHien}>
-          <p>{y.noi_dung}</p>
-          {y.nguon && <p class="nguon-anh" title={`Nguồn: ${y.nguon}`}>Nguồn: {y.nguon_url ? <a href={y.nguon_url} rel="nofollow noopener" target="_blank">{y.nguon}</a> : y.nguon}</p>}
-        </li>
-      ))}</ul>
-      {banCoBiet.length > GIOI_HAN.banCoBietHien && <script is:inline>{`(()=>{const u=document.querySelector('.ban-co-biet');if(!u)return;const n=+u.dataset.hien||3,ds=[...u.children];for(let i=ds.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[ds[i],ds[j]]=[ds[j],ds[i]];}ds.forEach((li,i)=>{li.hidden=i>=n;});})();`}</script>}
+  {!theoArc && <KhoiBanCoBiet ds={banCoBiet} />}
+
+  {coArc && (
+    <section class="khoi" id="cac-arc" data-pagefind-ignore="all">
+      <TieuDeKhoi tieuDe="Dòng thời gian Arc" bieuTuong="hanh-trinh" href={soBaiArc ? urlSeriesDanhMuc(slug, 'cot-truyen') : undefined} chuNut={`Xem ${soBaiArc} bài`} />
+      <DongThoiGianArc ds={d.cac_arc} baiCotTruyen={bai.filter((b) => b.data.category === 'cot-truyen')} />
+    </section>
+  )}
+
+  {coThuTuXem && (
+    <section class="khoi" id="thu-tu-xem" data-pagefind-ignore="all">
+      <TieuDeKhoi tieuDe="Thứ tự xem cho người mới" bieuTuong="de-cu" />
+      <div class="thu-tu-xem">
+        {doan(d.thu_tu_xem).map((p) => <p>{p}</p>)}
+        {d.tap_filler && <><h3>Tập có thể bỏ qua (filler)</h3>{doan(d.tap_filler).map((p) => <p>{p}</p>)}</>}
+      </div>
     </section>
   )}
 
@@ -156,10 +175,12 @@ const thongTin = [
 
   {nhom.map((n) => (
     <section class="khoi" id={n.c} data-pagefind-ignore="all">
-      <TieuDeKhoi tieuDe={DANH_MUC[n.c].tenSoNhieu} bieuTuong={n.c} href={n.ds.length > 10 ? urlSeriesDanhMuc(slug, n.c) : undefined} chuNut={`Xem tất cả ${n.ds.length}`} />
+      <TieuDeKhoi tieuDe={tenDm(n.c)} bieuTuong={n.c} href={n.ds.length > 10 ? urlSeriesDanhMuc(slug, n.c) : undefined} chuNut={`Xem tất cả ${n.ds.length}`} />
       <LuoiBai ds={n.ds.slice(0, 10)} />
     </section>
   ))}
+
+  {theoArc && <KhoiBanCoBiet ds={banCoBiet} />}
 
   {coBanDo && (
     <section class="khoi" id="ban-do" data-pagefind-ignore="all">
@@ -176,7 +197,7 @@ const thongTin = [
     </section>
   )}
 
-  {d.hanh_trinh.length > 0 && (
+  {hienHanhTrinh && (
     <section class="khoi" id="hanh-trinh" data-pagefind-ignore="all">
       <TieuDeKhoi tieuDe="Hành trình nhân vật chính" bieuTuong="hanh-trinh" />
       <DongThoiGian ds={d.hanh_trinh.map((h) => ({ diaDiem: h.dia_diem, canhGioi: h.canh_gioi, noiDung: h.su_kien }))} />

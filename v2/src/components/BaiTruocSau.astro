@@ -1,6 +1,6 @@
 ---
 // Bài trước / Bài sau trong cùng bộ truyện (Issue #103). Thứ tự: danh mục (như chuan-mdx) → thu_tu → tên.
-import { tenBai, urlBai, DANH_MUC, CAC_DANH_MUC } from '../lib/tien-ich.js';
+import { tenBai, urlBai, danhMucBai, CAC_DANH_MUC } from '../lib/tien-ich.js';
 interface Props { bai: any; cungBo: any[] }   // cungBo: các bài khác cùng bộ
 const { bai, cungBo } = Astro.props;
 const thuTu = (e: any) => [CAC_DANH_MUC.indexOf(e.data.category), e.data.thu_tu ?? 999, tenBai(e)];
@@ -10,10 +10,11 @@ const ds = [bai, ...cungBo].sort((a, b) => {
 });
 const i = ds.findIndex((e) => e.id === bai.id);
 const truoc = i > 0 ? ds[i - 1] : null, sau = i < ds.length - 1 ? ds[i + 1] : null;
+const tenTruoc = truoc && (await danhMucBai(truoc)).ten, tenSau = sau && (await danhMucBai(sau)).ten;
 ---
 {(truoc || sau) && (
   <nav class="truoc-sau" aria-label="Bài trước, bài sau" data-pagefind-ignore="all">
-    {truoc ? <a class="truoc-sau-o truoc" href={urlBai(truoc)} rel="prev"><span class="truoc-sau-nhan">← Bài trước · {DANH_MUC[truoc.data.category].ten}</span><span class="truoc-sau-ten">{tenBai(truoc)}</span></a> : <span></span>}
-    {sau && <a class="truoc-sau-o sau" href={urlBai(sau)} rel="next"><span class="truoc-sau-nhan">Bài sau · {DANH_MUC[sau.data.category].ten} →</span><span class="truoc-sau-ten">{tenBai(sau)}</span></a>}
+    {truoc ? <a class="truoc-sau-o truoc" href={urlBai(truoc)} rel="prev"><span class="truoc-sau-nhan">← Bài trước · {tenTruoc}</span><span class="truoc-sau-ten">{tenBai(truoc)}</span></a> : <span></span>}
+    {sau && <a class="truoc-sau-o sau" href={urlBai(sau)} rel="next"><span class="truoc-sau-nhan">Bài sau · {tenSau} →</span><span class="truoc-sau-ten">{tenBai(sau)}</span></a>}
   </nav>
 )}
